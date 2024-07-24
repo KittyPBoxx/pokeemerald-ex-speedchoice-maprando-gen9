@@ -29,6 +29,7 @@
 #include "constants/moves.h"
 #include "constants/songs.h"
 #include "constants/trainer_types.h"
+#include "done_button.h"
 
 #define NUM_FORCED_MOVEMENTS 18
 #define NUM_ACRO_BIKE_COLLISIONS 5
@@ -143,16 +144,16 @@ static bool32 Fishing_EndNoMon(struct Task *);
 static void AlignFishingAnimationFrames(void);
 static bool32 DoesFishingMinigameAllowCancel(void);
 static bool32 Fishing_DoesFirstMonInPartyHaveSuctionCupsOrStickyHold(void);
-static bool32 Fishing_RollForBite(bool32);
-static u32 CalculateFishingBiteOdds(bool32);
-static u32 CalculateFishingProximityBoost(u32 odds);
-static void GetCoordinatesAroundBobber(s16[], s16[][AXIS_COUNT], u32);
-static u32 CountQualifyingTiles(s16[][AXIS_COUNT], s16 player[], u8 facingDirection, struct ObjectEvent *objectEvent, bool32 isTileLand[]);
-static bool32 CheckTileQualification(s16 tile[], s16 player[], u32 facingDirection, struct ObjectEvent* objectEvent, bool32 isTileLand[], u32 direction);
-static u32 CountLandTiles(bool32 isTileLand[]);
-static bool32 IsPlayerHere(s16, s16, s16, s16);
-static bool32 IsMetatileBlocking(s16, s16, u32);
-static bool32 IsMetatileLand(s16, s16, u32);
+// static bool32 Fishing_RollForBite(bool32); Speedchoice: not used, fish always bit
+// static u32 CalculateFishingBiteOdds(bool32);
+// static u32 CalculateFishingProximityBoost(u32 odds);
+// static void GetCoordinatesAroundBobber(s16[], s16[][AXIS_COUNT], u32);
+// static u32 CountQualifyingTiles(s16[][AXIS_COUNT], s16 player[], u8 facingDirection, struct ObjectEvent *objectEvent, bool32 isTileLand[]);
+// static bool32 CheckTileQualification(s16 tile[], s16 player[], u32 facingDirection, struct ObjectEvent* objectEvent, bool32 isTileLand[], u32 direction);
+// static u32 CountLandTiles(bool32 isTileLand[]);
+// static bool32 IsPlayerHere(s16, s16, s16, s16);
+// static bool32 IsMetatileBlocking(s16, s16, u32);
+// static bool32 IsMetatileLand(s16, s16, u32);
 
 static u8 TrySpinPlayerForWarp(struct ObjectEvent *, s16 *);
 
@@ -1088,6 +1089,7 @@ void PlayerAcroTurnJump(u8 direction)
 
 void PlayerWheelieInPlace(u8 direction)
 {
+    TryIncrementButtonStat(DB_BONKS);
     PlaySE(SE_WALL_HIT);
     PlayerSetAnimId(GetAcroWheelieInPlaceDirectionMovementAction(direction), COPY_MOVE_WALK);
 }
@@ -1122,6 +1124,7 @@ static void PlayCollisionSoundIfNotFacingWarp(u8 direction)
             if (MetatileBehavior_IsWarpDoor(MapGridGetMetatileBehaviorAt(x, y)))
                 return;
         }
+        TryIncrementButtonStat(DB_BONKS);
         PlaySE(SE_WALL_HIT);
     }
 }
@@ -1758,8 +1761,8 @@ static bool32 Fishing_GetRodOut(struct Task *task)
     };
     const s16 minRounds2[] = {
         [OLD_ROD]   = 1,
-        [GOOD_ROD]  = 3,
-        [SUPER_ROD] = 6
+        [GOOD_ROD]  = 1, // Speedchoice: less fishing
+        [SUPER_ROD] = 1
     };
 
     task->tRoundsPlayed = 0;
@@ -1857,10 +1860,10 @@ static bool32 Fishing_CheckForBite(struct Task *task)
     firstMonHasSuctionOrSticky = Fishing_DoesFirstMonInPartyHaveSuctionCupsOrStickyHold();
 
     if(firstMonHasSuctionOrSticky)
-        bite = Fishing_RollForBite(firstMonHasSuctionOrSticky);
+        bite = TRUE; // bite = Fishing_RollForBite(firstMonHasSuctionOrSticky);
 
     if (!bite)
-        bite = Fishing_RollForBite(FALSE);
+        bite = TRUE; // bite = Fishing_RollForBite(FALSE);
 
     if (!bite)
         task->tStep = FISHING_NOT_EVEN_NIBBLE;
@@ -2082,142 +2085,142 @@ static bool32 Fishing_DoesFirstMonInPartyHaveSuctionCupsOrStickyHold(void)
     return (ability == ABILITY_SUCTION_CUPS || ability == ABILITY_STICKY_HOLD);
 }
 
-static bool32 Fishing_RollForBite(bool32 isStickyHold)
-{
-    return ((Random() % 100) > CalculateFishingBiteOdds(isStickyHold));
-}
+// static bool32 Fishing_RollForBite(bool32 isStickyHold)
+// {
+//     return ((Random() % 100) > CalculateFishingBiteOdds(isStickyHold));
+// }
 
-static u32 CalculateFishingBiteOdds(bool32 isStickyHold)
-{
-    u32 odds = FISHING_DEFAULT_ODDS;
+// static u32 CalculateFishingBiteOdds(bool32 isStickyHold)
+// {
+//     u32 odds = FISHING_DEFAULT_ODDS;
 
-    if (isStickyHold)
-        odds -= FISHING_STICKY_BOOST;
+//     if (isStickyHold)
+//         odds -= FISHING_STICKY_BOOST;
 
-    odds -= CalculateFishingProximityBoost(odds);
-    return odds;
-}
+//     odds -= CalculateFishingProximityBoost(odds);
+//     return odds;
+// }
 
-static u32 CalculateFishingProximityBoost(u32 odds)
-{
-    s16 player[AXIS_COUNT], bobber[AXIS_COUNT];
-    s16 surroundingTile[CARDINAL_DIRECTION_COUNT][AXIS_COUNT] = {{0, 0}};
-    bool32 isTileLand[CARDINAL_DIRECTION_COUNT] = {FALSE};
-    u32 facingDirection, numQualifyingTile = 0;
-    struct ObjectEvent *objectEvent;
+// static u32 CalculateFishingProximityBoost(u32 odds)
+// {
+//     s16 player[AXIS_COUNT], bobber[AXIS_COUNT];
+//     s16 surroundingTile[CARDINAL_DIRECTION_COUNT][AXIS_COUNT] = {{0, 0}};
+//     bool32 isTileLand[CARDINAL_DIRECTION_COUNT] = {FALSE};
+//     u32 facingDirection, numQualifyingTile = 0;
+//     struct ObjectEvent *objectEvent;
 
-    if (!I_FISHING_PROXIMITY)
-        return 0;
+//     if (!I_FISHING_PROXIMITY)
+//         return 0;
 
-    objectEvent = &gObjectEvents[gPlayerAvatar.objectEventId];
+//     objectEvent = &gObjectEvents[gPlayerAvatar.objectEventId];
 
-    player[AXIS_X] = objectEvent->currentCoords.x;
-    player[AXIS_Y] = objectEvent->currentCoords.y;
-    bobber[AXIS_X] = objectEvent->currentCoords.x;
-    bobber[AXIS_Y] = objectEvent->currentCoords.y;
+//     player[AXIS_X] = objectEvent->currentCoords.x;
+//     player[AXIS_Y] = objectEvent->currentCoords.y;
+//     bobber[AXIS_X] = objectEvent->currentCoords.x;
+//     bobber[AXIS_Y] = objectEvent->currentCoords.y;
 
-    facingDirection = GetPlayerFacingDirection();
-    MoveCoords(facingDirection, &bobber[AXIS_X], &bobber[AXIS_Y]);
+//     facingDirection = GetPlayerFacingDirection();
+//     MoveCoords(facingDirection, &bobber[AXIS_X], &bobber[AXIS_Y]);
 
-    GetCoordinatesAroundBobber(bobber, surroundingTile, facingDirection);
-    numQualifyingTile = CountQualifyingTiles(surroundingTile, player, facingDirection, objectEvent, isTileLand);
+//     GetCoordinatesAroundBobber(bobber, surroundingTile, facingDirection);
+//     numQualifyingTile = CountQualifyingTiles(surroundingTile, player, facingDirection, objectEvent, isTileLand);
 
-    numQualifyingTile += CountLandTiles(isTileLand);
+//     numQualifyingTile += CountLandTiles(isTileLand);
 
-    return (numQualifyingTile == 3) ? odds : (numQualifyingTile * FISHING_PROXIMITY_BOOST);
-}
+//     return (numQualifyingTile == 3) ? odds : (numQualifyingTile * FISHING_PROXIMITY_BOOST);
+// }
 
-static void GetCoordinatesAroundBobber(s16 bobber[], s16 surroundingTile[][AXIS_COUNT], u32 facingDirection)
-{
-    u32 direction;
+// static void GetCoordinatesAroundBobber(s16 bobber[], s16 surroundingTile[][AXIS_COUNT], u32 facingDirection)
+// {
+//     u32 direction;
 
-    for (direction = DIR_SOUTH; direction < CARDINAL_DIRECTION_COUNT; direction++)
-    {
-        surroundingTile[direction][AXIS_X] = bobber[AXIS_X];
-        surroundingTile[direction][AXIS_Y] = bobber[AXIS_Y];
-        MoveCoords(direction, &surroundingTile[direction][AXIS_X], &surroundingTile[direction][AXIS_Y]);
-    }
-}
+//     for (direction = DIR_SOUTH; direction < CARDINAL_DIRECTION_COUNT; direction++)
+//     {
+//         surroundingTile[direction][AXIS_X] = bobber[AXIS_X];
+//         surroundingTile[direction][AXIS_Y] = bobber[AXIS_Y];
+//         MoveCoords(direction, &surroundingTile[direction][AXIS_X], &surroundingTile[direction][AXIS_Y]);
+//     }
+// }
 
-static u32 CountQualifyingTiles(s16 surroundingTile[][AXIS_COUNT], s16 player[], u8 facingDirection, struct ObjectEvent *objectEvent, bool32 isTileLand[])
-{
-    u32 numQualifyingTile = 0;
-    s16 tile[AXIS_COUNT];
-    u8 direction = DIR_SOUTH;
+// static u32 CountQualifyingTiles(s16 surroundingTile[][AXIS_COUNT], s16 player[], u8 facingDirection, struct ObjectEvent *objectEvent, bool32 isTileLand[])
+// {
+//     u32 numQualifyingTile = 0;
+//     s16 tile[AXIS_COUNT];
+//     u8 direction = DIR_SOUTH;
 
-    for (direction = DIR_SOUTH; direction < CARDINAL_DIRECTION_COUNT; direction++)
-    {
-        tile[AXIS_X] = surroundingTile[direction][AXIS_X];
-        tile[AXIS_Y] = surroundingTile[direction][AXIS_Y];
+//     for (direction = DIR_SOUTH; direction < CARDINAL_DIRECTION_COUNT; direction++)
+//     {
+//         tile[AXIS_X] = surroundingTile[direction][AXIS_X];
+//         tile[AXIS_Y] = surroundingTile[direction][AXIS_Y];
 
-        if (!CheckTileQualification(tile, player, facingDirection, objectEvent, isTileLand, direction))
-            continue;
+//         if (!CheckTileQualification(tile, player, facingDirection, objectEvent, isTileLand, direction))
+//             continue;
 
-        numQualifyingTile++;
-    }
-    return numQualifyingTile;
-}
+//         numQualifyingTile++;
+//     }
+//     return numQualifyingTile;
+// }
 
-static bool32 CheckTileQualification(s16 tile[], s16 player[], u32 facingDirection, struct ObjectEvent* objectEvent, bool32 isTileLand[], u32 direction)
-{
-    u32 collison = GetCollisionAtCoords(objectEvent, tile[AXIS_X], tile[AXIS_Y], facingDirection);
+// static bool32 CheckTileQualification(s16 tile[], s16 player[], u32 facingDirection, struct ObjectEvent* objectEvent, bool32 isTileLand[], u32 direction)
+// {
+//     u32 collison = GetCollisionAtCoords(objectEvent, tile[AXIS_X], tile[AXIS_Y], facingDirection);
 
-    if (IsPlayerHere(tile[AXIS_X], tile[AXIS_Y], player[AXIS_X], player[AXIS_Y]))
-        return FALSE;
-    else if (IsMetatileBlocking(tile[AXIS_X], tile[AXIS_Y], collison))
-        return TRUE;
-    else if (MetatileBehavior_IsSurfableFishableWater(MapGridGetMetatileBehaviorAt(tile[AXIS_X], tile[AXIS_Y])))
-        return FALSE;
-    else if (IsMetatileLand(tile[AXIS_X], tile[AXIS_Y], collison))
-        isTileLand[direction] = TRUE;
+//     if (IsPlayerHere(tile[AXIS_X], tile[AXIS_Y], player[AXIS_X], player[AXIS_Y]))
+//         return FALSE;
+//     else if (IsMetatileBlocking(tile[AXIS_X], tile[AXIS_Y], collison))
+//         return TRUE;
+//     else if (MetatileBehavior_IsSurfableFishableWater(MapGridGetMetatileBehaviorAt(tile[AXIS_X], tile[AXIS_Y])))
+//         return FALSE;
+//     else if (IsMetatileLand(tile[AXIS_X], tile[AXIS_Y], collison))
+//         isTileLand[direction] = TRUE;
 
-    return FALSE;
-}
+//     return FALSE;
+// }
 
-static u32 CountLandTiles(bool32 isTileLand[])
-{
-    u32 direction, numQualifyingTile = 0;
+// static u32 CountLandTiles(bool32 isTileLand[])
+// {
+//     u32 direction, numQualifyingTile = 0;
 
-    for (direction = DIR_SOUTH; direction < CARDINAL_DIRECTION_COUNT; direction++)
-        if (isTileLand[direction])
-            numQualifyingTile++;
+//     for (direction = DIR_SOUTH; direction < CARDINAL_DIRECTION_COUNT; direction++)
+//         if (isTileLand[direction])
+//             numQualifyingTile++;
 
-    return (numQualifyingTile < 2) ? 0 : numQualifyingTile;
-}
+//     return (numQualifyingTile < 2) ? 0 : numQualifyingTile;
+// }
 
-static bool32 IsPlayerHere(s16 x, s16 y, s16 playerX, s16 playerY)
-{
-    return ((x == playerX) && (y == playerY));
-}
+// static bool32 IsPlayerHere(s16 x, s16 y, s16 playerX, s16 playerY)
+// {
+//     return ((x == playerX) && (y == playerY));
+// }
 
-static bool32 IsMetatileBlocking(s16 x, s16 y, u32 collison)
-{
-    switch(collison)
-    {
-        case COLLISION_NONE:
-        case COLLISION_STOP_SURFING:
-        case COLLISION_ELEVATION_MISMATCH:
-            return FALSE;
-        default:
-            return TRUE;
-        case COLLISION_OBJECT_EVENT:
-            return (gObjectEvents[GetObjectEventIdByXY(x,y)].inanimate);
-    }
-    return TRUE;
-}
+// static bool32 IsMetatileBlocking(s16 x, s16 y, u32 collison)
+// {
+//     switch(collison)
+//     {
+//         case COLLISION_NONE:
+//         case COLLISION_STOP_SURFING:
+//         case COLLISION_ELEVATION_MISMATCH:
+//             return FALSE;
+//         default:
+//             return TRUE;
+//         case COLLISION_OBJECT_EVENT:
+//             return (gObjectEvents[GetObjectEventIdByXY(x,y)].inanimate);
+//     }
+//     return TRUE;
+// }
 
-static bool32 IsMetatileLand(s16 x, s16 y, u32 collison)
-{
-    switch(collison)
-    {
-        case COLLISION_NONE:
-        case COLLISION_STOP_SURFING:
-        case COLLISION_ELEVATION_MISMATCH:
-            return TRUE;
-        default:
-            return FALSE;
-    }
-}
+// static bool32 IsMetatileLand(s16 x, s16 y, u32 collison)
+// {
+//     switch(collison)
+//     {
+//         case COLLISION_NONE:
+//         case COLLISION_STOP_SURFING:
+//         case COLLISION_ELEVATION_MISMATCH:
+//             return TRUE;
+//         default:
+//             return FALSE;
+//     }
+// }
 
 #undef tStep
 #undef tFrameCounter

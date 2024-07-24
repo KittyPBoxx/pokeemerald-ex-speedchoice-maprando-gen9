@@ -2,6 +2,7 @@
 #include "palette.h"
 #include "palette_util.h"
 #include "util.h"
+#include "overworld.h"
 
 // "RouletteFlash" is more accurately a general flashing/fading util
 // this file handles fading the palettes for the color/icon selections on the Roulette wheel

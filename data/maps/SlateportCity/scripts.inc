@@ -559,18 +559,85 @@ SlateportCity_EventScript_PowerTMClerk::
 	faceplayer
 	message gText_HowMayIServeYou
 	waitmessage
-	pokemart SlateportCity_Pokemart_PowerTMs
+	pokemart SlateportCity_Pokemart_Speedchoice
 	msgbox gText_PleaseComeAgain, MSGBOX_DEFAULT
 	release
 	end
 
 	.align 2
 SlateportCity_Pokemart_PowerTMs:
-	.2byte ITEM_TM_HIDDEN_POWER
-	.2byte ITEM_TM_SECRET_POWER
+	.2byte ITEM_TM10  @ Hidden Power
+	.2byte ITEM_TM43  @ Secret Power
 	.2byte ITEM_NONE
 	release
 	end
+
+    .align 2
+SlateportCity_Pokemart_Speedchoice:
+    .2byte ITEM_TM10
+    .2byte ITEM_TM43
+    .2byte ITEM_SUN_STONE
+    .2byte ITEM_MOON_STONE
+    .2byte ITEM_FIRE_STONE
+    .2byte ITEM_THUNDER_STONE
+    .2byte ITEM_WATER_STONE
+    .2byte ITEM_LEAF_STONE
+    .2byte ITEM_DAWN_STONE
+    .2byte ITEM_DUSK_STONE
+    .2byte ITEM_LEAF_STONE
+    .2byte ITEM_SHINY_STONE
+    .2byte ITEM_ICE_STONE
+    .2byte ITEM_SEA_INCENSE
+    .2byte ITEM_LAX_INCENSE
+    .2byte ITEM_ODD_INCENSE
+    .2byte ITEM_ROCK_INCENSE
+    .2byte ITEM_FULL_INCENSE
+    .2byte ITEM_WAVE_INCENSE
+    .2byte ITEM_ROSE_INCENSE
+    .2byte ITEM_LUCK_INCENSE
+    .2byte ITEM_PURE_INCENSE
+    .2byte ITEM_UP_GRADE
+    .2byte ITEM_DUBIOUS_DISC
+    .2byte ITEM_DRAGON_SCALE
+    .2byte ITEM_DEEP_SEA_TOOTH
+    .2byte ITEM_DEEP_SEA_SCALE
+    .2byte ITEM_METAL_COAT
+    .2byte ITEM_KINGS_ROCK
+    .2byte ITEM_ELECTIRIZER
+    .2byte ITEM_MAGMARIZER
+    .2byte ITEM_OVAL_STONE
+    .2byte ITEM_PROTECTOR
+    .2byte ITEM_RAZOR_CLAW
+    .2byte ITEM_RAZOR_FANG
+    .2byte ITEM_REAPER_CLOTH
+    .2byte ITEM_PRISM_SCALE
+    .2byte ITEM_SACHET
+    .2byte ITEM_WHIPPED_DREAM
+    .2byte ITEM_CHIPPED_POT
+    .2byte ITEM_CRACKED_POT
+    .2byte ITEM_GALARICA_CUFF
+    .2byte ITEM_GALARICA_WREATH
+    .2byte ITEM_SWEET_APPLE
+    .2byte ITEM_TART_APPLE
+    .2byte ITEM_STRAWBERRY_SWEET
+    .2byte ITEM_LOVE_SWEET
+    .2byte ITEM_BERRY_SWEET
+    .2byte ITEM_CLOVER_SWEET
+    .2byte ITEM_FLOWER_SWEET
+    .2byte ITEM_STAR_SWEET
+    .2byte ITEM_RIBBON_SWEET
+	.2byte ITEM_ROTOM_CATALOG
+	.2byte ITEM_GRACIDEA
+	.2byte ITEM_REVEAL_GLASS
+	.2byte ITEM_DNA_SPLICERS
+	.2byte ITEM_ZYGARDE_CUBE
+	.2byte ITEM_PRISON_BOTTLE
+	.2byte ITEM_N_SOLARIZER
+	.2byte ITEM_N_LUNARIZER
+	.2byte ITEM_REINS_OF_UNITY
+    .2byte ITEM_NONE
+    release
+    end
 
 @ Scene with Capt Sterns interview and Team Aqua announcing plans to steal Submarine
 SlateportCity_EventScript_CaptStern::

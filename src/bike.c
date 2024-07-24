@@ -9,6 +9,7 @@
 #include "sound.h"
 #include "constants/map_types.h"
 #include "constants/songs.h"
+#include "speedchoice.h"
 
 // this file's functions
 static void MovePlayerOnMachBike(u8, u16, u16);
@@ -123,9 +124,21 @@ static const struct BikeHistoryInputInfo sAcroBikeTricksList[] =
     {DIR_EAST, B_BUTTON, 0xF, 0xF, sAcroBikeJumpTimerList, sAcroBikeJumpTimerList, DIR_EAST},
 };
 
-// code
+// -----------------------------------------
+// SPEEDCHOICE CHANGE
+// -----------------------------------------
+// Change: Super Bike used to be set here, but is default now.
 void MovePlayerOnBike(u8 direction, u16 newKeys, u16 heldKeys)
 {
+    if(gMain.newKeys & R_BUTTON)
+    {
+        PlaySE(SE_BIKE_BELL);
+        if(gPlayerAvatar.flags & PLAYER_AVATAR_FLAG_ACRO_BIKE)
+            SetPlayerAvatarTransitionFlags(PLAYER_AVATAR_FLAG_MACH_BIKE);
+        else
+            SetPlayerAvatarTransitionFlags(PLAYER_AVATAR_FLAG_ACRO_BIKE);
+    }
+
     if (gPlayerAvatar.flags & PLAYER_AVATAR_FLAG_MACH_BIKE)
         MovePlayerOnMachBike(direction, newKeys, heldKeys);
     else
@@ -900,7 +913,7 @@ static bool8 IsRunningDisallowedByMetatile(u8 tile)
 {
     if (MetatileBehavior_IsRunningDisallowed(tile))
         return TRUE;
-    if (MetatileBehavior_IsFortreeBridge(tile) && (PlayerGetElevation() & 1) == 0)
+    if ((0) && MetatileBehavior_IsFortreeBridge(tile) && (PlayerGetElevation() & 1) == 0)
         return TRUE;
     return FALSE;
 }

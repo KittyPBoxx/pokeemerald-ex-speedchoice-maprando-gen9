@@ -1081,7 +1081,7 @@ static void InitResults_Leader(void)
         if (WaitFanfare(TRUE))
         {
             SetGameFunc(FUNC_RESULTS);
-            FadeOutAndPlayNewMapMusic(MUS_RG_VICTORY_WILD, 4);
+            FadeOutAndPlayNewMapMusic(MUS_VICTORY_WILD, 4);
         }
         break;
     }
@@ -1126,7 +1126,7 @@ static void InitResults_Member(void)
         {
             sGame->maxBerriesPickedInRow = sGame->berryResults[sGame->multiplayerId][BERRY_IN_ROW];
             SetGameFunc(FUNC_RESULTS);
-            FadeOutAndPlayNewMapMusic(MUS_RG_VICTORY_WILD, 4);
+            FadeOutAndPlayNewMapMusic(MUS_VICTORY_WILD, 4);
         }
         break;
     }
@@ -4905,7 +4905,7 @@ static void ShowResults(void)
             PutWindowTilemap(sGfx->windowIds[1]);
         }
         CopyBgTilemapBufferToVram(BG_INTERFACE);
-        FadeOutAndFadeInNewMapMusic(MUS_RG_VICTORY_WILD, 20, 10);
+        FadeOutAndFadeInNewMapMusic(MUS_VICTORY_WILD, 20, 10);
         sGfx->state++;
         break;
     case 11:

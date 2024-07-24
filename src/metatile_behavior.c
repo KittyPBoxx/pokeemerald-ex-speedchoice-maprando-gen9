@@ -1,6 +1,7 @@
 #include "global.h"
 #include "metatile_behavior.h"
 #include "constants/metatile_behaviors.h"
+#include "speedchoice.h"
 
 #define TILE_FLAG_HAS_ENCOUNTERS (1 << 0)
 #define TILE_FLAG_SURFABLE       (1 << 1)
@@ -1257,12 +1258,12 @@ bool8 MetatileBehavior_IsSeaweed(u8 metatileBehavior)
 
 bool8 MetatileBehavior_IsRunningDisallowed(u8 metatileBehavior)
 {
-    if (metatileBehavior == MB_NO_RUNNING
-     || metatileBehavior == MB_LONG_GRASS
-     || metatileBehavior == MB_HOT_SPRINGS
-     || MetatileBehavior_IsPacifidlogLog(metatileBehavior) != FALSE)
-        return TRUE;
-    else
+    // if (metatileBehavior == MB_NO_RUNNING
+    //  || metatileBehavior == MB_LONG_GRASS
+    //  || metatileBehavior == MB_HOT_SPRINGS
+    //  || MetatileBehavior_IsPacifidlogLog(metatileBehavior) != FALSE)
+    //     return TRUE;
+    // else
         return FALSE;
 }
 

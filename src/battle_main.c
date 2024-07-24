@@ -68,6 +68,8 @@
 #include "constants/songs.h"
 #include "constants/trainers.h"
 #include "cable_club.h"
+#include "done_button.h"
+#include "speedchoice.h"
 
 extern const struct BgTemplate gBattleBgTemplates[];
 extern const struct WindowTemplate *const gBattleWindowTemplates[];
@@ -440,6 +442,10 @@ void CB2_InitBattle(void)
     AllocateBattleSpritesData();
     AllocateMonSpritesGfx();
     RecordedBattle_ClearFrontierPassFlag();
+
+    sInSubMenu = FALSE;
+    sInField = FALSE;
+    sInBattle = TRUE;
 
     if (gBattleTypeFlags & BATTLE_TYPE_MULTI)
     {
@@ -5641,6 +5647,11 @@ static void TryEvolvePokemon(void)
             u16 species = GetEvolutionTargetSpecies(&gPlayerParty[i], EVO_MODE_BATTLE_SPECIAL, i, NULL);
             bool32 evoModeNormal = TRUE;
             sTriedEvolving |= gBitTable[i];
+
+            if(CheckSpeedchoiceOption(EVO_EVERY_LEVEL, EVO_EV_OFF) == FALSE)
+                evoModeNormal = FALSE;
+            else
+                evoModeNormal = TRUE;
 
             if (species == SPECIES_NONE && (gLeveledUpInBattle & gBitTable[i]))
             {

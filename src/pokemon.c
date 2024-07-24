@@ -59,6 +59,9 @@
 #include "constants/union_room.h"
 #include "constants/weather.h"
 #include "wild_encounter.h"
+#include "speedchoice.h"
+#include "constants/day_night.h"
+#include "day_night.h"
 
 #define FRIENDSHIP_EVO_THRESHOLD ((P_FRIENDSHIP_EVO_THRESHOLD >= GEN_9) ? 160 : 220)
 
@@ -4317,7 +4320,7 @@ static void BufferStatRoseMessage(s32 statIdx)
 {
     gBattlerTarget = gBattlerInMenuId;
     StringCopy(gBattleTextBuff1, gStatNamesTable[sStatsToRaise[statIdx]]);
-    if (B_X_ITEMS_BUFF >= GEN_7)
+    if (CheckSpeedchoiceOption(GEN_7_X_ITEMS, GEN_7_X_ITEMS_ON) == TRUE)
     {
         StringCopy(gBattleTextBuff2, gText_StatSharply);
         StringAppend(gBattleTextBuff2, gText_StatRose);
@@ -4410,6 +4413,11 @@ static u32 GetGMaxTargetSpecies(u32 species)
     return SPECIES_NONE;
 }
 
+EWRAM_DATA u32 gDebugEvoLastLevel = 0; // level used for random evo
+EWRAM_DATA u32 gDebugEvoLastPV1 = 0;   // PV used for random evo, before for loop
+EWRAM_DATA u32 gDebugEvoLastPV2 = 0;   // PV used for random evo, after for loop
+EWRAM_DATA u32 gDebugEvoLastInput = 0; // input to NationalPokedexNumToSpecies
+
 u16 GetEvolutionTargetSpecies(struct Pokemon *mon, u8 mode, u16 evolutionItem, struct Pokemon *tradePartner)
 {
     int i, j;
@@ -4425,6 +4433,46 @@ u16 GetEvolutionTargetSpecies(struct Pokemon *mon, u8 mode, u16 evolutionItem, s
     bool32 consumeItem = FALSE;
     u16 evolutionTracker = GetMonData(mon, MON_DATA_EVOLUTION_TRACKER, 0);
     const struct Evolution *evolutions = GetSpeciesEvolutions(species);
+
+    if (species == SPECIES_NONE)
+        return SPECIES_NONE;
+
+    if(CheckSpeedchoiceOption(EVO_EVERY_LEVEL, EVO_EV_OFF) == FALSE && ((mode == EVO_MODE_BATTLE_ONLY) || (mode == EVO_MODE_NORMAL)))
+    {
+        // use the new level as the seed, not the current one.
+        u32 lv = GetMonData(mon, MON_DATA_LEVEL, 0) + 1;
+
+        // Prevent situations where mon evolves, then immediately tries to evolve again
+        if (!((gDebugEvoLastLevel == lv) && 
+              (gDebugEvoLastPV2 == personality) && 
+              (gDebugEvoLastInput == species)))
+        {
+            u32 newSpecies;
+            int attempts = 3;
+            
+            gDebugEvoLastLevel = lv;
+            gDebugEvoLastPV1 = personality;
+
+            do 
+            {
+                for (i = 0; i < lv+species; i++) 
+                {
+                    PRandom(&personality);
+                }
+
+                newSpecies = NationalPokedexNumToSpecies((PRandom(&personality) * NATIONAL_DEX_COUNT / (PRAND_MAX + 1)) + 1);
+            } while (attempts --> 0 && newSpecies == species);
+
+            // if you ran out of attempts and got the same species 3 times in a row, go buy
+            // some lottery tickets.
+            
+            gDebugEvoLastPV2 = personality;
+            gDebugEvoLastInput = newSpecies;
+            
+            return newSpecies;
+        }    
+
+    }
 
     if (evolutions == NULL)
         return SPECIES_NONE;
@@ -5692,8 +5740,7 @@ u16 GetBattleBGM(void)
     {
         switch (GetMonData(&gEnemyParty[0], MON_DATA_SPECIES, NULL))
         {
-        case SPECIES_RAYQUAZA:
-            return MUS_VS_RAYQUAZA;
+        case SPECIES_RAYQUAZA: // rayquaza song is identical
         case SPECIES_KYOGRE:
         case SPECIES_GROUDON:
             return MUS_VS_KYOGRE_GROUDON;
@@ -5756,8 +5803,126 @@ u16 GetBattleBGM(void)
         }
     }
     else
+    {
+        switch (GetMonData(&gEnemyParty[0], MON_DATA_SPECIES, NULL))
+        {
+        case SPECIES_ARTICUNO:
+        case SPECIES_ZAPDOS:
+        case SPECIES_MOLTRES:
+        case SPECIES_ARTICUNO_GALARIAN:
+        case SPECIES_ZAPDOS_GALARIAN:
+        case SPECIES_MOLTRES_GALARIAN:
+            return MUS_RG_VS_LEGEND;
+        case SPECIES_MEWTWO:
+        case SPECIES_MEWTWO_MEGA_X:
+        case SPECIES_MEWTWO_MEGA_Y:
+            return MUS_RG_VS_MEWTWO;
+        case SPECIES_MEW:
+            return MUS_VS_MEW;
+        case SPECIES_RAIKOU:
+            return MUS_HG_VS_RAIKOU;
+        case SPECIES_ENTEI:
+            return MUS_HG_VS_ENTEI;
+        case SPECIES_SUICUNE:
+            return MUS_HG_VS_SUICUNE;
+        case SPECIES_LUGIA:
+            return MUS_HG_VS_LUGIA;
+        case SPECIES_HO_OH:
+            return MUS_HG_VS_HO_OH;
+        case SPECIES_CELEBI:
+            return MUS_HG_VS_WILD;
+        case SPECIES_REGIROCK:
+        case SPECIES_REGICE:
+        case SPECIES_REGISTEEL:
+        case SPECIES_REGIGIGAS:
+        case SPECIES_REGIELEKI:
+        case SPECIES_REGIDRAGO:
+            return MUS_VS_REGI;
+        case SPECIES_LATIAS:
+        case SPECIES_LATIOS:
+        case SPECIES_LATIAS_MEGA:
+        case SPECIES_LATIOS_MEGA:
+            return MUS_VS_WILD;
+        case SPECIES_GROUDON:
+        case SPECIES_KYOGRE:
+        case SPECIES_RAYQUAZA:
+        case SPECIES_RAYQUAZA_MEGA:
+        case SPECIES_KYOGRE_PRIMAL:
+        case SPECIES_GROUDON_PRIMAL:
+            return MUS_VS_KYOGRE_GROUDON;
+        case SPECIES_JIRACHI:
+            return MUS_VS_WILD;
+        case SPECIES_DEOXYS:
+        case SPECIES_DEOXYS_ATTACK:
+        case SPECIES_DEOXYS_DEFENSE:
+        case SPECIES_DEOXYS_SPEED:
+            return MUS_RG_VS_DEOXYS;
+        case SPECIES_UXIE:
+        case SPECIES_MESPRIT:
+        case SPECIES_AZELF:
+            return MUS_DP_VS_UXIE_MESPRIT_AZELF;
+        case SPECIES_DIALGA:
+        case SPECIES_PALKIA:
+            return MUS_DP_VS_DIALGA_PALKIA;
+        case SPECIES_ROTOM:
+        case SPECIES_ROTOM_HEAT:
+        case SPECIES_ROTOM_WASH:
+        case SPECIES_ROTOM_FROST:
+        case SPECIES_ROTOM_FAN:
+        case SPECIES_ROTOM_MOW:
+        case SPECIES_HEATRAN:
+        case SPECIES_MANAPHY:
+        case SPECIES_DARKRAI:
+            return MUS_DP_VS_LEGEND;
+        case SPECIES_GIRATINA:
+        case SPECIES_GIRATINA_ORIGIN:
+            return MUS_PL_VS_GIRATINA;
+        case SPECIES_CRESSELIA:
+        case SPECIES_PHIONE:
+        case SPECIES_SHAYMIN:
+        case SPECIES_SHAYMIN_SKY:
+            return MUS_DP_VS_WILD;
+        case SPECIES_ARCEUS:
+        case SPECIES_ARCEUS_FIGHTING:
+        case SPECIES_ARCEUS_FLYING:
+        case SPECIES_ARCEUS_POISON:
+        case SPECIES_ARCEUS_GROUND:
+        case SPECIES_ARCEUS_ROCK:
+        case SPECIES_ARCEUS_BUG:
+        case SPECIES_ARCEUS_GHOST:
+        case SPECIES_ARCEUS_STEEL:
+        case SPECIES_ARCEUS_FIRE:
+        case SPECIES_ARCEUS_WATER:
+        case SPECIES_ARCEUS_GRASS:
+        case SPECIES_ARCEUS_ELECTRIC:
+        case SPECIES_ARCEUS_PSYCHIC:
+        case SPECIES_ARCEUS_ICE:
+        case SPECIES_ARCEUS_DRAGON:
+        case SPECIES_ARCEUS_DARK:
+        case SPECIES_ARCEUS_FAIRY:
+            return MUS_DP_VS_ARCEUS;
+        default:
+            if (GetCurrentTimeOfDay() == TIME_NIGHT)
+                return MUS_VS_WILD_NIGHT;
+            else
         return MUS_VS_WILD;
+        return MUS_VS_WILD;
+        return MUS_VS_WILD;
+        return MUS_VS_WILD;
+        return MUS_VS_WILD;
+        return MUS_VS_WILD;
+        return MUS_VS_WILD;
+        return MUS_VS_WILD;
+        return MUS_VS_WILD;
+        return MUS_VS_WILD;
+        return MUS_VS_WILD;
+        return MUS_VS_WILD;
+                return MUS_VS_WILD;
+        }
+
+    }
 }
+
 
 void PlayBattleBGM(void)
 {

@@ -76,6 +76,12 @@ u32 Random2_32(void)
     return _SFC32_Next_Stream(&gRng2Value, STREAM2);
 }
 
+u16 PRandom(u32 *state) 
+{
+    *state = ISO_RANDOMIZE1(*state);
+    return *state >> 16;
+}
+
 void SeedRng(u32 seed)
 {
     struct Sfc32State state;

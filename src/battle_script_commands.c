@@ -65,6 +65,8 @@
 #include "constants/pokemon.h"
 #include "config/battle.h"
 #include "data/battle_move_effects.h"
+#include "done_button.h"
+#include "speedchoice.h"
 
 // table to avoid ugly powing on gba (courtesy of doesnt)
 // this returns (i^2.5)/4
@@ -1946,6 +1948,16 @@ static void Cmd_critcalc(void)
     else
         gIsCriticalHit = RandomChance(RNG_CRITICAL_HIT, 1, sCriticalHitOdds[critChance]);
 
+    switch(gBattlerTarget)
+    {
+        case B_SIDE_OPPONENT:
+            TryIncrementButtonStat(DB_CRITS_DEALT);
+            break;
+        case B_SIDE_PLAYER:
+            TryIncrementButtonStat(DB_CRITS_TAKEN);
+            break;
+    }
+
     // Counter for EVO_CRITICAL_HITS.
     partySlot = gBattlerPartyIndexes[gBattlerAttacker];
     if (gIsCriticalHit && GetBattlerSide(gBattlerAttacker) == B_SIDE_PLAYER
@@ -2328,6 +2340,16 @@ static void Cmd_datahpupdate(void)
                 gBattleMons[battler].hp += -gBattleMoveDamage;
                 if (gBattleMons[battler].hp > gBattleMons[battler].maxHP)
                     gBattleMons[battler].hp = gBattleMons[battler].maxHP;
+
+                switch(GetBattlerSide(battler))
+                {
+                    case B_SIDE_PLAYER:
+                        TryAddButtonStatBy(DB_PLAYER_HP_HEALED, -gBattleMoveDamage);
+                        break;
+                    case B_SIDE_OPPONENT:
+                        TryAddButtonStatBy(DB_ENEMY_HP_HEALED, -gBattleMoveDamage);
+                        break;
+                }
             }
             else
             {
@@ -2354,6 +2376,33 @@ static void Cmd_datahpupdate(void)
                 {
                     gHpDealt = gBattleMons[battler].hp;
                     gBattleMons[battler].hp = 0;
+
+                    // OHKO
+                    if(gBattleMons[battler].hp == gBattleMons[battler].maxHP)
+                    {
+                        // Whos getting OHKO'd?
+                        switch(GetBattlerSide(battler))
+                        {
+                            case B_SIDE_PLAYER:
+                                TryIncrementButtonStat(DB_OHKOS_TAKEN);
+                                break;
+                            case B_SIDE_OPPONENT:
+                                TryIncrementButtonStat(DB_OHKOS_DEALT);
+                                break;
+                        }
+                    }
+                }
+
+                switch(GetBattlerSide(battler))
+                {
+                    case B_SIDE_PLAYER:
+                        TryAddButtonStatBy(DB_TOTAL_DAMAGE_TAKEN, gHpDealt);
+                        TryAddButtonStatBy(DB_ACTUAL_DAMAGE_TAKEN, gBattleMoveDamage);
+                        break;
+                    case B_SIDE_OPPONENT:
+                        TryAddButtonStatBy(DB_TOTAL_DAMAGE_DEALT, gHpDealt);
+                        TryAddButtonStatBy(DB_ACTUAL_DAMAGE_DEALT, gBattleMoveDamage);
+                        break;
                 }
 
                 // Record damage for Shell Bell
@@ -2446,10 +2495,28 @@ static void Cmd_effectivenesssound(void)
         case MOVE_RESULT_SUPER_EFFECTIVE:
             BtlController_EmitPlaySE(gBattlerTarget, BUFFER_A, SE_SUPER_EFFECTIVE);
             MarkBattlerForControllerExec(gBattlerTarget);
+            switch(gBattlerTarget)
+            {
+                case B_SIDE_PLAYER:
+                    TryIncrementButtonStat(DB_OWN_MOVES_SE);
+                    break;
+                case B_SIDE_OPPONENT:
+                    TryIncrementButtonStat(DB_ENEMY_MOVES_SE);
+                    break;
+            }
             break;
         case MOVE_RESULT_NOT_VERY_EFFECTIVE:
             BtlController_EmitPlaySE(gBattlerTarget, BUFFER_A, SE_NOT_EFFECTIVE);
             MarkBattlerForControllerExec(gBattlerTarget);
+            switch(gBattlerTarget)
+            {
+                case B_SIDE_PLAYER:
+                   TryIncrementButtonStat(DB_OWN_MOVES_NVE);
+                    break;
+                case B_SIDE_OPPONENT:
+                    TryIncrementButtonStat(DB_ENEMY_MOVES_NVE);
+                    break;
+            }
             break;
         case MOVE_RESULT_DOESNT_AFFECT_FOE:
         case MOVE_RESULT_FAILED:
@@ -3968,6 +4035,7 @@ static void Cmd_tryfaintmon(void)
                 gHitMarker |= HITMARKER_PLAYER_FAINTED;
                 if (gBattleResults.playerFaintCounter < 255)
                     gBattleResults.playerFaintCounter++;
+                TryIncrementButtonStat(DB_PLAYER_POKEMON_FAINTED);
                 AdjustFriendshipOnBattleFaint(battler);
                 gSideTimers[B_SIDE_PLAYER].retaliateTimer = 2;
             }
@@ -3975,6 +4043,7 @@ static void Cmd_tryfaintmon(void)
             {
                 if (gBattleResults.opponentFaintCounter < 255)
                     gBattleResults.opponentFaintCounter++;
+                TryIncrementButtonStat(DB_ENEMY_POKEMON_FAINTED);
                 gBattleResults.lastOpponentSpecies = GetMonData(&gEnemyParty[gBattlerPartyIndexes[battler]], MON_DATA_SPECIES, NULL);
                 gSideTimers[B_SIDE_OPPONENT].retaliateTimer = 2;
             }
@@ -4240,6 +4309,10 @@ static void Cmd_getexp(void)
     u32 holdEffect;
     s32 i; // also used as stringId
     u8 *expMonId = &gBattleStruct->expGetterMonId;
+    u32 useGen5Exp = 0;
+
+    if(CheckSpeedchoiceOption(EXPMATH, EXP_BW) == TRUE)
+        useGen5Exp = 1;
 
     gBattlerFainted = GetBattlerForBattleScript(cmd->battler);
 
@@ -4248,7 +4321,8 @@ static void Cmd_getexp(void)
     case 0: // check if should receive exp at all
         if (GetBattlerSide(gBattlerFainted) != B_SIDE_OPPONENT
             || IsAiVsAiBattle()
-            || !BattleTypeAllowsExp())
+            || !BattleTypeAllowsExp()
+            || CheckSpeedchoiceOption(EXPMATH, EXP_NONE) == TRUE)
         {
             gBattleScripting.getexpState = 6; // goto last case
         }
@@ -4276,7 +4350,7 @@ static void Cmd_getexp(void)
                     viaSentIn++;
 
                 holdEffect = GetMonHoldEffect(&gPlayerParty[i]);
-                if (holdEffect == HOLD_EFFECT_EXP_SHARE || IsGen6ExpShareEnabled())
+                if (holdEffect == HOLD_EFFECT_EXP_SHARE || (IsGen6ExpShareEnabled() && !useGen5Exp))
                 {
                     expShareBits |= gBitTable[i];
                     viaExpShare++;
@@ -4302,10 +4376,10 @@ static void Cmd_getexp(void)
             else
                 calculatedExp /= 7;
 
-            if (B_TRAINER_EXP_MULTIPLIER <= GEN_7 && gBattleTypeFlags & BATTLE_TYPE_TRAINER)
+            if ((B_TRAINER_EXP_MULTIPLIER <= GEN_7 || useGen5Exp) && gBattleTypeFlags & BATTLE_TYPE_TRAINER)
                 calculatedExp = (calculatedExp * 150) / 100;
 
-            if (B_SPLIT_EXP < GEN_6)
+            if (B_SPLIT_EXP < GEN_6 || useGen5Exp)
             {
                 if (viaExpShare) // at least one mon is getting exp via exp share
                 {
@@ -4345,7 +4419,7 @@ static void Cmd_getexp(void)
             bool32 wasSentOut = ((gBattleStruct->expSentInMons & gBitTable[*expMonId]) != 0);
             holdEffect = GetMonHoldEffect(&gPlayerParty[*expMonId]);
 
-            if ((holdEffect != HOLD_EFFECT_EXP_SHARE && !wasSentOut && !IsGen6ExpShareEnabled())
+            if ((holdEffect != HOLD_EFFECT_EXP_SHARE && !wasSentOut && !(IsGen6ExpShareEnabled() && !useGen5Exp))
              || GetMonData(&gPlayerParty[*expMonId], MON_DATA_SPECIES_OR_EGG) == SPECIES_EGG)
             {
                 gBattleScripting.getexpState = 5;
@@ -4380,8 +4454,8 @@ static void Cmd_getexp(void)
                     else
                         gBattleMoveDamage = 0;
 
-                    if ((holdEffect == HOLD_EFFECT_EXP_SHARE || IsGen6ExpShareEnabled())
-                        && (B_SPLIT_EXP < GEN_6 || gBattleMoveDamage == 0)) // only give exp share bonus in later gens if the mon wasn't sent out
+                    if ((holdEffect == HOLD_EFFECT_EXP_SHARE || (IsGen6ExpShareEnabled() && !useGen5Exp))
+                        && ((B_SPLIT_EXP < GEN_6 || useGen5Exp)|| gBattleMoveDamage == 0)) // only give exp share bonus in later gens if the mon wasn't sent out
                     {
                         gBattleMoveDamage += GetSoftLevelCapExpValue(gPlayerParty[*expMonId].level, gBattleStruct->expShareExpValue);;
                     }
@@ -4399,6 +4473,9 @@ static void Cmd_getexp(void)
                         else if (gExperienceTables[growthRate][levelCap] < currentExp + gBattleMoveDamage)
                             gBattleMoveDamage = gExperienceTables[growthRate][levelCap] - currentExp;
                     }
+
+                    // gBattleMoveDamage is used as exp.
+                    TryAddButtonStatBy(DB_EXP_GAINED, gBattleMoveDamage);
 
                     if (IsTradedMon(&gPlayerParty[*expMonId]))
                     {
@@ -4440,7 +4517,7 @@ static void Cmd_getexp(void)
                     {
                         PrepareStringBattle(STRINGID_PKMNGAINEDEXP, gBattleStruct->expGetterBattlerId);
                     }
-                    else if (IsGen6ExpShareEnabled() && !gBattleStruct->teamGotExpMsgPrinted) // Print 'the rest of your team got exp' message once, when all of the sent-in mons were given experience
+                    else if ((IsGen6ExpShareEnabled() && !useGen5Exp) && !gBattleStruct->teamGotExpMsgPrinted) // Print 'the rest of your team got exp' message once, when all of the sent-in mons were given experience
                     {
                         gLastUsedItem = ITEM_EXP_SHARE;
                         PrepareStringBattle(STRINGID_TEAMGAINEDEXP, gBattleStruct->expGetterBattlerId);
@@ -5918,6 +5995,18 @@ static void Cmd_moveend(void)
                 gBattleStruct->lastTakenMove[gBattlerTarget] = gChosenMove;
                 gBattleStruct->lastTakenMoveFrom[gBattlerTarget][gBattlerAttacker] = gChosenMove;
             }
+            if(!(gMoveResultFlags & MOVE_RESULT_MISSED))
+            {
+                switch(GetBattlerSide(gBattlerAttacker))
+                {
+                    case B_SIDE_PLAYER:
+                        TryIncrementButtonStat(DB_OWN_MOVES_HIT);
+                        break;
+                    case B_SIDE_OPPONENT:
+                        TryIncrementButtonStat(DB_ENEMY_MOVES_HIT);
+                        break;
+                }
+            }
             gBattleScripting.moveendState++;
             break;
         case MOVEEND_NEXT_TARGET: // For moves hitting two opposing Pokemon.
@@ -6448,6 +6537,10 @@ static void Cmd_returnatktoball(void)
         BtlController_EmitReturnMonToBall(gBattlerAttacker, BUFFER_A, FALSE);
         MarkBattlerForControllerExec(gBattlerAttacker);
     }
+
+    if(GetBattlerSide(gBattlerAttacker) == B_SIDE_PLAYER)
+        TryIncrementButtonStat(DB_SWITCHOUTS);
+    
     gBattlescriptCurrInstr = cmd->nextInstr;
 }
 
@@ -7703,6 +7796,7 @@ static u32 GetTrainerMoneyToGive(u16 trainerId)
             moneyReward = 4 * lastMonLevel * gBattleStruct->moneyMultiplier * trainerMoney;
     }
 
+    TryAddButtonStatBy(DB_MONEY_MADE, moneyReward);
     return moneyReward;
 }
 
@@ -7739,6 +7833,7 @@ static void Cmd_getmoneyreward(void)
         }
         money = sWhiteOutBadgeMoney[count] * sPartyLevel;
         RemoveMoney(&gSaveBlock1Ptr->money, money);
+        TryAddButtonStatBy(DB_MONEY_LOST, money);
     }
 
     PREPARE_WORD_NUMBER_BUFFER(gBattleTextBuff1, 5, money);
@@ -12276,6 +12371,7 @@ static void Cmd_givepaydaymoney(void)
     {
         u32 bonusMoney = gPaydayMoney * gBattleStruct->moneyMultiplier;
         AddMoney(&gSaveBlock1Ptr->money, bonusMoney);
+        TryAddButtonStatBy(DB_MONEY_MADE, bonusMoney);
 
         PREPARE_HWORD_NUMBER_BUFFER(gBattleTextBuff1, 5, bonusMoney)
 
@@ -15017,6 +15113,7 @@ static void Cmd_handleballthrow(void)
 
     if (gBattleTypeFlags & BATTLE_TYPE_TRAINER)
     {
+        TryIncrementButtonStat(DB_BALLS_THROWN);
         BtlController_EmitBallThrowAnim(gBattlerAttacker, BUFFER_A, BALL_TRAINER_BLOCK);
         MarkBattlerForControllerExec(gBattlerAttacker);
         gBattlescriptCurrInstr = BattleScript_TrainerBallBlock;
@@ -15031,6 +15128,8 @@ static void Cmd_handleballthrow(void)
     {
         u32 odds, i;
         u8 catchRate;
+
+        TryIncrementButtonStat(DB_BALLS_THROWN);
 
         gLastThrownBall = gLastUsedItem;
         gBallToDisplay = gLastThrownBall;
@@ -15231,6 +15330,7 @@ static void Cmd_handleballthrow(void)
             TryBattleFormChange(gBattlerTarget, FORM_CHANGE_END_BATTLE);
             gBattlescriptCurrInstr = BattleScript_SuccessBallThrow;
             SetMonData(&gEnemyParty[gBattlerPartyIndexes[gBattlerTarget]], MON_DATA_POKEBALL, &gLastUsedItem);
+            TryIncrementButtonStat(DB_POKEMON_CAUGHT_IN_BALLS);
 
             if (CalculatePlayerPartyCount() == PARTY_SIZE)
                 gBattleCommunication[MULTISTRING_CHOOSER] = 0;
@@ -15253,25 +15353,35 @@ static void Cmd_handleballthrow(void)
             gBattleSpritesDataPtr->animationData->isCriticalCapture = FALSE;
             gBattleSpritesDataPtr->animationData->criticalCaptureSuccess = FALSE;
 
-            if (CriticalCapture(odds))
+            // Speedchoice instant critical capture
+            if (CheckSpeedchoiceOption(FAST_CATCH, FAST_CATCH_ON) == TRUE)
             {
-                maxShakes = BALL_1_SHAKE;  // critical capture doesn't guarantee capture
+                maxShakes = BALL_1_SHAKE;
+                shakes = maxShakes;
                 gBattleSpritesDataPtr->animationData->isCriticalCapture = TRUE;
             }
             else
             {
-                maxShakes = BALL_3_SHAKES_SUCCESS;
-            }
+                if (CriticalCapture(odds))
+                {
+                    maxShakes = BALL_1_SHAKE;  // critical capture doesn't guarantee capture
+                    gBattleSpritesDataPtr->animationData->isCriticalCapture = TRUE;
+                }
+                else
+                {
+                    maxShakes = BALL_3_SHAKES_SUCCESS;
+                }
 
-            if (gLastUsedItem == ITEM_MASTER_BALL)
-            {
-                shakes = maxShakes;
-            }
-            else
-            {
-                odds = Sqrt(Sqrt(16711680 / odds));
-                odds = 1048560 / odds;
-                for (shakes = 0; shakes < maxShakes && Random() < odds; shakes++);
+                if (gLastUsedItem == ITEM_MASTER_BALL)
+                {
+                    shakes = maxShakes;
+                }
+                else
+                {
+                    odds = Sqrt(Sqrt(16711680 / odds));
+                    odds = 1048560 / odds;
+                    for (shakes = 0; shakes < maxShakes && Random() < odds; shakes++);
+                }
             }
 
             BtlController_EmitBallThrowAnim(gBattlerAttacker, BUFFER_A, shakes);
@@ -15502,8 +15612,8 @@ static void Cmd_trygivecaughtmonnick(void)
         HandleBattleWindow(YESNOBOX_X_Y, 0);
         BattlePutTextOnWindow(gText_BattleYesNoChoice, B_WIN_YESNO);
         gBattleCommunication[MULTIUSE_STATE]++;
-        gBattleCommunication[CURSOR_POSITION] = 0;
-        BattleCreateYesNoCursorAt(0);
+        gBattleCommunication[CURSOR_POSITION] = 1;
+        BattleCreateYesNoCursorAt(1);
         break;
     case 1:
         if (JOY_NEW(DPAD_UP) && gBattleCommunication[CURSOR_POSITION] != 0)
@@ -16276,6 +16386,12 @@ void BS_ItemIncreaseStat(void)
     NATIVE_ARGS();
     u16 statId = ItemId_GetEffect(gLastUsedItem)[1];
     u16 stages = ItemId_GetHoldEffectParam(gLastUsedItem);
+
+    if (gLastUsedItem >= ITEM_X_ATTACK && gLastUsedItem <= ITEM_X_ACCURACY)
+    {
+        stages = CheckSpeedchoiceOption(GEN_7_X_ITEMS, GEN_7_X_ITEMS_ON) == TRUE ? 2 : 1;
+    }
+    
     SET_STATCHANGER(statId, stages, FALSE);
     gBattlescriptCurrInstr = cmd->nextInstr;
 }

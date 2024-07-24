@@ -3522,6 +3522,8 @@ static void Task_ExitInfoScreen(u8 taskId)
     }
 }
 
+extern bool32 IsWildMonInCurrentMap(u16 species);
+
 static void Task_LoadAreaScreen(u8 taskId)
 {
     switch (gMain.state)
@@ -3546,6 +3548,9 @@ static void Task_LoadAreaScreen(u8 taskId)
         gMain.state++;
         break;
     case 2:
+        u16 species = NationalPokedexNumToSpecies(sPokedexListItem->dexNum);
+        if(IsWildMonInCurrentMap(species))
+            PlaySE(SE_CONTEST_MONS_TURN);
         ShowPokedexAreaScreen(NationalPokedexNumToSpecies(sPokedexListItem->dexNum), &sPokedexView->screenSwitchState);
         SetVBlankCallback(gPokedexVBlankCB);
         sPokedexView->screenSwitchState = 0;

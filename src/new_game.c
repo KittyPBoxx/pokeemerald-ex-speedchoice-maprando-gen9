@@ -45,6 +45,9 @@
 #include "mystery_gift.h"
 #include "union_room_chat.h"
 #include "constants/items.h"
+#include "speedchoice.h"
+#include "constants/items.h"
+#include "done_button.h"
 
 extern const u8 EventScript_ResetAllMapFlags[];
 
@@ -88,13 +91,26 @@ static void InitPlayerTrainerId(void)
 }
 
 // L=A isnt set here for some reason.
+
+/*
+OPTIONs should be
+- Text Speed INST
+- Battle Scene OFF
+- Battle Style OFF
+- Sound MONO
+- Button Mode L=A
+- Frame TYPE1
+by default
+*/
+
 static void SetDefaultOptions(void)
 {
-    gSaveBlock2Ptr->optionsTextSpeed = OPTIONS_TEXT_SPEED_MID;
+    gSaveBlock2Ptr->optionsTextSpeed = OPTIONS_TEXT_SPEED_INST;
     gSaveBlock2Ptr->optionsWindowFrameType = 0;
-    gSaveBlock2Ptr->optionsSound = OPTIONS_SOUND_MONO;
-    gSaveBlock2Ptr->optionsBattleStyle = OPTIONS_BATTLE_STYLE_SHIFT;
-    gSaveBlock2Ptr->optionsBattleSceneOff = FALSE;
+    gSaveBlock2Ptr->optionsSound = OPTIONS_SOUND_STEREO;
+    gSaveBlock2Ptr->optionsBattleStyle = OPTIONS_BATTLE_STYLE_SET;
+    gSaveBlock2Ptr->optionsBattleSceneOff = TRUE;
+    gSaveBlock2Ptr->optionsButtonMode = OPTIONS_BUTTON_MODE_L_EQUALS_A;
     gSaveBlock2Ptr->regionMapZoom = FALSE;
 }
 
@@ -128,6 +144,10 @@ static void WarpToTruck(void)
 {
     SetWarpDestination(MAP_GROUP(INSIDE_OF_TRUCK), MAP_NUM(INSIDE_OF_TRUCK), WARP_ID_NONE, -1, -1);
     WarpIntoMap();
+    sInIntro = FALSE;
+    sInSubMenu = FALSE;
+    sInBattle = FALSE;
+    sInField = TRUE;
 }
 
 void Sav2_ClearSetDefault(void)
@@ -204,6 +224,16 @@ void NewGameInitData(void)
     WipeTrainerNameRecords();
     ResetTrainerHillResults();
     ResetContestLinkResults();
+
+    // ADD DONE BUTTON
+    AddBagItem(ITEM_DONE_BUTTON, 1);
+    AddBagItem(ITEM_SLEEPING_BAG, 1);
+
+    AddBagItem(ITEM_MACH_BIKE, 1);
+    AddBagItem(ITEM_ACRO_BIKE, 1);
+    FlagSet(FLAG_RECEIVED_BIKE);
+
+    gSaveBlock1Ptr->registeredItem = ITEM_MACH_BIKE;
 }
 
 static void ResetMiniGamesRecords(void)

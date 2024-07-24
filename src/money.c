@@ -10,6 +10,7 @@
 #include "strings.h"
 #include "decompress.h"
 #include "tv.h"
+#include "done_button.h"
 
 EWRAM_DATA static u8 sMoneyBoxWindowId = 0;
 EWRAM_DATA static u8 sMoneyLabelSpriteId = 0;
@@ -126,6 +127,7 @@ bool8 IsEnoughForCostInVar0x8005(void)
 
 void SubtractMoneyFromVar0x8005(void)
 {
+    TryAddButtonStatBy(DB_MONEY_SPENT, gSpecialVar_0x8005);
     RemoveMoney(&gSaveBlock1Ptr->money, gSpecialVar_0x8005);
 }
 

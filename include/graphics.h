@@ -269,9 +269,11 @@ extern const u32 gBattleTerrainPalette_Rayquaza[];
 extern const u32 gBattleTerrainPalette_Kyogre[];
 extern const u32 gBattleTerrainPalette_Groudon[];
 extern const u32 gBattleTerrainPalette_BuildingGym[];
-extern const u32 gBattleTerrainPalette_BuildingLeader[];
-extern const u32 gBattleTerrainPalette_StadiumAqua[];
-extern const u32 gBattleTerrainPalette_StadiumMagma[];
+extern const u32 gBattleTerrainPalette_BuildingAqua[];
+extern const u32 gBattleTerrainPalette_BuildingMagma[];
+extern const u32 gBattleTerrainPalette_StadiumLeader[];
+extern const u32 gBattleTerrainTiles_Plain[];
+extern const u32 gBattleTerrainTilemap_Plain[];
 extern const u32 gBattleTerrainPalette_StadiumSidney[];
 extern const u32 gBattleTerrainPalette_StadiumPhoebe[];
 extern const u32 gBattleTerrainPalette_StadiumGlacia[];
@@ -3321,6 +3323,13 @@ extern const u16 gObjectEventPal_Brendan[];
 extern const u16 gObjectEventPal_May[];
 extern const u16 gObjectEventPal_RubySapphireBrendan[];
 extern const u16 gObjectEventPal_RubySapphireMay[];
+
+// Speedchoice
+extern const u32 gItemIcon_DoneButton[];
+extern const u32 gItemIconPalette_DoneButton[];
+
+extern const u32 gItemIcon_SleepingBag[];
+extern const u32 gItemIconPalette_SleepingBag[];
 
 // Mail
 extern const u16 gMailPalette_Orange[];

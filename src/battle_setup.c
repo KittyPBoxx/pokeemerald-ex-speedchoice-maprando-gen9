@@ -49,6 +49,7 @@
 #include "constants/trainers.h"
 #include "constants/trainer_hill.h"
 #include "constants/weather.h"
+#include "done_button.h"
 
 enum {
     TRANSITION_TYPE_NORMAL,
@@ -623,7 +624,7 @@ void BattleSetup_StartLegendaryBattle(void)
         break;
     case SPECIES_RAYQUAZA:
     case SPECIES_RAYQUAZA_MEGA:
-        CreateBattleStartTask(B_TRANSITION_RAYQUAZA, MUS_VS_RAYQUAZA);
+        CreateBattleStartTask(B_TRANSITION_RAYQUAZA, MUS_VS_KYOGRE_GROUDON);
         break;
     case SPECIES_DEOXYS_NORMAL:
     case SPECIES_DEOXYS_ATTACK:
@@ -713,6 +714,9 @@ static void CB2_EndWildBattle(void)
 {
     CpuFill16(0, (void *)(BG_PLTT), BG_PLTT_SIZE);
     ResetOamRange(0, 128);
+    sInSubMenu = FALSE;
+    sInBattle = FALSE;
+    sInField = TRUE;
 
     if (IsPlayerDefeated(gBattleOutcome) == TRUE && !InBattlePyramid() && !InBattlePike())
     {
@@ -730,6 +734,9 @@ static void CB2_EndScriptedWildBattle(void)
 {
     CpuFill16(0, (void *)(BG_PLTT), BG_PLTT_SIZE);
     ResetOamRange(0, 128);
+    sInSubMenu = FALSE;
+    sInBattle = FALSE;
+    sInField = TRUE;
 
     if (IsPlayerDefeated(gBattleOutcome) == TRUE)
     {
@@ -1019,6 +1026,9 @@ static void CB2_EndFirstBattle(void)
     Overworld_ClearSavedMusic();
     DowngradeBadPoison();
     SetMainCallback2(CB2_ReturnToFieldContinueScriptPlayMapMusic);
+    sInSubMenu = FALSE;
+    sInBattle = FALSE;
+    sInField = TRUE;
 }
 
 static void TryUpdateGymLeaderRematchFromWild(void)
@@ -1439,6 +1449,9 @@ static void HandleBattleVariantEndParty(void)
 static void CB2_EndTrainerBattle(void)
 {
     HandleBattleVariantEndParty();
+    sInSubMenu = FALSE;
+    sInBattle = FALSE;
+    sInField = TRUE;
 
     if (gTrainerBattleOpponent_A == TRAINER_SECRET_BASE)
     {
@@ -1466,6 +1479,10 @@ static void CB2_EndTrainerBattle(void)
 
 static void CB2_EndRematchBattle(void)
 {
+    sInSubMenu = FALSE;
+    sInBattle = FALSE;
+    sInField = TRUE;
+
     if (gTrainerBattleOpponent_A == TRAINER_SECRET_BASE)
     {
         DowngradeBadPoison();

@@ -52,6 +52,9 @@
 #include "list_menu.h"
 #include "malloc.h"
 #include "constants/event_objects.h"
+#include "speedchoice.h"
+#include "done_button.h"
+#include "day_night.h"
 
 typedef u16 (*SpecialFunc)(void);
 typedef void (*NativeFunc)(struct ScriptContext *ctx);
@@ -496,6 +499,7 @@ bool8 ScrCmd_additem(struct ScriptContext *ctx)
     u16 itemId = VarGet(ScriptReadHalfword(ctx));
     u32 quantity = VarGet(ScriptReadHalfword(ctx));
 
+    TryAddButtonStatBy(DB_ITEMS_PICKED_UP, quantity);
     gSpecialVar_Result = AddBagItem(itemId, quantity);
     return FALSE;
 }
@@ -706,6 +710,7 @@ bool8 ScrCmd_gettime(struct ScriptContext *ctx)
     gSpecialVar_0x8000 = gLocalTime.hours;
     gSpecialVar_0x8001 = gLocalTime.minutes;
     gSpecialVar_0x8002 = gLocalTime.seconds;
+    gSpecialVar_0x8003 = GetCurrentTimeOfDay();
     return FALSE;
 }
 
@@ -1370,11 +1375,7 @@ bool8 ScrCmd_closemessage(struct ScriptContext *ctx)
 
 static bool8 WaitForAorBPress(void)
 {
-    if (JOY_NEW(A_BUTTON))
-        return TRUE;
-    if (JOY_NEW(B_BUTTON))
-        return TRUE;
-    return FALSE;
+    return ((gMain.heldKeys) & (A_BUTTON | B_BUTTON)) ? TRUE : FALSE;
 }
 
 bool8 ScrCmd_waitbuttonpress(struct ScriptContext *ctx)
@@ -1884,8 +1885,11 @@ bool8 ScrCmd_removemoney(struct ScriptContext *ctx)
     u32 amount = ScriptReadWord(ctx);
     u8 ignore = ScriptReadByte(ctx);
 
-    if (!ignore)
+    if (!ignore) 
+    {
+        TryAddButtonStatBy(DB_MONEY_SPENT, amount);
         RemoveMoney(&gSaveBlock1Ptr->money, amount);
+    }
     return FALSE;
 }
 
@@ -2465,6 +2469,15 @@ bool8 ScrCmd_warpwhitefade(struct ScriptContext *ctx)
     SetWarpDestination(mapGroup, mapNum, warpId, x, y);
     DoWhiteFadeWarp();
     ResetInitialPlayerAvatarState();
+    return TRUE;
+}
+
+bool8 ScrCmd_checkspeedchoice(struct ScriptContext *ctx)
+{
+    u8 option = ScriptReadByte(ctx);
+    u8 setting = ScriptReadByte(ctx);
+
+    ctx->comparisonResult = CheckSpeedchoiceOption(option, setting);
     return TRUE;
 }
 

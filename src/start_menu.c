@@ -47,6 +47,12 @@
 #include "constants/battle_frontier.h"
 #include "constants/rgb.h"
 #include "constants/songs.h"
+#include "speedchoice.h"
+#include "done_button.h"
+#include "constants/day_night.h"
+#include "day_night.h"
+#include "rtc.h"
+#include "link.h"
 
 // Menu actions
 enum
@@ -65,6 +71,7 @@ enum
     MENU_ACTION_RETIRE_FRONTIER,
     MENU_ACTION_PYRAMID_BAG,
     MENU_ACTION_DEBUG,
+    MENU_ACTION_ESCAPE
 };
 
 // Save status
@@ -85,6 +92,7 @@ EWRAM_DATA static u8 sBattlePyramidFloorWindowId = 0;
 EWRAM_DATA static u8 sStartMenuCursorPos = 0;
 EWRAM_DATA static u8 sNumStartMenuActions = 0;
 EWRAM_DATA static u8 sCurrentStartMenuActions[9] = {0};
+EWRAM_DATA bool32 sUsedEscapeOption = FALSE;
 EWRAM_DATA static s8 sInitStartMenuData[2] = {0};
 
 EWRAM_DATA static u8 (*sSaveDialogCallback)(void) = NULL;
@@ -184,6 +192,14 @@ static const struct WindowTemplate sWindowTemplate_PyramidPeak = {
 
 static const u8 sText_MenuDebug[] = _("DEBUG");
 
+extern const u8 gText_MenuEscape[];
+extern void(*sItemUseOnFieldCB)(u8 taskId);
+
+bool8 StartMenu_EscapeCallback(void);
+extern struct MapObjectTimerBackup gMapObjectTimerBackup[MAX_SPRITES];
+extern void ItemUseOnFieldCB_EscapeRope(u8 taskId);
+extern void SetUpItemUseOnFieldCallback(u8 taskId);
+
 static const struct MenuAction sStartMenuItems[] =
 {
     [MENU_ACTION_POKEDEX]         = {gText_MenuPokedex, {.u8_void = StartMenuPokedexCallback}},
@@ -200,6 +216,7 @@ static const struct MenuAction sStartMenuItems[] =
     [MENU_ACTION_RETIRE_FRONTIER] = {gText_MenuRetire,  {.u8_void = StartMenuBattlePyramidRetireCallback}},
     [MENU_ACTION_PYRAMID_BAG]     = {gText_MenuBag,     {.u8_void = StartMenuBattlePyramidBagCallback}},
     [MENU_ACTION_DEBUG]           = {sText_MenuDebug,   {.u8_void = StartMenuDebugCallback}},
+    [MENU_ACTION_ESCAPE]          = {gText_MenuEscape,  {.u8_void = StartMenu_EscapeCallback}}
 };
 
 static const struct BgTemplate sBgTemplates_LinkBattleSave[] =
@@ -274,6 +291,87 @@ static void RemoveSaveInfoWindow(void);
 static void HideStartMenuWindow(void);
 static void HideStartMenuDebug(void);
 
+void DoMapObjectTimerBackup(void)
+{
+    u8 i;
+
+    for(i = 0; i < MAX_SPRITES; i++)
+    {
+        gMapObjectTimerBackup[i].backedUp = TRUE;
+        gMapObjectTimerBackup[i].spriteId = gSprites[i].data[0];
+        gMapObjectTimerBackup[i].timer = gSprites[i].data[3];
+    }
+}
+
+bool8 CanUseFly(void)
+{
+    if(Overworld_MapTypeAllowsTeleportAndFly(gMapHeader.mapType) == TRUE)
+        return TRUE;
+    else
+        return FALSE;
+}
+
+void CloseMenuWithoutScriptContext(void)
+{
+    ClearStdWindowAndFrame(GetStartMenuWindowId(), 1);
+    RemoveStartMenuWindow();
+    ScriptUnfreezeObjectEvents();
+}
+
+static void ItemUseInEscape_EscapeRope(u8 taskId)
+{
+    sUsedEscapeOption = TRUE;
+    sItemUseOnFieldCB = ItemUseOnFieldCB_EscapeRope; // do escape rope attempt.
+    gTasks[taskId].data[3] = 1; // dont fade to black! Not in a submenu.
+    SetUpItemUseOnFieldCallback(taskId);
+}
+
+bool8 StartMenu_EscapeCallback(void)
+{
+	CloseMenuWithoutScriptContext();
+
+    // If we warp out a pokecenter turn off wireless comms
+    gWirelessCommType = 0;
+
+    // If you escape outdoors you will go to the last heal location
+    // Unless you are already in the last heal location, or the last heal location was indoors, or it was littleroot/oldale 
+    // then you go back to the center of oldale 
+    if (IsMapTypeOutdoors(GetCurrentMapType())) 
+    {
+        if ((gSaveBlock1Ptr->lastHealLocation.mapGroup == gSaveBlock1Ptr->location.mapGroup && 
+            gSaveBlock1Ptr->lastHealLocation.mapNum == gSaveBlock1Ptr->location.mapNum && 
+            gSaveBlock1Ptr->lastHealLocation.warpId == gSaveBlock1Ptr->location.warpId) ||
+            !IsMapTypeOutdoors(GetMapTypeByWarpData(&gSaveBlock1Ptr->lastHealLocation)) || 
+            (gSaveBlock1Ptr->lastHealLocation.mapGroup == 0 && (gSaveBlock1Ptr->lastHealLocation.mapNum == 9 || gSaveBlock1Ptr->lastHealLocation.mapNum == 10)))
+        {
+            SetWarpDestination(0,10,10,10,9);
+        }
+        else 
+        {
+            SetWarpDestinationToLastHealLocation();
+        }
+
+        DoTeleportTileWarp();
+    }
+    else
+    {
+        CreateTask(ItemUseInEscape_EscapeRope, 0xFF);
+    }
+
+    return TRUE;
+}
+
+bool8 IsMapEscapeOption(void)
+{
+    u8 i;
+
+    for(i = 0; i < 16; i++)
+        if((gObjectEvents[i].trainerType == 1 || gObjectEvents[i].trainerType == 3) && CanUseFly() == FALSE)
+            return TRUE;
+
+    return FALSE;
+}
+
 void SetDexPokemonPokenavFlags(void) // unused
 {
     FlagSet(FLAG_SYS_POKEDEX_GET);
@@ -344,7 +442,10 @@ static void BuildNormalStartMenu(void)
     AddStartMenuAction(MENU_ACTION_PLAYER);
     AddStartMenuAction(MENU_ACTION_SAVE);
     AddStartMenuAction(MENU_ACTION_OPTION);
-    AddStartMenuAction(MENU_ACTION_EXIT);
+    if(FlagGet(FLAG_SYS_POKEMON_GET) == TRUE)
+        AddStartMenuAction(MENU_ACTION_ESCAPE);
+    else
+        AddStartMenuAction(MENU_ACTION_EXIT);
 }
 
 static void BuildDebugStartMenu(void)
@@ -562,6 +663,9 @@ static void CreateStartMenuTask(TaskFunc followupFunc)
 
     sInitStartMenuData[0] = 0;
     sInitStartMenuData[1] = 0;
+
+    DoMapObjectTimerBackup();
+
     taskId = CreateTask(StartMenuTask, 0x50);
     SetTaskFuncWithFollowupFunc(taskId, StartMenuTask, followupFunc);
 }
@@ -614,10 +718,17 @@ void ShowStartMenu(void)
     }
     CreateStartMenuTask(Task_ShowStartMenu);
     LockPlayerFieldControls();
+    sInSubMenu = TRUE;
+    sInField = FALSE;
+    sInBattle = FALSE;
 }
 
 static bool8 HandleStartMenuInput(void)
 {
+    sInSubMenu = TRUE;
+    sInBattle = FALSE;
+    sInField = FALSE;
+
     if (JOY_NEW(DPAD_UP))
     {
         PlaySE(SE_SELECT);
@@ -1112,6 +1223,7 @@ static u8 SaveOverwriteInputCallback(void)
     switch (Menu_ProcessInputNoWrapClearOnChoose())
     {
     case 0: // Yes
+        TryIncrementButtonStat(DB_SAVE_COUNT);
         sSaveDialogCallback = SaveSavingMessageCallback;
         return SAVE_IN_PROGRESS;
     case MENU_B_PRESSED:
@@ -1477,6 +1589,9 @@ void HideStartMenu(void)
 {
     PlaySE(SE_SELECT);
     HideStartMenuWindow();
+    sInSubMenu = FALSE;
+    sInField = TRUE;
+    sInBattle = FALSE;
 }
 
 void AppendToList(u8 *list, u8 *pos, u8 newEntry)

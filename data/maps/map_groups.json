@@ -1,4 +1,5 @@
 {
+  "layouts_table_label": "gMapLayouts",
   "group_order": [
     "gMapGroup_TownsAndRoutes",
     "gMapGroup_IndoorLittleroot",
@@ -429,7 +430,15 @@
     "TerraCave_Entrance",
     "TerraCave_End",
     "AlteringCave",
-    "MeteorFalls_StevensCave"
+    "MeteorFalls_StevensCave",
+    "AlteringCave_SubCave1",
+    "AlteringCave_SubCave2",
+    "AlteringCave_SubCave3",
+    "AlteringCave_SubCave4",
+    "AlteringCave_SubCave5",
+    "AlteringCave_SubCave6",
+    "AlteringCave_SubCave7",
+    "AlteringCave_SubCave8"
   ],
   "gMapGroup_IndoorDynamic": [
     "SecretBase_RedCave1",

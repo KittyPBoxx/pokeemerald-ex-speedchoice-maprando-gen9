@@ -68,6 +68,9 @@
 #include "constants/songs.h"
 #include "constants/trainer_hill.h"
 #include "constants/weather.h"
+#include "speedchoice.h"
+#include "done_button.h"
+#include "day_night.h"
 
 struct CableClubPlayer
 {
@@ -104,7 +107,7 @@ static void CB2_LoadMapOnReturnToFieldCableClub(void);
 static void CB2_LoadMap2(void);
 static void VBlankCB_Field(void);
 static void SpriteCB_LinkPlayer(struct Sprite *);
-static void ChooseAmbientCrySpecies(void);
+void ChooseAmbientCrySpecies(void);
 static void DoMapLoadLoop(u8 *);
 static bool32 LoadMapInStepsLocal(u8 *, bool32);
 static bool32 LoadMapInStepsLink(u8 *);
@@ -471,6 +474,19 @@ void IncrementGameStat(u8 index)
             statVal = 0xFFFFFF;
 
         SetGameStat(index, statVal);
+
+        if (index == GAME_STAT_TOTAL_BATTLES)
+        {
+            TryIncrementButtonStat(DB_BATTLES);
+        }
+        else if (index == GAME_STAT_WILD_BATTLES)
+        {
+            TryIncrementButtonStat(DB_WILD_BATTLES);
+        }
+        else if (index == GAME_STAT_TRAINER_BATTLES)
+        {
+             TryIncrementButtonStat(DB_TRAINER_BATTLES);
+        }
     }
 }
 
@@ -1016,9 +1032,9 @@ static u16 GetCenterScreenMetatileBehavior(void)
 
 bool32 Overworld_IsBikingAllowed(void)
 {
-    if (!gMapHeader.allowCycling)
-        return FALSE;
-    else
+    // if (!gMapHeader.allowCycling)
+    //     return FALSE;
+    // else
         return TRUE;
 }
 
@@ -1372,7 +1388,7 @@ void UpdateAmbientCry(s16 *state, u16 *delayCounter)
     }
 }
 
-static void ChooseAmbientCrySpecies(void)
+void ChooseAmbientCrySpecies(void)
 {
     if ((gSaveBlock1Ptr->location.mapGroup == MAP_GROUP(ROUTE130)
      && gSaveBlock1Ptr->location.mapNum == MAP_NUM(ROUTE130))
@@ -1653,6 +1669,9 @@ static void CB2_LoadMap2(void)
 
 void CB2_ReturnToFieldContestHall(void)
 {
+    sInSubMenu = FALSE;
+    sInField = TRUE;
+    sInBattle = FALSE;
     if (!gMain.state)
     {
         FieldClearVBlankHBlankCallbacks();
@@ -1688,6 +1707,9 @@ static void CB2_LoadMapOnReturnToFieldCableClub(void)
 
 void CB2_ReturnToField(void)
 {
+    sInSubMenu = FALSE;
+    sInField = TRUE;
+    sInBattle = FALSE;
     if (IsOverworldLinkActive() == TRUE)
     {
         SetMainCallback2(CB2_ReturnToFieldLink);

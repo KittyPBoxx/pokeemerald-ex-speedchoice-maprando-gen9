@@ -186,7 +186,7 @@
 #define B_FLAG_NO_CATCHING          0     // If this flag is set, the ability to catch wild Pokémon is disabled.
 #define B_FLAG_AI_VS_AI_BATTLE      0     // If this flag is set, the player's mons will be controlled by the ai next battles.
 #define B_FLAG_DYNAMAX_BATTLE       0     // If this flag is set, the ability to Dynamax in battle is enabled for all trainers.
-#define B_FLAG_TERA_ORB_CHARGED     0     // If this flag is set, the Tera Orb is charged. It is automatically set upon healing and cleared upon Terastallizing once configured.
+#define B_FLAG_TERA_ORB_CHARGED     FLAG_TERA_ORB_CHARGED  // If this flag is set, the Tera Orb is charged. It is automatically set upon healing and cleared upon Terastallizing once configured.
 #define B_FLAG_TERA_ORB_NO_COST     0     // If this flag is set, the Tera Orb does not use up its charge upon Terastallization. In S/V, this occurs after an event with Terapagos.
 
 // Var Settings
@@ -222,7 +222,7 @@
 #define B_SHOW_CATEGORY_ICON        TRUE  // If set to TRUE, it will show an icon in the summary showing the move's category.
 #define B_HIDE_HEALTHBOX_IN_ANIMS   TRUE  // If set to TRUE, hides healthboxes during move animations.
 #define B_EXPANDED_MOVE_NAMES       TRUE  // If set to FALSE, move names are decreased from 16 characters to 12 characters.
-#define B_WAIT_TIME_MULTIPLIER      16    // This determines how long text pauses in battle last. Vanilla is 16. Lower values result in faster battles.
+#define B_WAIT_TIME_MULTIPLIER      1     // This determines how long text pauses in battle last. Vanilla is 16. Lower values result in faster battles.
 #define B_QUICK_MOVE_CURSOR_TO_RUN  FALSE // If set to TRUE, pushing B in the battle options against a wild encounter will move the cursor to the run option
 #define B_MOVE_DESCRIPTION_BUTTON   L_BUTTON // If set to a button other than B_LAST_USED_BALL_BUTTON, pressing this button will open the move description menu
 

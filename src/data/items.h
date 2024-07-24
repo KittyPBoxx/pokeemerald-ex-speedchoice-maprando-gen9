@@ -10513,19 +10513,19 @@ const struct Item gItemsInfo[] =
         .secondaryId = MOVE_BULK_UP,
     },
 
+    // SPEEDCHOICE (Sweet Scent instead of Bullet Seed)
     [ITEM_TM_BULLET_SEED] =
     {
         .name = _("TM09"),
         .price = 3000,
         .description = COMPOUND_STRING(
-            "Shoots 2 to 5 seeds\n"
-            "in a row to strike\n"
-            "the foe."),
+            "Allures the foe to reduce\n"
+            "evasiveness."),
         .importance = I_REUSABLE_TMS,
         .pocket = POCKET_TM_HM,
         .type = ITEM_USE_PARTY_MENU,
         .fieldUseFunc = ItemUseOutOfBattle_TMHM,
-        .secondaryId = MOVE_BULLET_SEED,
+        .secondaryId = MOVE_SWEET_SCENT,
     },
 
     [ITEM_TM_HIDDEN_POWER] =
@@ -11945,7 +11945,7 @@ const struct Item gItemsInfo[] =
     [ITEM_ROTOM_CATALOG] =
     {
         .name = HANDLE_EXPANDED_ITEM_NAME("RotomCatalog", "Rotom Catalog"),
-        .price = 0,
+        .price = 3000,
         .importance = 1,
         .description = COMPOUND_STRING(
             "A catalog full of\n"
@@ -11961,7 +11961,7 @@ const struct Item gItemsInfo[] =
     [ITEM_GRACIDEA] =
     {
         .name = _("Gracidea"),
-        .price = 0,
+        .price = 3000,
         .importance = 1,
         .description = COMPOUND_STRING(
             "Bouquets made with\n"
@@ -11978,7 +11978,7 @@ const struct Item gItemsInfo[] =
     {
         .name = _("Reveal Glass"),
         .pluralName = _("Reveal Glasses"),
-        .price = 0,
+        .price = 3000,
         .importance = 1,
         .description = COMPOUND_STRING(
             "This glass returns\n"
@@ -11995,7 +11995,7 @@ const struct Item gItemsInfo[] =
     {
         .name = _("DNA Splicers"),
         .pluralName = _("DNA Splicers"),
-        .price = 0,
+        .price = 3000,
         .importance = 1,
         .description = COMPOUND_STRING(
             "Splicer that fuses\n"
@@ -12011,7 +12011,7 @@ const struct Item gItemsInfo[] =
     [ITEM_ZYGARDE_CUBE] =
     {
         .name = _("Zygarde Cube"),
-        .price = 0,
+        .price = 3000,
         .importance = 1,
         .description = COMPOUND_STRING(
             "An item to store\n"
@@ -12027,7 +12027,7 @@ const struct Item gItemsInfo[] =
     [ITEM_PRISON_BOTTLE] =
     {
         .name = _("Prison Bottle"),
-        .price = 0,
+        .price = 3000,
         .importance = 1,
         .description = COMPOUND_STRING(
             "A bottle used to\n"
@@ -12043,7 +12043,7 @@ const struct Item gItemsInfo[] =
     [ITEM_N_SOLARIZER] =
     {
         .name = _("N-Solarizer"),
-        .price = 0,
+        .price = 3000,
         .importance = 1,
         .description = COMPOUND_STRING(
             "A device to fuse\n"
@@ -12059,7 +12059,7 @@ const struct Item gItemsInfo[] =
     [ITEM_N_LUNARIZER] =
     {
         .name = _("N-Lunarizer"),
-        .price = 0,
+        .price = 3000,
         .importance = 1,
         .description = COMPOUND_STRING(
             "A device to fuse\n"
@@ -12076,7 +12076,7 @@ const struct Item gItemsInfo[] =
     {
         .name = HANDLE_EXPANDED_ITEM_NAME("ReinsOfUnity", "Reins of Unity"),
         .pluralName = HANDLE_EXPANDED_ITEM_NAME("ReinsOfUnity", "Reins of Unity"),
-        .price = 0,
+        .price = 3000,
         .importance = 1,
         .description = COMPOUND_STRING(
             "Reins that unite\n"
@@ -14069,5 +14069,37 @@ const struct Item gItemsInfo[] =
         .fieldUseFunc = ItemUseOutOfBattle_CannotUse,
         .iconPic = gItemIcon_PokeshiDoll,
         .iconPalette = gItemIconPalette_PokeshiDoll,
+    },
+
+    [ITEM_DONE_BUTTON] =
+    {
+        .name = _("DONE BUTTON"),
+        .price = 0,
+        .description = COMPOUND_STRING(
+            "Ends the current\n"
+            "race. No, you can't\n"
+            "throw it, Keiz."),
+        .importance = 1,
+        .pocket = POCKET_KEY_ITEMS,
+        .type = 4,
+        .fieldUseFunc = ItemUseOutOfBattle_DoneButton,
+        .secondaryId = 0,
+        .iconPic = gItemIcon_DoneButton,
+        .iconPalette = gItemIconPalette_DoneButton,
+    },
+
+    [ITEM_SLEEPING_BAG] =
+    {
+        .name = _("Sleeping Bag"),
+        .price = 0,
+        .description = COMPOUND_STRING(
+            "Advances time\n"
+            "until the next\n"
+            "time period."),
+        .importance = 1,
+        .pocket = POCKET_KEY_ITEMS,
+        .type = 4,
+        .fieldUseFunc = ItemUseOutOfBattle_SleepingBag,
+        .secondaryId = 0,
     },
 };

@@ -5,6 +5,7 @@
 #include "gpu_regs.h"
 #include "task.h"
 #include "constants/rgb.h"
+#include "day_night.h"
 
 enum
 {
@@ -82,15 +83,12 @@ static const u8 sRoundedDownGrayscaleMap[] = {
 
 void LoadCompressedPalette(const u32 *src, u16 offset, u16 size)
 {
-    LZDecompressWram(src, gPaletteDecompressionBuffer);
-    CpuCopy16(gPaletteDecompressionBuffer, &gPlttBufferUnfaded[offset], size);
-    CpuCopy16(gPaletteDecompressionBuffer, &gPlttBufferFaded[offset], size);
+    LoadCompressedPalette_HandleDayNight(src, offset, size, FALSE);
 }
 
 void LoadPalette(const void *src, u16 offset, u16 size)
 {
-    CpuCopy16(src, &gPlttBufferUnfaded[offset], size);
-    CpuCopy16(src, &gPlttBufferFaded[offset], size);
+    LoadPalette_HandleDayNight(src, offset, size, FALSE);
 }
 
 void FillPalette(u16 value, u16 offset, u16 size)
@@ -828,16 +826,49 @@ static bool8 IsSoftwarePaletteFadeFinishing(void)
     }
 }
 
-void BlendPalettes(u32 selectedPalettes, u8 coeff, u16 color)
+// optimized based on lucktyphlosion's BlendPalettesFine
+void BlendPalettesFine(u32 palettes, u16 *src, u16 *dst, u32 coeff, u32 color) 
 {
-    u16 paletteOffset;
+  s32 newR, newG, newB;
 
-    for (paletteOffset = 0; selectedPalettes; paletteOffset += 16)
+  if (!palettes)
+    return;
+
+  coeff *= 2;
+  newR = (color << 27) >> 27;
+  newG = (color << 22) >> 27;
+  newB = (color << 17) >> 27;
+
+  do 
+  {
+    if (palettes & 1) 
     {
-        if (selectedPalettes & 1)
-            BlendPalette(paletteOffset, 16, coeff, color);
-        selectedPalettes >>= 1;
+      u16 *srcEnd = src + 16;
+      while (src != srcEnd) 
+      { // Transparency is blended because it can matter for tile palettes
+        u32 srcColor = *src;
+        s32 r = (srcColor << 27) >> 27;
+        s32 g = (srcColor << 22) >> 27;
+        s32 b = (srcColor << 17) >> 27;
+
+        *dst++ = ((r + (((newR - r) * coeff) >> 5)) << 0)
+               | ((g + (((newG - g) * coeff) >> 5)) << 5)
+               | ((b + (((newB - b) * coeff) >> 5)) << 10);
+        src++;
+      }
+    } 
+    else 
+    {
+      src += 16;
+      dst += 16;
     }
+    palettes >>= 1;
+  } while (palettes);
+}
+
+void BlendPalettes(u32 palettes, u8 coeff, u16 color) 
+{
+  BlendPalettesFine(palettes, gPlttBufferUnfaded, gPlttBufferFaded, coeff, color);
 }
 
 void BlendPalettesUnfaded(u32 selectedPalettes, u8 coeff, u16 color)

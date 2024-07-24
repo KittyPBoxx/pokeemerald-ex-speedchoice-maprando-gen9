@@ -1,12 +1,17 @@
 #include <string.h>
 #include "gba/m4a_internal.h"
 #include "global.h"
+#include "constants/songs.h"
+#include "random.h"
+#include "speedchoice.h"
+#include "sound.h"
 
 extern const u8 gCgb3Vol[];
 
 #define BSS_CODE __attribute__((section(".bss.code")))
 
-BSS_CODE ALIGNED(4) char SoundMainRAM_Buffer[0x800] = {0};
+BSS_CODE ALIGNED(4) char SoundMainRAM_Buffer[0xB40] = {0};
+BSS_CODE ALIGNED(4) u32 hq_buffer_ptr[0x130] = {0};
 
 struct SoundInfo gSoundInfo;
 struct PokemonCrySong gPokemonCrySongs[MAX_POKEMON_CRIES];
@@ -77,9 +82,9 @@ void m4aSoundInit(void)
     SoundInit(&gSoundInfo);
     MPlayExtender(gCgbChans);
     m4aSoundMode(SOUND_MODE_DA_BIT_8
-               | SOUND_MODE_FREQ_13379
+               | SOUND_MODE_FREQ_18157
                | (12 << SOUND_MODE_MASVOL_SHIFT)
-               | (5 << SOUND_MODE_MAXCHN_SHIFT));
+               | (15 << SOUND_MODE_MAXCHN_SHIFT));
 
     for (i = 0; i < NUM_MUSIC_PLAYERS; i++)
     {
@@ -105,14 +110,46 @@ void m4aSoundMain(void)
     SoundMain();
 }
 
+EWRAM_DATA int gShuffleMusic = FALSE;
+EWRAM_DATA u16 gShuffledMusic[(SONGS_END - SONGS_START + 2) - SFANFARES_COUNT][2] = {0};
+EWRAM_DATA u16 gShuffledFanfares[SFANFARES_COUNT+1][2] = {0}; // 18 is the number of set entries in sFanfares
+
+extern const u16 gExpansionMusicTracks[];
+extern const u16 gExpansionFanfareTracks[];
+
+static inline u16 GetShuffledSongNumber(u16 n) {
+    int i;
+
+    for (i = 0; gShuffledMusic[i][0] != 0xFFFF; i++) {
+        if (gShuffledMusic[i][0] == n) {
+            return gShuffledMusic[i][1];
+        }
+    }
+
+    for (i = 0; gShuffledFanfares[i][0] != 0xFFFF; i++) {
+        if (gShuffledFanfares[i][0] == n) {
+            return gShuffledFanfares[i][1];
+        }
+    }
+
+    return MUS_NONE;
+}
+
 void m4aSongNumStart(u16 n)
 {
-    const struct MusicPlayer *mplayTable = gMPlayTable;
-    const struct Song *songTable = gSongTable;
-    const struct Song *song = &songTable[n];
-    const struct MusicPlayer *mplay = &mplayTable[song->ms];
+    // do the rando thing.
+    if(gShuffleMusic == TRUE && ((n >= SONGS_START && n <= SONGS_END) || n == MUS_VS_WILD_NIGHT) && CheckSpeedchoiceOption(SHUFFLE_MUSIC, SHUFFLE_MUSIC_OFF) == FALSE) {
+        n = GetShuffledSongNumber(n);
+    }
+    {
+        // blah, doing it like this.
+        const struct MusicPlayer *mplayTable = gMPlayTable;
+        const struct Song *songTable = gSongTable;
+        const struct Song *song = &songTable[n];
+        const struct MusicPlayer *mplay = &mplayTable[song->ms];
 
-    MPlayStart(mplay->info, song->header);
+        MPlayStart(mplay->info, song->header);
+    }
 }
 
 void m4aSongNumStartOrChange(u16 n)

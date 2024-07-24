@@ -34,6 +34,7 @@
 #include "constants/songs.h"
 #include "constants/rgb.h"
 #include "constants/items.h"
+#include "done_button.h"
 
 struct EvoInfo
 {
@@ -212,6 +213,8 @@ void EvolutionScene(struct Pokemon *mon, u16 postEvoSpecies, bool8 canStopEvo, u
     u32 personality;
     bool32 isShiny;
     u8 id;
+
+    TryIncrementButtonStat(DB_EVOLUTIONS_ATTEMPTED);
 
     SetHBlankCallback(NULL);
     SetVBlankCallback(NULL);
@@ -652,6 +655,7 @@ static void Task_EvolutionScene(u8 taskId)
         && gTasks[sEvoGraphicsTaskId].isActive
         && gTasks[taskId].tBits & TASK_BIT_CAN_STOP)
     {
+        TryIncrementButtonStat(DB_EVOLUTIONS_CANCELLED);
         gTasks[taskId].tState = EVOSTATE_CANCEL;
         gTasks[sEvoGraphicsTaskId].tEvoStopped = TRUE;
         StopBgAnimation();
@@ -770,6 +774,7 @@ static void Task_EvolutionScene(u8 taskId)
         if (IsCryFinished())
         {
             u32 zero = 0;
+            TryIncrementButtonStat(DB_EVOLUTIONS_COMPLETED);
             StringExpandPlaceholders(gStringVar4, gText_CongratsPkmnEvolved);
             BattlePutTextOnWindow(gStringVar4, B_WIN_MSG);
             PlayBGM(MUS_EVOLVED);

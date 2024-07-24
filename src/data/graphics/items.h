@@ -1884,6 +1884,12 @@ const u32 gItemIconPalette_AuroraTicket[] = INCBIN_U32("graphics/items/icon_pale
 const u32 gItemIcon_OldSeaMap[] = INCBIN_U32("graphics/items/icons/old_sea_map.4bpp.lz");
 const u32 gItemIconPalette_OldSeaMap[] = INCBIN_U32("graphics/items/icon_palettes/old_sea_map.gbapal.lz");
 
+const u32 gItemIcon_DoneButton[] = INCBIN_U32("graphics/items/icons/done_button.4bpp.lz");
+const u32 gItemIconPalette_DoneButton[] = INCBIN_U32("graphics/items/icon_palettes/done_button.gbapal.lz");
+
+const u32 gItemIcon_SleepingBag[] = INCBIN_U32("graphics/items/icons/sleeping_bag.4bpp.lz");
+const u32 gItemIconPalette_SleepingBag[] = INCBIN_U32("graphics/items/icon_palettes/sleeping_bag.gbapal.lz");
+
 const u32 gItemIcon_Letter[] = INCBIN_U32("graphics/items/icons/letter.4bpp.lz");
 
 const u32 gItemIcon_DevonParts[] = INCBIN_U32("graphics/items/icons/devon_parts.4bpp.lz");

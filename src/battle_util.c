@@ -48,6 +48,7 @@
 #include "constants/trainers.h"
 #include "constants/weather.h"
 #include "constants/pokemon.h"
+#include "done_button.h"
 
 /*
 NOTE: The data and functions in this file up until (but not including) sSoundMovesTable
@@ -521,6 +522,7 @@ bool32 TryRunFromBattle(u32 battler)
     {
         gCurrentTurnActionNumber = gBattlersCount;
         gBattleOutcome = B_OUTCOME_RAN;
+        TryIncrementButtonStat(DB_BATTLES_FLED);
     }
 
     return effect;
@@ -1163,6 +1165,21 @@ void PrepareStringBattle(u16 stringId, u32 battler)
 
     BtlController_EmitPrintString(battler, BUFFER_A, stringId);
     MarkBattlerForControllerExec(battler);
+
+    if(stringId == STRINGID_ATTACKMISSED)
+    {
+        switch(GetBattlerSide(gBattlerAttacker))
+        {
+            case B_SIDE_PLAYER:
+                TryIncrementButtonStat(DB_OWN_MOVES_MISSED);
+                break;
+            case B_SIDE_OPPONENT:
+                TryIncrementButtonStat(DB_ENEMY_MOVES_MISSED);
+                break;
+        }
+    }
+    if(stringId == STRINGID_CANTESCAPE2 || stringId == STRINGID_CANTESCAPE)
+        TryIncrementButtonStat(DB_FAILED_RUNS);
 }
 
 void ResetSentPokesToOpponentValue(void)
@@ -8340,10 +8357,10 @@ u32 GetMoveTarget(u16 move, u8 setTarget)
     return targetBattler;
 }
 
-static bool32 IsBattlerModernFatefulEncounter(u32 battler)
-{
-    return TRUE;
-}
+// static bool32 IsBattlerModernFatefulEncounter(u32 battler)
+// {
+//     return TRUE;
+// }
 
 u8 IsMonDisobedient(void)
 {
@@ -8357,8 +8374,12 @@ u8 IsMonDisobedient(void)
     if (BattlerHasAi(gBattlerAttacker))
         return 0;
 
-    if (IsBattlerModernFatefulEncounter(gBattlerAttacker)) // only false if illegal Mew or Deoxys
-    {
+    // ----------------------------------
+    // SPEEDCHOICE CHANGE
+    // ----------------------------------
+    // Do not do Obedience crap for Mew or Deoxys.
+    // if (IsBattlerModernFatefulEncounter(gBattlerAttacker)) // only false if illegal Mew or Deoxys
+    // {
         if (gBattleTypeFlags & BATTLE_TYPE_INGAME_PARTNER && GetBattlerPosition(gBattlerAttacker) == B_POSITION_PLAYER_RIGHT)
             return 0;
         if (gBattleTypeFlags & BATTLE_TYPE_FRONTIER)
@@ -8386,7 +8407,7 @@ u8 IsMonDisobedient(void)
             obedienceLevel = 70;
         if (FlagGet(FLAG_BADGE07_GET)) // Mind Badge
             obedienceLevel = 80;
-    }
+    // }
 
     if (B_OBEDIENCE_MECHANICS >= GEN_8
      && !IsOtherTrainer(gBattleMons[gBattlerAttacker].otId, gBattleMons[gBattlerAttacker].otName))

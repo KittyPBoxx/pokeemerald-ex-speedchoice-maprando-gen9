@@ -62,8 +62,15 @@ RusturfTunnel_EventScript_ClearTunnelScene::
 	msgbox RusturfTunnel_Text_YouShatteredBoulderTakeHM, MSGBOX_DEFAULT
 	call_if_eq VAR_TEMP_1, 2, RusturfTunnel_EventScript_WandasBoyfriendApproachPlayer
 	call_if_eq VAR_TEMP_1, 3, RusturfTunnel_EventScript_WandasBoyfriendApproachPlayer
-	giveitem ITEM_HM_STRENGTH
+	checkspeedchoice EARLYSURF, SURF_ON
+	goto_if TRUE, Speedchoice_EarlySurf2
+	giveitem ITEM_HM04
 	setflag FLAG_RECEIVED_HM_STRENGTH
+	goto AfterEarlySurf2
+Speedchoice_EarlySurf2::
+	giveitem ITEM_HM03
+	setflag FLAG_RECEIVED_HM_SURF
+AfterEarlySurf2::
 	msgbox RusturfTunnel_Text_ExplainStrength, MSGBOX_DEFAULT
 	closemessage
 	call_if_eq VAR_TEMP_1, 1, RusturfTunnel_EventScript_BoyfriendApproachWanda1
@@ -309,7 +316,7 @@ RusturfTunnel_EventScript_Grunt::
 	msgbox RusturfTunnel_Text_GruntIntro, MSGBOX_DEFAULT
 	trainerbattle_no_intro TRAINER_GRUNT_RUSTURF_TUNNEL, RusturfTunnel_Text_GruntDefeat
 	msgbox RusturfTunnel_Text_GruntTakePackage, MSGBOX_DEFAULT
-	giveitem ITEM_DEVON_PARTS
+	giveitem ITEM_DEVON_GOODS
 	closemessage
 	applymovement OBJ_EVENT_ID_PLAYER, RusturfTunnel_Movement_PushPlayerAsideForGrunt
 	applymovement LOCALID_GRUNT, RusturfTunnel_Movement_GruntEscape

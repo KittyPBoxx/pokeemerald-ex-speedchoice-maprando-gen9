@@ -37,7 +37,7 @@ EXE :=
 endif
 
 TITLE        := POKEMON EMER
-GAME_CODE    := BPEE
+GAME_CODE    := SPDC
 MAKER_CODE   := 01
 REVISION     := 0
 MODERN       ?= 1
@@ -75,7 +75,7 @@ ELF_NAME := $(ROM_NAME:.gba=.elf)
 MAP_NAME := $(ROM_NAME:.gba=.map)
 OBJ_DIR_NAME := build/emerald
 
-MODERN_ROM_NAME := pokeemerald.gba
+MODERN_ROM_NAME := pokeemerald-speedchoice.gba
 MODERN_ELF_NAME := $(MODERN_ROM_NAME:.gba=.elf)
 MODERN_MAP_NAME := $(MODERN_ROM_NAME:.gba=.map)
 MODERN_OBJ_DIR_NAME := build/modern
@@ -85,6 +85,8 @@ SHELL := bash -o pipefail
 ELF = $(ROM:.gba=.elf)
 MAP = $(ROM:.gba=.map)
 SYM = $(ROM:.gba=.sym)
+INI = $(ROM:.gba=.ini)
+PATCH := $(ROM:.gba=.xdelta)
 
 TEST_OBJ_DIR_NAME_MODERN := build/modern-test
 TEST_OBJ_DIR_NAME_AGBCC := build/test
@@ -166,6 +168,8 @@ RAMSCRGEN := tools/ramscrgen/ramscrgen$(EXE)
 FIX := tools/gbafix/gbafix$(EXE)
 MAPJSON := tools/mapjson/mapjson$(EXE)
 JSONPROC := tools/jsonproc/jsonproc$(EXE)
+INIGEN := tools/inigen/inigen$(EXE)
+XDELTA := xdelta3
 PATCHELF := tools/patchelf/patchelf$(EXE)
 ROMTEST ?= $(shell { command -v mgba-rom-test || command -v tools/mgba/mgba-rom-test$(EXE); } 2>/dev/null)
 ROMTESTHYDRA := tools/mgba-rom-test-hydra/mgba-rom-test-hydra$(EXE)
@@ -199,7 +203,7 @@ infoshell = $(foreach line, $(shell $1 | sed "s/ /__SPACE__/g"), $(info $(subst 
 # Disable dependency scanning for clean/tidy/tools
 # Use a separate minimal makefile for speed
 # Since we don't need to reload most of this makefile
-ifeq (,$(filter-out all rom compare agbcc modern check libagbsyscall syms $(TESTELF),$(MAKECMDGOALS)))
+ifeq (,$(filter-out all rom compare agbcc modern check libagbsyscall syms $(TESTELF) release,$(MAKECMDGOALS)))
 $(call infoshell, $(MAKE) -f make_tools.mk)
 else
 NODEP ?= 1
@@ -279,6 +283,12 @@ rom: $(ROM)
 ifeq ($(COMPARE),1)
 	@$(SHA1) rom.sha1
 endif
+
+release: ini patch
+
+ini: $(INI)
+
+patch: $(PATCH)
 
 # For contributors to make sure a change didn't affect the contents of the ROM.
 compare: all
@@ -542,6 +552,15 @@ check: $(TESTELF)
 
 libagbsyscall:
 	@$(MAKE) -C libagbsyscall TOOLCHAIN=$(TOOLCHAIN) MODERN=$(MODERN)
+
+$(INI): $(ROM)
+	$(INIGEN) $(ELF) $@ --name "Emerald Speedchoice (U)" --code $(GAME_CODE)
+	echo "MD5Hash="$(shell md5sum $< | cut -d' ' -f1) >> $@
+
+$(PATCH): $(ROM)
+	$(XDELTA) -f -e -s baserom.gba $< $@
+
+print-% : ; $(info $* is a $(flavor $*) variable set to [$($*)]) @true
 
 ###################
 ### Symbol file ###

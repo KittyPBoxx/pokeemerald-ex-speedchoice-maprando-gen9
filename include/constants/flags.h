@@ -652,7 +652,7 @@
 #define FLAG_HIDDEN_ITEM_ROUTE_123_RARE_CANDY                (FLAG_HIDDEN_ITEMS_START + 0x6E)
 #define FLAG_HIDDEN_ITEM_ROUTE_105_BIG_PEARL                 (FLAG_HIDDEN_ITEMS_START + 0x6F)
 
-#define FLAG_UNUSED_0x264  0x264 // Unused Flag
+#define FLAG_TERA_ORB_CHARGED  0x264 // Unused Flag
 #define FLAG_UNUSED_0x265  0x265 // Unused Flag
 #define FLAG_UNUSED_0x266  0x266 // Unused Flag
 #define FLAG_UNUSED_0x267  0x267 // Unused Flag
@@ -1218,7 +1218,7 @@
 #define FLAG_ITEM_SAFARI_ZONE_NORTH_EAST_NUGGET                     0x491
 #define FLAG_ITEM_SAFARI_ZONE_SOUTH_EAST_BIG_PEARL                  0x492
 
-#define FLAG_UNUSED_0x493                                           0x493 // Unused Flag
+#define FLAG_HIDE_SOOTOPOLIS_CITY_OLD_MAN_EXPERT                    0x493 // SPEEDCHOICE (previously unused flag, repurposed to hide the old man blocking the Cave of Origin entrance after Juan.)
 #define FLAG_UNUSED_0x494                                           0x494 // Unused Flag
 #define FLAG_UNUSED_0x495                                           0x495 // Unused Flag
 #define FLAG_UNUSED_0x496                                           0x496 // Unused Flag
@@ -1647,6 +1647,15 @@
 // FLAG_SPECIAL_FLAG_0x4005 - 0x407F also exist and are unused
 #define SPECIAL_FLAGS_END                       (SPECIAL_FLAGS_START + 0x7F)
 #define NUM_SPECIAL_FLAGS                       (SPECIAL_FLAGS_END - SPECIAL_FLAGS_START + 1)
+
+// Hack redefines to compile
+#define FLAG_HIDE_MAGMA_HIDEOUT_4F_GROUDON_2                        0x352
+#define FLAG_HIDE_MAGMA_HIDEOUT_4F_GROUDON_1                        0x355
+#define FLAG_HIDE_SEAFLOOR_CAVERN_ROOM_9_KYOGRE_1                   0x35B
+
+#define FLAG_HIDE_RAYQUAZA_SKY_TOWER_SUMMIT                         0x50
+#define FLAG_HIDE_SKY_PILLAR_TOP_RAYQUAZA_2                         0x305
+// Hackend
 
 // Temp flag aliases
 #define FLAG_TEMP_SKIP_GABBY_INTERVIEW          FLAG_TEMP_1

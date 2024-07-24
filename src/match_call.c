@@ -33,6 +33,7 @@
 #include "constants/region_map_sections.h"
 #include "constants/songs.h"
 #include "constants/trainers.h"
+#include "day_night.h"
 
 // In this file only the values normally associated with Battle Pike and Factory are swapped.
 // Note that this is *not* a bug, because they are properly swapped consistently in this file.
@@ -1055,13 +1056,13 @@ static bool32 UpdateMatchCallMinutesCounter(void)
 
 static bool32 CheckMatchCallChance(void)
 {
-    int callChance = 1;
-    if (!GetMonData(&gPlayerParty[0], MON_DATA_SANITY_IS_EGG) && GetMonAbility(&gPlayerParty[0]) == ABILITY_LIGHTNING_ROD)
-        callChance = 2;
+    // int callChance = 1;
+    // if (!GetMonData(&gPlayerParty[0], MON_DATA_SANITY_IS_EGG) && GetMonAbility(&gPlayerParty[0]) == ABILITY_LIGHTNING_ROD)
+    //     callChance = 2;
 
-    if (Random() % 10 < callChance * 3)
-        return TRUE;
-    else
+    // if (Random() % 10 < callChance * 3)
+    //     return TRUE;
+    // else
         return FALSE;
 }
 
@@ -1751,6 +1752,10 @@ static void PopulateSpeciesFromTrainerLocation(int matchCallId, u8 *destStr)
     int numSpecies;
     u8 slot;
     int i = 0;
+    u8 timeOfDay;
+
+    RtcCalcLocalTime();
+    timeOfDay = GetCurrentTimeOfDay();
 
     if (gWildMonHeaders[i].mapGroup != MAP_GROUP(UNDEFINED)) // ??? This check is nonsense.
     {
@@ -1769,14 +1774,14 @@ static void PopulateSpeciesFromTrainerLocation(int matchCallId, u8 *destStr)
             if (gWildMonHeaders[i].landMonsInfo)
             {
                 slot = GetLandEncounterSlot();
-                species[numSpecies] = gWildMonHeaders[i].landMonsInfo->wildPokemon[slot].species;
+                species[numSpecies] = gWildMonHeaders[i].landMonsInfo->wildPokemon[timeOfDay][slot].species;
                 numSpecies++;
             }
 
             if (gWildMonHeaders[i].waterMonsInfo)
             {
                 slot = GetWaterEncounterSlot();
-                species[numSpecies] = gWildMonHeaders[i].waterMonsInfo->wildPokemon[slot].species;
+                species[numSpecies] = gWildMonHeaders[i].waterMonsInfo->wildPokemon[timeOfDay][slot].species;
                 numSpecies++;
             }
 

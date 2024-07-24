@@ -3,6 +3,8 @@
 
 #include "constants/sound.h"
 
+#define SFANFARES_COUNT 74
+
 void InitMapMusic(void);
 void MapMusicMain(void);
 void ResetMapMusic(void);
@@ -45,5 +47,6 @@ void SE12PanpotControl(s8 pan);
 bool8 IsSEPlaying(void);
 bool8 IsBGMPlaying(void);
 bool8 IsSpecialSEPlaying(void);
+int IsInFanfares(u16 songNum);
 
 #endif // GUARD_SOUND_H

@@ -19,6 +19,7 @@
 #include "constants/coins.h"
 #include "constants/contest.h"
 #include "constants/daycare.h"
+#include "constants/day_night.h"
 #include "constants/decorations.h"
 #include "constants/easy_chat.h"
 #include "constants/event_objects.h"
@@ -573,6 +574,14 @@ gStdScripts_End::
 	.include "data/maps/Route119_WeatherInstitute_2F/scripts.inc"
 	.include "data/maps/Route119_House/scripts.inc"
 	.include "data/maps/Route124_DivingTreasureHuntersHouse/scripts.inc"
+	.include "data/maps/AlteringCave_SubCave1/scripts.inc"
+	.include "data/maps/AlteringCave_SubCave2/scripts.inc"
+	.include "data/maps/AlteringCave_SubCave3/scripts.inc"
+	.include "data/maps/AlteringCave_SubCave4/scripts.inc"
+	.include "data/maps/AlteringCave_SubCave5/scripts.inc"
+	.include "data/maps/AlteringCave_SubCave6/scripts.inc"
+	.include "data/maps/AlteringCave_SubCave7/scripts.inc"
+	.include "data/maps/AlteringCave_SubCave8/scripts.inc"
 
 	.include "data/scripts/std_msgbox.inc"
 	.include "data/scripts/trainer_battle.inc"
@@ -799,6 +808,8 @@ Movement_FerryDepart:
 	step_end
 
 EventScript_HideMrBriney::
+	setflag FLAG_HIDE_SAFARI_ZONE_SOUTH_CONSTRUCTION_WORKERS
+	clearflag FLAG_HIDE_SAFARI_ZONE_SOUTH_EAST_EXPANSION
 	setflag FLAG_HIDE_MR_BRINEY_DEWFORD_TOWN
 	setflag FLAG_HIDE_MR_BRINEY_BOAT_DEWFORD_TOWN
 	setflag FLAG_HIDE_ROUTE_109_MR_BRINEY

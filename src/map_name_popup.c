@@ -22,6 +22,7 @@
 #include "constants/weather.h"
 #include "config/general.h"
 #include "config/overworld.h"
+#include "day_night.h"
 
 // enums
 enum MapPopUp_Themes
@@ -185,7 +186,8 @@ static const u8 sRegionMapSectionId_To_PopUpThemeIdMapping[] =
     [MAPSEC_DESERT_UNDERPASS - KANTO_MAPSEC_COUNT] = MAPPOPUP_THEME_STONE,
     [MAPSEC_ALTERING_CAVE - KANTO_MAPSEC_COUNT] = MAPPOPUP_THEME_STONE,
     [MAPSEC_NAVEL_ROCK - KANTO_MAPSEC_COUNT] = MAPPOPUP_THEME_STONE,
-    [MAPSEC_TRAINER_HILL - KANTO_MAPSEC_COUNT] = MAPPOPUP_THEME_MARBLE
+    [MAPSEC_TRAINER_HILL - KANTO_MAPSEC_COUNT] = MAPPOPUP_THEME_MARBLE,
+    [MAPSEC_ANCIENT_CAVE] = MAPPOPUP_THEME_STONE
 };
 
 #if OW_POPUP_GENERATION == GEN_5
@@ -500,6 +502,11 @@ void HideMapNamePopUpWindow(void)
     }
 }
 
+const u8 sText_TimeOfDay_Morning[] = _(" DAWN ");
+const u8 sText_TimeOfDay_Day[] = _("  DAY ");
+const u8 sText_TimeOfDay_Evening[] = _(" DUSK ");
+const u8 sText_TimeOfDay_Night[] = _("NIGHT ");
+
 static void ShowMapNamePopUpWindow(void)
 {
     u8 mapDisplayHeader[24];
@@ -554,6 +561,25 @@ static void ShowMapNamePopUpWindow(void)
         if (OW_POPUP_BW_TIME_MODE != OW_POPUP_BW_TIME_NONE)
         {
             RtcCalcLocalTime();
+
+            switch(GetCurrentTimeOfDay()) 
+            {
+                case TIME_MORNING:
+                default:
+                    StringCopy(mapDisplayHeader, sText_TimeOfDay_Morning);
+                    break;
+                case TIME_DAY:
+                    StringCopy(mapDisplayHeader, sText_TimeOfDay_Day);
+                    break;
+                case TIME_EVENING:
+                    StringCopy(mapDisplayHeader, sText_TimeOfDay_Evening);
+                    break;
+                case TIME_NIGHT:
+                    StringCopy(mapDisplayHeader, sText_TimeOfDay_Night);
+                    break;
+            }
+            AddTextPrinterParameterized(secondaryPopUpWindowId, FONT_SMALL, mapDisplayHeader, GetStringRightAlignXOffset(FONT_SMALL, mapDisplayHeader, DISPLAY_WIDTH) - 5, 8, TEXT_SKIP_DRAW, NULL);
+            withoutPrefixPtr = &(mapDisplayHeader[6]);
             FormatDecimalTimeWithoutSeconds(withoutPrefixPtr, gLocalTime.hours, gLocalTime.minutes, OW_POPUP_BW_TIME_MODE == OW_POPUP_BW_TIME_24_HR);
             AddTextPrinterParameterized(secondaryPopUpWindowId, FONT_SMALL, mapDisplayHeader, GetStringRightAlignXOffset(FONT_SMALL, mapDisplayHeader, DISPLAY_WIDTH) - 5, 8, TEXT_SKIP_DRAW, NULL);
         }

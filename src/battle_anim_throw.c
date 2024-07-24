@@ -21,6 +21,7 @@
 #include "constants/moves.h"
 #include "constants/songs.h"
 #include "constants/rgb.h"
+#include "speedchoice.h"
 
 // iwram
 u32 gMonShrinkDuration;
@@ -1328,7 +1329,14 @@ static void SpriteCB_Ball_Bounce_Step(struct Sprite *sprite)
         sprite->sState = 0;
         sprite->y += Cos(64, 40);
         sprite->y2 = 0;
-        if (gBattleSpritesDataPtr->animationData->ballThrowCaseId == BALL_NO_SHAKES)
+
+        if ((CheckSpeedchoiceOption(FAST_CATCH, FAST_CATCH_ON) == TRUE))
+        {
+            sprite->sState++;
+            sprite->callback = SpriteCB_Ball_Capture;
+            sprite->affineAnimPaused = TRUE;
+        }
+        else if (gBattleSpritesDataPtr->animationData->ballThrowCaseId == BALL_NO_SHAKES)
         {
             sprite->sTimer = 0;
             sprite->callback = SpriteCB_Ball_Release;
@@ -1503,7 +1511,7 @@ static void SpriteCB_Ball_Wobble_Step(struct Sprite *sprite)
             }
             else
             {
-                if (gBattleSpritesDataPtr->animationData->ballThrowCaseId == BALL_3_SHAKES_SUCCESS && shakes == 3)
+                if (gBattleSpritesDataPtr->animationData->ballThrowCaseId == BALL_3_SHAKES_SUCCESS && shakes == 2) // SPEEDCHOICE (2 shakes instead of 3).
                 {
                     sprite->callback = SpriteCB_Ball_Capture;
                     sprite->affineAnimPaused = TRUE;

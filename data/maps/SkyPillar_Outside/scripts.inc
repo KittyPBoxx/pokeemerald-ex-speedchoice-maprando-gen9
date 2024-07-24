@@ -33,6 +33,8 @@ SkyPillar_Outside_OnFrame:
 	.2byte 0
 
 SkyPillar_Outside_EventScript_WallaceScene::
+	checkspeedchoice PLOTLESS, PLOT_KEEP
+	goto_if FALSE, SkyPillar_Outside_EventScript_Wallace
 	lockall
 	applymovement LOCALID_WALLACE, SkyPillar_Outside_Movement_WallaceApproachPlayer
 	waitmovement 0

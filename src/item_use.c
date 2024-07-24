@@ -45,6 +45,9 @@
 #include "constants/items.h"
 #include "constants/songs.h"
 #include "constants/map_types.h"
+#include "speedchoice.h"
+#include "done_button.h"
+#include "day_night.h"
 
 static void SetUpItemUseCallback(u8);
 static void FieldCB_UseItemOnField(void);
@@ -81,7 +84,7 @@ static void ItemUseOnFieldCB_Honey(u8 taskId);
 static bool32 IsValidLocationForVsSeeker(void);
 
 // EWRAM variables
-EWRAM_DATA static void(*sItemUseOnFieldCB)(u8 taskId) = NULL;
+EWRAM_DATA void(*sItemUseOnFieldCB)(u8 taskId) = NULL;
 
 // Below is set TRUE by UseRegisteredKeyItemOnField
 #define tUsingRegisteredKeyItem  data[3]
@@ -124,7 +127,7 @@ static void SetUpItemUseCallback(u8 taskId)
     }
 }
 
-static void SetUpItemUseOnFieldCallback(u8 taskId)
+void SetUpItemUseOnFieldCallback(u8 taskId)
 {
     if (gTasks[taskId].tUsingRegisteredKeyItem != TRUE)
     {
@@ -866,6 +869,43 @@ void ItemUseOutOfBattle_TMHM(u8 taskId)
         DisplayItemMessage(taskId, FONT_NORMAL, gText_BootedUpTM, BootUpSoundTMHM); // TM
 }
 
+static const struct YesNoFuncTable gDoneButtonYesNo =
+{
+    .yesFunc = Task_InitDoneButtonMenu,
+    .noFunc = CloseItemMessage,
+};
+
+const u8 gAreYouDoneWithRace[] = _("Are you done with the race?");
+
+void DoDoneButtonYesNo(u8 taskId)
+{
+    BagMenu_YesNo(taskId, 1, &gDoneButtonYesNo);
+}
+
+void ItemUseOutOfBattle_DoneButton(u8 taskId)
+{
+    DisplayItemMessage(taskId, 1, gAreYouDoneWithRace, DoDoneButtonYesNo);
+}
+
+void Task_WaitUntilAPress(u8 taskId)
+{
+    if(JOY_NEW(A_BUTTON)) {
+        gTasks[taskId].func = CloseItemMessage;
+    }
+}
+
+const u8 gTimeHasBeenAdvanced[] = _("Time has been advanced.\n");
+
+void ItemUseOutOfBattle_SleepingBag(u8 taskId)
+{
+    if(gTasks[taskId].tUsingRegisteredKeyItem == TRUE) {
+        DisplayDadsAdviceCannotUseItemMessage(taskId, gTasks[taskId].tUsingRegisteredKeyItem);
+    } else {
+        AdvanceTimeToNextPeriod();
+        DisplayItemMessage(taskId, 1, gTimeHasBeenAdvanced, Task_WaitUntilAPress);
+    }
+}
+
 static void BootUpSoundTMHM(u8 taskId)
 {
     PlaySE(SE_PC_LOGIN);
@@ -893,11 +933,22 @@ static void UseTMHM(u8 taskId)
     SetUpItemUseCallback(taskId);
 }
 
+extern bool32 sUsedEscapeOption;
+
 static void RemoveUsedItem(void)
 {
-    RemoveBagItem(gSpecialVar_ItemId, 1);
-    CopyItemName(gSpecialVar_ItemId, gStringVar2);
-    StringExpandPlaceholders(gStringVar4, gText_PlayerUsedVar2);
+    if(sUsedEscapeOption == TRUE)
+    {
+        CopyItemName(ITEM_ESCAPE_ROPE, gStringVar2);
+        StringExpandPlaceholders(gStringVar4, gText_PlayerUsedVar2);
+    }
+    else
+    {
+        RemoveBagItem(gSpecialVar_ItemId, 1);
+        CopyItemName(gSpecialVar_ItemId, gStringVar2);
+        StringExpandPlaceholders(gStringVar4, gText_PlayerUsedVar2);
+    }
+    sUsedEscapeOption = FALSE;
     if (!InBattlePyramid())
     {
         UpdatePocketItemList(ItemId_GetPocket(gSpecialVar_ItemId));
@@ -1032,12 +1083,13 @@ void ItemUseOutOfBattle_BlackWhiteFlute(u8 taskId)
 
 void Task_UseDigEscapeRopeOnField(u8 taskId)
 {
+    sInSubMenu = FALSE;
     ResetInitialPlayerAvatarState();
     StartEscapeRopeFieldEffect();
     DestroyTask(taskId);
 }
 
-static void ItemUseOnFieldCB_EscapeRope(u8 taskId)
+void ItemUseOnFieldCB_EscapeRope(u8 taskId)
 {
     Overworld_ResetStateAfterDigEscRope();
     if (I_KEY_ESCAPE_ROPE < GEN_8)

@@ -11,7 +11,7 @@ RustboroCity_Mart_EventScript_Clerk::
 	end
 
 RustboroCity_Mart_EventScript_PokemartBasic::
-	pokemart RustboroCity_Mart_Pokemart_Basic
+	pokemart RustboroCitySpeedchoice_Mart_Items1
 	msgbox gText_PleaseComeAgain, MSGBOX_DEFAULT
 	release
 	end
@@ -32,8 +32,26 @@ RustboroCity_Mart_Pokemart_Basic:
 	release
 	end
 
+	.align 2
+RustboroCitySpeedchoice_Mart_Items1::
+	.2byte ITEM_POKE_BALL
+	.2byte ITEM_POTION
+	.2byte ITEM_SUPER_POTION
+	.2byte ITEM_ANTIDOTE
+	.2byte ITEM_PARALYZE_HEAL
+	.2byte ITEM_ESCAPE_ROPE
+	.2byte ITEM_REPEL
+	.2byte ITEM_X_SPEED
+	.2byte ITEM_X_ATTACK
+	.2byte ITEM_X_DEFENSE
+	.2byte ITEM_X_SP_ATK
+    .2byte ITEM_X_SP_DEF
+	.2byte ITEM_NONE
+	release
+	end
+
 RustboroCity_Mart_EventScript_PokemartExpanded::
-	pokemart RustboroCity_Mart_Pokemart_Expanded
+	pokemart RustboroCitySpeedchoice_Mart_Items2
 	msgbox gText_PleaseComeAgain, MSGBOX_DEFAULT
 	release
 	end
@@ -52,6 +70,26 @@ RustboroCity_Mart_Pokemart_Expanded:
 	.2byte ITEM_X_SPEED
 	.2byte ITEM_X_ATTACK
 	.2byte ITEM_X_DEFENSE
+	.2byte ITEM_NONE
+	release
+	end
+
+	.align 2
+RustboroCitySpeedchoice_Mart_Items2::
+	.2byte ITEM_POKE_BALL
+	.2byte ITEM_TIMER_BALL
+	.2byte ITEM_REPEAT_BALL
+	.2byte ITEM_POTION
+	.2byte ITEM_SUPER_POTION
+	.2byte ITEM_ANTIDOTE
+	.2byte ITEM_PARALYZE_HEAL
+	.2byte ITEM_ESCAPE_ROPE
+	.2byte ITEM_REPEL
+	.2byte ITEM_X_SPEED
+	.2byte ITEM_X_ATTACK
+	.2byte ITEM_X_DEFENSE
+	.2byte ITEM_X_SP_ATK
+    .2byte ITEM_X_SP_DEF
 	.2byte ITEM_NONE
 	release
 	end

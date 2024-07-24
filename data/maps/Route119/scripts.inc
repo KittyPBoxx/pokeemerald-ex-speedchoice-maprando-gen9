@@ -13,14 +13,16 @@ Route119_OnResume:
 
 Route119_EventScript_TryRemoveKecleon::
 	specialvar VAR_RESULT, GetBattleOutcome
-	goto_if_ne VAR_RESULT, B_OUTCOME_CAUGHT, Common_EventScript_NopReturn
+	compare VAR_RESULT, B_OUTCOME_CAUGHT
+	goto_if_ne Common_EventScript_NopReturn
 	removeobject VAR_LAST_TALKED
 	return
 
 Route119_OnTransition:
 	call Common_EventScript_SetupRivalGfxId
 	call Common_EventScript_SetupRivalOnBikeGfxId
-	call_if_eq VAR_WEATHER_INSTITUTE_STATE, 1, Route119_EventScript_MoveInstituteWorkersDownstairs
+	compare VAR_WEATHER_INSTITUTE_STATE, 1
+	call_if_eq Route119_EventScript_MoveInstituteWorkersDownstairs
 	special SetRoute119Weather
 	end
 
@@ -44,31 +46,39 @@ Route119_EventScript_RivalEncounter::
 	lockall
 	addobject LOCALID_RIVAL_ON_BIKE
 	checkplayergender
-	call_if_eq VAR_RESULT, MALE, Route119_EventScript_PlayMayMusic
-	call_if_eq VAR_RESULT, FEMALE, Route119_EventScript_PlayBrendanMusic
+	compare VAR_RESULT, MALE
+	call_if_eq Route119_EventScript_PlayMayMusic
+	compare VAR_RESULT, FEMALE
+	call_if_eq Route119_EventScript_PlayBrendanMusic
 	delay 65
-	call_if_eq VAR_TEMP_1, 1, Route119_EventScript_RivalEnter1
-	call_if_eq VAR_TEMP_1, 2, Route119_EventScript_RivalEnter2
+	compare VAR_TEMP_1, 1
+	call_if_eq Route119_EventScript_RivalEnter1
+	compare VAR_TEMP_1, 2
+	call_if_eq Route119_EventScript_RivalEnter2
 	applymovement OBJ_EVENT_ID_PLAYER, Common_Movement_WalkInPlaceFasterDown
 	waitmovement 0
 	delay 30
-	call_if_eq VAR_TEMP_1, 1, Route119_EventScript_SetRivalPos1
-	call_if_eq VAR_TEMP_1, 2, Route119_EventScript_SetRivalPos2
+	compare VAR_TEMP_1, 1
+	call_if_eq Route119_EventScript_SetRivalPos1
+	compare VAR_TEMP_1, 2
+	call_if_eq Route119_EventScript_SetRivalPos2
 	removeobject LOCALID_RIVAL_ON_BIKE
 	addobject LOCALID_RIVAL
 	delay 30
 	checkplayergender
-	goto_if_eq VAR_RESULT, MALE, Route119_EventScript_BattleMay
-	goto_if_eq VAR_RESULT, FEMALE, Route119_EventScript_BattleBrendan
+	compare VAR_RESULT, MALE
+	goto_if_eq Route119_EventScript_BattleMay
+	compare VAR_RESULT, FEMALE
+	goto_if_eq Route119_EventScript_BattleBrendan
 	releaseall
 	end
 
 Route119_EventScript_PlayMayMusic::
-	playbgm MUS_ENCOUNTER_MAY, TRUE
+	playbgm MUS_ENCOUNTER_MAY, 1
 	return
 
 Route119_EventScript_PlayBrendanMusic::
-	playbgm MUS_ENCOUNTER_BRENDAN, TRUE
+	playbgm MUS_ENCOUNTER_BRENDAN, 1
 	return
 
 Route119_EventScript_BattleMay::
@@ -96,7 +106,10 @@ Route119_EventScript_BattleMayMudkip::
 
 Route119_EventScript_DefeatedMay::
 	msgbox Route119_Text_MayPresentForYou, MSGBOX_DEFAULT
-	call Route119_EventScript_GiveFlyHM
+	checkspeedchoice EARLYFLY, FLY_YES
+	call_if TRUE, Speedchoice_GiveItemfinder
+	checkspeedchoice EARLYFLY, FLY_NO
+	call_if TRUE, Route119_EventScript_GiveFlyHM @ im still not sure if there's a better way to do this than a double check. i cannot be sure that the callif instructions don't modify callif conditional.
 	msgbox Route119_Text_MayExplainFly, MSGBOX_DEFAULT
 	goto Route119_EventScript_RivalExitScottArrive
 	end
@@ -126,40 +139,56 @@ Route119_EventScript_BattleBrendanMudkip::
 
 Route119_EventScript_DefeatedBrendan::
 	msgbox Route119_Text_BrendanIllGiveYouThis, MSGBOX_DEFAULT
-	call Route119_EventScript_GiveFlyHM
+	checkspeedchoice EARLYFLY, FLY_YES
+	call_if TRUE, Speedchoice_GiveItemfinder
+	checkspeedchoice EARLYFLY, FLY_NO
+	call_if TRUE, Route119_EventScript_GiveFlyHM @ im still not sure if there's a better way to do this than a double check. i cannot be sure that the callif instructions don't modify callif conditional.
 	msgbox Route119_Text_BrendanExplainFly, MSGBOX_DEFAULT
 	goto Route119_EventScript_RivalExitScottArrive
 	end
 
 Route119_EventScript_GiveFlyHM::
-	giveitem ITEM_HM_FLY
+	giveitem ITEM_HM02
+	setflag FLAG_RECEIVED_HM_FLY
+	return
+
+Speedchoice_GiveItemfinder::
+	giveitem ITEM_ITEMFINDER
 	setflag FLAG_RECEIVED_HM_FLY
 	return
 
 Route119_EventScript_RivalExitScottArrive::
 	closemessage
-	call_if_eq VAR_TEMP_1, 1, Route119_EventScript_SetRivalPos1
-	call_if_eq VAR_TEMP_1, 2, Route119_EventScript_SetRivalPos2
+	compare VAR_TEMP_1, 1
+	call_if_eq Route119_EventScript_SetRivalPos1
+	compare VAR_TEMP_1, 2
+	call_if_eq Route119_EventScript_SetRivalPos2
 	removeobject LOCALID_RIVAL
 	addobject LOCALID_RIVAL_ON_BIKE
 	delay 30
-	call_if_eq VAR_TEMP_1, 1, Route119_EventScript_RivalExit1
-	call_if_eq VAR_TEMP_1, 2, Route119_EventScript_RivalExit2
+	compare VAR_TEMP_1, 1
+	call_if_eq Route119_EventScript_RivalExit1
+	compare VAR_TEMP_1, 2
+	call_if_eq Route119_EventScript_RivalExit2
 	removeobject LOCALID_RIVAL_ON_BIKE
 	setvar VAR_ROUTE119_STATE, 1
 	savebgm MUS_DUMMY
 	fadedefaultbgm
 	delay 60
-	call_if_eq VAR_TEMP_1, 1, Route119_EventScript_SetScottPos1
-	call_if_eq VAR_TEMP_1, 2, Route119_EventScript_SetScottPos2
+	compare VAR_TEMP_1, 1
+	call_if_eq Route119_EventScript_SetScottPos1
+	compare VAR_TEMP_1, 2
+	call_if_eq Route119_EventScript_SetScottPos2
 	addobject LOCALID_SCOTT
 	applymovement LOCALID_SCOTT, Route119_Movement_ScottEnter
 	waitmovement 0
 	addvar VAR_SCOTT_STATE, 1
 	msgbox Route119_Text_ScottWayToGoBeSeeingYou, MSGBOX_DEFAULT
 	closemessage
-	call_if_eq VAR_TEMP_1, 1, Route119_EventScript_ScottExit1
-	call_if_eq VAR_TEMP_1, 2, Route119_EventScript_ScottExit2
+	compare VAR_TEMP_1, 1
+	call_if_eq Route119_EventScript_ScottExit1
+	compare VAR_TEMP_1, 2
+	call_if_eq Route119_EventScript_ScottExit2
 	removeobject LOCALID_SCOTT
 	releaseall
 	end
@@ -216,16 +245,16 @@ Route119_EventScript_SetRivalPos2::
 
 Route119_Movement_PlayerWatchRivalExit1:
 	delay_16
-	walk_in_place_faster_right
+	walk_in_place_Faster_right
 	delay_8
-	walk_in_place_faster_up
+	walk_in_place_Faster_up
 	step_end
 
 Route119_Movement_PlayerWatchRivalExit2:
 	delay_16
-	walk_in_place_faster_left
+	walk_in_place_Faster_left
 	delay_8
-	walk_in_place_faster_up
+	walk_in_place_Faster_up
 	step_end
 
 Route119_Movement_RivalEnter1:
@@ -354,7 +383,8 @@ Route119_EventScript_Kent::
 Route119_EventScript_Jackson::
 	trainerbattle_single TRAINER_JACKSON_1, Route119_Text_JacksonIntro, Route119_Text_JacksonDefeat, Route119_EventScript_RegisterJackson
 	specialvar VAR_RESULT, ShouldTryRematchBattle
-	goto_if_eq VAR_RESULT, TRUE, Route119_EventScript_RematchJackson
+	compare VAR_RESULT, TRUE
+	goto_if_eq Route119_EventScript_RematchJackson
 	msgbox Route119_Text_JacksonPostBattle, MSGBOX_DEFAULT
 	release
 	end
@@ -375,7 +405,8 @@ Route119_EventScript_RematchJackson::
 Route119_EventScript_Catherine::
 	trainerbattle_single TRAINER_CATHERINE_1, Route119_Text_CatherineIntro, Route119_Text_CatherineDefeat, Route119_EventScript_RegisterCatherine
 	specialvar VAR_RESULT, ShouldTryRematchBattle
-	goto_if_eq VAR_RESULT, TRUE, Route119_EventScript_RematchCatherine
+	compare VAR_RESULT, TRUE
+	goto_if_eq Route119_EventScript_RematchCatherine
 	msgbox Route119_Text_CatherinePostBattle, MSGBOX_DEFAULT
 	release
 	end

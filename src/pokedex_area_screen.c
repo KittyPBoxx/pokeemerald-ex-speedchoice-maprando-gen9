@@ -20,6 +20,8 @@
 #include "constants/region_map_sections.h"
 #include "constants/rgb.h"
 #include "constants/songs.h"
+#include "day_night.h"
+#include "constants/day_night.h"
 
 // There are two types of indicators for the area screen to show where a Pokémon can occur:
 // - Area glows, which highlight any of the maps in MAP_GROUP_TOWNS_AND_ROUTES that have the species.
@@ -403,12 +405,17 @@ static bool8 MapHasSpecies(const struct WildPokemonHeader *info, u16 species)
 static bool8 MonListHasSpecies(const struct WildPokemonInfo *info, u16 species, u16 size)
 {
     u16 i;
+    u8 timeOfDay;
+
     if (info != NULL)
     {
-        for (i = 0; i < size; i++)
+        for (timeOfDay = 0; timeOfDay < TIMES_OF_DAY_COUNT; timeOfDay++)
         {
-            if (info->wildPokemon[i].species == species)
-                return TRUE;
+            for (i = 0; i < size; i++)
+            {
+                if (info->wildPokemon[timeOfDay][i].species == species)
+                    return TRUE;
+            }
         }
     }
     return FALSE;

@@ -24,6 +24,7 @@
 #include "task.h"
 #include "constants/rgb.h"
 #include "constants/songs.h"
+#include "done_button.h"
 
 /*
  * Move relearner state machine
@@ -720,6 +721,7 @@ static void DoMoveRelearnerMain(void)
     case MENU_STATE_DOUBLE_FANFARE_FORGOT_MOVE:
         if (!MoveRelearnerRunTextPrinters())
         {
+            TryIncrementButtonStat(DB_MOVES_LEARNT);
             PrintMessageWithPlaceholders(gText_MoveRelearnerPkmnForgotMoveAndLearnedNew);
             sMoveRelearnerStruct->state = MENU_STATE_PRINT_TEXT_THEN_FANFARE;
             PlayFanfare(MUS_LEVEL_UP);

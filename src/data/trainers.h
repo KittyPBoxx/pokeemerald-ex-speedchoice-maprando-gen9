@@ -42183,3 +42183,82 @@ F_TRAINER_FEMALE |
             },
         },
     },
+#line 16812
+    [TRAINER_ROXANNE_NERFED] =
+    {
+#line 16813
+        .trainerName = _("ROXANNE"),
+#line 16814
+        .trainerClass = TRAINER_CLASS_LEADER,
+#line 16815
+        .trainerPic = TRAINER_PIC_LEADER_ROXANNE,
+        .encounterMusic_gender = 
+#line 16816
+F_TRAINER_FEMALE | 
+#line 16817
+            TRAINER_ENCOUNTER_MUSIC_FEMALE,
+#line 16818
+        .doubleBattle = FALSE,
+#line 16819
+        .aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY,
+        .partySize = 3,
+        .party = (const struct TrainerMon[])
+        {
+            {
+#line 16821
+            .species = SPECIES_GEODUDE,
+            .gender = TRAINER_MON_RANDOM_GENDER,
+#line 16823
+            .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
+#line 16822
+            .lvl = 12,
+            .nature = NATURE_HARDY,
+            .dynamaxLevel = MAX_DYNAMAX_LEVEL,
+            .moves = {
+#line 16824
+                MOVE_TACKLE,
+                MOVE_DEFENSE_CURL,
+                MOVE_ROCK_THROW,
+                MOVE_ROCK_TOMB,
+            },
+            },
+            {
+#line 16829
+            .species = SPECIES_GEODUDE,
+            .gender = TRAINER_MON_RANDOM_GENDER,
+#line 16831
+            .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
+#line 16830
+            .lvl = 12,
+            .nature = NATURE_HARDY,
+            .dynamaxLevel = MAX_DYNAMAX_LEVEL,
+            .moves = {
+#line 16832
+                MOVE_TACKLE,
+                MOVE_DEFENSE_CURL,
+                MOVE_ROCK_THROW,
+                MOVE_ROCK_TOMB,
+            },
+            },
+            {
+#line 16837
+            .species = SPECIES_NOSEPASS,
+            .gender = TRAINER_MON_RANDOM_GENDER,
+#line 16837
+            .heldItem = ITEM_ORAN_BERRY,
+#line 16839
+            .iv = TRAINER_PARTY_IVS(24, 24, 24, 24, 24, 24),
+#line 16838
+            .lvl = 15,
+            .nature = NATURE_HARDY,
+            .dynamaxLevel = MAX_DYNAMAX_LEVEL,
+            .moves = {
+#line 16840
+                MOVE_BLOCK,
+                MOVE_HARDEN,
+                MOVE_TACKLE,
+                MOVE_ROCK_TOMB,
+            },
+            },
+        },
+    },

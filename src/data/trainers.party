@@ -16873,3 +16873,36 @@ Double Battle: No
 Kyogre
 Level: 5
 IVs: 0 HP / 0 Atk / 0 Def / 0 SpA / 0 SpD / 0 Spe
+
+=== TRAINER_ROXANNE_NERFED ===
+Name: ROXANNE
+Class: Leader
+Pic: Leader Roxanne
+Gender: Female
+Music: Female
+Double Battle: No
+AI: Check Bad Move / Try To Faint / Check Viability
+
+Geodude
+Level: 12
+IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
+- Tackle
+- Defense Curl
+- Rock Throw
+- Rock Tomb
+
+Geodude
+Level: 12
+IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
+- Tackle
+- Defense Curl
+- Rock Throw
+- Rock Tomb
+
+Nosepass @ Oran Berry
+Level: 15
+IVs: 24 HP / 24 Atk / 24 Def / 24 SpA / 24 SpD / 24 Spe
+- Block
+- Harden
+- Tackle
+- Rock Tomb

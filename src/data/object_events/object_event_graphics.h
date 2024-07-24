@@ -293,6 +293,7 @@ const u32 gFieldEffectObjectPic_ShadowSmall[] = INCBIN_U32("graphics/field_effec
 const u32 gFieldEffectObjectPic_ShadowMedium[] = INCBIN_U32("graphics/field_effects/pics/shadow_medium.4bpp");
 const u32 gFieldEffectObjectPic_ShadowLarge[] = INCBIN_U32("graphics/field_effects/pics/shadow_large.4bpp");
 const u32 gFieldEffectObjectPic_ShadowExtraLarge[] = INCBIN_U32("graphics/field_effects/pics/shadow_extra_large.4bpp");
+const u32 gFieldEffectObjectPic_BallLight[] = INCBIN_U32("graphics/object_events/pics/misc/light.4bpp");
 static const u32 sFiller[0x48] = {};
 const u8 gFieldEffectPic_CutGrass[] = INCBIN_U8("graphics/field_effects/pics/cut_grass.4bpp");
 const u32 gFieldEffectPic_CutGrass_Copy[] = INCBIN_U32("graphics/field_effects/pics/cut_grass.4bpp");
@@ -382,6 +383,7 @@ const u16 gObjectEventPal_Lugia[] = INCBIN_U16("graphics/object_events/palettes/
 
 const u16 gObjectEventPal_Substitute[] = INCBIN_U16("graphics/pokemon/question_mark/overworld.gbapal");
 
+const u16 gObjectEventPaletteLight[] = INCBIN_U16("graphics/object_events/palettes/light.gbapal");
 const u16 gObjectEventPaletteEmotes[] = INCBIN_U16("graphics/misc/emotes.gbapal");
 
 #if OW_FOLLOWERS_POKEBALLS

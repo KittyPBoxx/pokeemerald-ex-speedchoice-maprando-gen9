@@ -51,6 +51,8 @@
 #include "constants/items.h"
 #include "constants/rgb.h"
 #include "constants/songs.h"
+#include "speedchoice.h"
+#include "done_button.h"
 
 #define TAG_POCKET_SCROLL_ARROW 110
 #define TAG_BAG_SCROLL_ARROW    111
@@ -309,6 +311,13 @@ static const u8 sContextMenuItems_BerriesPocket[] = {
     ACTION_CHECK_TAG,   ACTION_DUMMY,
     ACTION_USE,         ACTION_GIVE,
     ACTION_TOSS,        ACTION_CANCEL
+};
+
+// SPEEDCHOICE Nice Menu berry menu order, swaps CHECK TAG and USE
+static const u8 sSpeedchoiceBerryMenu[] = {
+    ACTION_USE, ACTION_DUMMY, 
+    ACTION_CHECK_TAG, ACTION_GIVE, 
+    ACTION_TOSS, ACTION_CANCEL
 };
 
 static const u8 sContextMenuItems_BattleUse[] = {
@@ -1655,7 +1664,7 @@ static void OpenContextMenu(u8 taskId)
                 gBagMenu->contextMenuNumItems = ARRAY_COUNT(sContextMenuItems_TmHmPocket);
                 break;
             case BERRIES_POCKET:
-                gBagMenu->contextMenuItemsPtr = sContextMenuItems_BerriesPocket;
+                gBagMenu->contextMenuItemsPtr = CheckSpeedchoiceOption(NICE_MENU_ORDER, NICE_MENU_ORDER_ON) == TRUE ? sSpeedchoiceBerryMenu : sContextMenuItems_BerriesPocket;
                 gBagMenu->contextMenuNumItems = ARRAY_COUNT(sContextMenuItems_BerriesPocket);
                 break;
             }
@@ -2202,8 +2211,10 @@ static void SellItem(u8 taskId)
 
     PlaySE(SE_SHOP);
     RemoveBagItem(gSpecialVar_ItemId, tItemCount);
+    TryAddButtonStatBy(DB_ITEMS_SOLD, tItemCount);
     AddMoney(&gSaveBlock1Ptr->money, (ItemId_GetPrice(gSpecialVar_ItemId) / ITEM_SELL_FACTOR) * tItemCount);
     DestroyListMenuTask(tListTaskId, scrollPos, cursorPos);
+    TryAddButtonStatBy(DB_MONEY_MADE, (ItemId_GetPrice(gSpecialVar_ItemId) / 2) * tItemCount);
     UpdatePocketItemList(gBagPosition.pocket);
     UpdatePocketListPosition(gBagPosition.pocket);
     LoadBagItemListBuffers(gBagPosition.pocket);

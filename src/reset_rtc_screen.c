@@ -18,6 +18,7 @@
 #include "window.h"
 #include "gpu_regs.h"
 #include "constants/rgb.h"
+#include "done_button.h"
 
 #define PALTAG_ARROW 0x1000
 
@@ -492,6 +493,7 @@ static void Task_ResetRtc_HandleInput(u8 taskId)
             gTasks[taskId].func = Task_ResetRtc_Exit;
             tSetTime = TRUE;
             tSelection = SELECTION_NONE;
+            TryIncrementButtonStat(DB_CLOCK_RESET_COUNT);
         }
     }
     else if (MoveTimeUpDown(&data[selectionInfo->dataIndex], selectionInfo->minVal, selectionInfo->maxVal, JOY_REPEAT(DPAD_UP | DPAD_DOWN)))
