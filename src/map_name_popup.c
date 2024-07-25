@@ -351,7 +351,7 @@ enum {
 };
 
 #define POPUP_OFFSCREEN_Y  ((OW_POPUP_GENERATION == GEN_5) ? 24 : 40)
-#define POPUP_SLIDE_SPEED  2
+#define POPUP_SLIDE_SPEED  3
 
 #define tState         data[0]
 #define tOnscreenTimer data[1]
@@ -425,7 +425,7 @@ static void Task_MapNamePopUpWindow(u8 taskId)
         break;
     case STATE_WAIT:
         // Wait while the window is fully onscreen.
-        if (++task->tOnscreenTimer > 120)
+        if (++task->tOnscreenTimer > 160)
         {
             task->tOnscreenTimer = 0;
             task->tState = STATE_SLIDE_OUT;
@@ -502,9 +502,9 @@ void HideMapNamePopUpWindow(void)
     }
 }
 
-const u8 sText_TimeOfDay_Morning[] = _(" DAWN ");
-const u8 sText_TimeOfDay_Day[] = _("  DAY ");
-const u8 sText_TimeOfDay_Evening[] = _(" DUSK ");
+const u8 sText_TimeOfDay_Morning[] = _("DAWN ");
+const u8 sText_TimeOfDay_Day[] = _("DAY ");
+const u8 sText_TimeOfDay_Evening[] = _("DUSK ");
 const u8 sText_TimeOfDay_Night[] = _("NIGHT ");
 
 static void ShowMapNamePopUpWindow(void)
@@ -513,7 +513,8 @@ static void ShowMapNamePopUpWindow(void)
     u8 *withoutPrefixPtr;
     u8 x;
     const u8 *mapDisplayHeaderSource;
-    u8 mapNamePopUpWindowId, secondaryPopUpWindowId;
+    u8 secondaryPopUpWindowId;
+    u8 timeOfDayTextLetters = 0;
 
     if (InBattlePyramid())
     {
@@ -540,7 +541,6 @@ static void ShowMapNamePopUpWindow(void)
         if (OW_POPUP_BW_ALPHA_BLEND && !IsWeatherAlphaBlend())
             SetGpuRegBits(REG_OFFSET_WININ, WININ_WIN0_CLR);
 
-        mapNamePopUpWindowId = AddMapNamePopUpWindow();
         secondaryPopUpWindowId = AddSecondaryPopUpWindow();
     }
     else
@@ -556,7 +556,7 @@ static void ShowMapNamePopUpWindow(void)
 
     if (OW_POPUP_GENERATION == GEN_5)
     {
-        AddTextPrinterParameterized(mapNamePopUpWindowId, FONT_SHORT, mapDisplayHeader, 8, 2, TEXT_SKIP_DRAW, NULL);
+        AddTextPrinterParameterized(secondaryPopUpWindowId, FONT_SMALL, mapDisplayHeader, GetStringRightAlignXOffset(FONT_SMALL, mapDisplayHeader, DISPLAY_WIDTH) - 5, 7, TEXT_SKIP_DRAW, NULL);
         
         if (OW_POPUP_BW_TIME_MODE != OW_POPUP_BW_TIME_NONE)
         {
@@ -567,24 +567,27 @@ static void ShowMapNamePopUpWindow(void)
                 case TIME_MORNING:
                 default:
                     StringCopy(mapDisplayHeader, sText_TimeOfDay_Morning);
+                    timeOfDayTextLetters = 4;
                     break;
                 case TIME_DAY:
                     StringCopy(mapDisplayHeader, sText_TimeOfDay_Day);
+                    timeOfDayTextLetters = 3;
                     break;
                 case TIME_EVENING:
                     StringCopy(mapDisplayHeader, sText_TimeOfDay_Evening);
+                    timeOfDayTextLetters = 4;
                     break;
                 case TIME_NIGHT:
                     StringCopy(mapDisplayHeader, sText_TimeOfDay_Night);
+                    timeOfDayTextLetters = 5;
                     break;
             }
-            AddTextPrinterParameterized(secondaryPopUpWindowId, FONT_SMALL, mapDisplayHeader, GetStringRightAlignXOffset(FONT_SMALL, mapDisplayHeader, DISPLAY_WIDTH) - 5, 8, TEXT_SKIP_DRAW, NULL);
-            withoutPrefixPtr = &(mapDisplayHeader[6]);
+            AddTextPrinterParameterized(secondaryPopUpWindowId, FONT_SMALL, mapDisplayHeader, 8, 7, TEXT_SKIP_DRAW, NULL);
+            withoutPrefixPtr = &(mapDisplayHeader[timeOfDayTextLetters + 1]);
             FormatDecimalTimeWithoutSeconds(withoutPrefixPtr, gLocalTime.hours, gLocalTime.minutes, OW_POPUP_BW_TIME_MODE == OW_POPUP_BW_TIME_24_HR);
-            AddTextPrinterParameterized(secondaryPopUpWindowId, FONT_SMALL, mapDisplayHeader, GetStringRightAlignXOffset(FONT_SMALL, mapDisplayHeader, DISPLAY_WIDTH) - 5, 8, TEXT_SKIP_DRAW, NULL);
+            AddTextPrinterParameterized(secondaryPopUpWindowId, FONT_SMALL, mapDisplayHeader, 8, 7, TEXT_SKIP_DRAW, NULL);
         }
 
-        CopyWindowToVram(mapNamePopUpWindowId, COPYWIN_FULL);
         CopyWindowToVram(secondaryPopUpWindowId, COPYWIN_FULL);
     }
     else
@@ -630,7 +633,7 @@ static void DrawMapNamePopUpFrame(u8 bg, u8 x, u8 y, u8 deltaX, u8 deltaY, u8 un
 static void LoadMapNamePopUpWindowBg(void)
 {
     u8 popUpThemeId;
-    u8 popupWindowId = GetMapNamePopUpWindowId();
+    u8 popupWindowId;
     u16 regionMapSectionId = gMapHeader.regionMapSectionId;
     u8 secondaryPopUpWindowId;
 
@@ -657,16 +660,15 @@ static void LoadMapNamePopUpWindowBg(void)
                 else
                     LoadPalette(sMapPopUpTilesPalette_BW_Black, BG_PLTT_ID(14), sizeof(sMapPopUpTilesPalette_BW_Black));
 
-                CopyToWindowPixelBuffer(popupWindowId, sMapPopUpTilesPrimary_BW, sizeof(sMapPopUpTilesPrimary_BW), 0);
                 CopyToWindowPixelBuffer(secondaryPopUpWindowId, sMapPopUpTilesSecondary_BW, sizeof(sMapPopUpTilesSecondary_BW), 0);
                 break;
         }
 
-        PutWindowTilemap(popupWindowId);
         PutWindowTilemap(secondaryPopUpWindowId);
     }
     else
     {
+        popupWindowId = GetMapNamePopUpWindowId();
         popUpThemeId = sRegionMapSectionId_To_PopUpThemeIdMapping[regionMapSectionId];
         LoadBgTiles(GetWindowAttribute(popupWindowId, WINDOW_BG), sMapPopUp_OutlineTable[popUpThemeId], 0x400, 0x21D);
         CallWindowFunction(popupWindowId, DrawMapNamePopUpFrame);
