@@ -225,13 +225,26 @@ void NewGameInitData(void)
     ResetTrainerHillResults();
     ResetContestLinkResults();
 
-    // ADD DONE BUTTON
+    // ADD SPEEDCHOICE EXTRAS
     AddBagItem(ITEM_DONE_BUTTON, 1);
     AddBagItem(ITEM_SLEEPING_BAG, 1);
 
     AddBagItem(ITEM_MACH_BIKE, 1);
     AddBagItem(ITEM_ACRO_BIKE, 1);
     FlagSet(FLAG_RECEIVED_BIKE);
+
+    FlagSet(FLAG_SYS_B_DASH);
+
+    // To get though first route
+    AddBagItem(ITEM_REPEL, 1);
+
+    // TODO: configure which gimic you get
+    AddBagItem(ITEM_TERA_ORB, 1);
+    FlagSet(B_FLAG_TERA_ORB_CHARGED);
+
+    AddBagItem(ITEM_MEGA_RING, 1);
+    AddBagItem(ITEM_Z_POWER_RING, 1);
+    //AddBagItem(ITEM_DYNAMAX_BAND, 1);
 
     gSaveBlock1Ptr->registeredItem = ITEM_MACH_BIKE;
 }
