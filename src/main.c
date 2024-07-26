@@ -29,6 +29,10 @@
 #include "palette.h"
 #include "region_map.h"
 #include "speedchoice.h"
+#include "main_menu.h"
+#include "save.h"
+#include "new_game.h"
+#include "io_reg.h"
 
 static void VBlankIntr(void);
 static void HBlankIntr(void);
@@ -79,7 +83,9 @@ void *gAgbMainLoop_sp;
 static EWRAM_DATA u16 sTrainerId = 0;
 
 //EWRAM_DATA void (**gFlashTimerIntrFunc)(void) = NULL;
+EWRAM_DATA u8 gSoftResetFlag;
 
+static void DoSoftResetWithoutRTCReset(void);
 static void UpdateLinkAndCallCallbacks(void);
 static void InitMainCallbacks(void);
 static void CallCallbacks(void);
@@ -87,6 +93,7 @@ static void CallCallbacks(void);
 static void SeedRngWithRtc(void);
 #endif
 static void ReadKeys(void);
+static void CB2_PostSoftResetInit(void);
 void InitIntrHandlers(void);
 static void WaitForVBlank(void);
 void EnableVCountIntrAtLine150(void);
@@ -96,6 +103,9 @@ void DoFrameTimers(void);
 
 void AgbMain()
 {
+    if (SiiRtcProbe() != 0x11) // 0x11 = RTC in protected mode
+        gSoftResetFlag = 1;
+
     *(vu16 *)BG_PLTT = RGB_WHITE; // Set the backdrop to white on startup
     InitGpuRegManager();
     REG_WAITCNT = WAITCNT_PREFETCH_ENABLE | WAITCNT_WS0_S_1 | WAITCNT_WS0_N_3;
@@ -146,7 +156,7 @@ void AgbMainLoop(void)
         {
             rfu_REQ_stopMode();
             rfu_waitREQComplete();
-            DoSoftReset();
+            DoSoftResetWithoutRTCReset();
         }
 
         if (Overworld_SendKeysToLinkIsRunning() == TRUE)
@@ -208,7 +218,17 @@ static void InitMainCallbacks(void)
     gTrainerHillVBlankCounter = NULL;
     gMain.vblankCounter2 = 0;
     gMain.callback1 = NULL;
-    SetMainCallback2(gInitialMainCB2);
+   
+    DebugPrintfLevel(MGBA_LOG_DEBUG, "Reading soft %x", gSoftResetFlag);
+    if(gSoftResetFlag)
+    {
+        SetMainCallback2(CB2_PostSoftResetInit);
+    }
+    else
+    {
+        SetMainCallback2(gInitialMainCB2);
+    }
+
     gSaveBlock2Ptr = &gSaveblock2.block;
     gPokemonStoragePtr = &gPokemonStorage.block;
 }
@@ -528,6 +548,21 @@ void ClearTrainerHillVBlankCounter(void)
     gTrainerHillVBlankCounter = NULL;
 }
 
+static void DoSoftResetWithoutRTCReset(void)
+{
+    REG_IME = 0;
+    m4aSoundVSyncOff();
+    ScanlineEffect_Stop();
+    DmaStop(1);
+    DmaStop(2);
+    DmaStop(3);
+
+    // Keep the rtc enables during reset so we can use it as a reliable way to check softresets and skip the intro
+    // It's not reliable to just modify the softreset to set a flag after setting the stack ptr to 0x3007F00
+    //SiiRtcProtect();
+    SoftReset(RESET_ALL);
+}
+
 void DoSoftReset(void)
 {
     REG_IME = 0;
@@ -540,7 +575,22 @@ void DoSoftReset(void)
     SoftReset(RESET_ALL);
 }
 
+
 void ClearPokemonCrySongs(void)
 {
     CpuFill16(0, gPokemonCrySongs, MAX_POKEMON_CRIES * sizeof(struct PokemonCrySong));
+}
+
+static void CB2_PostSoftResetInit(void)
+{
+    gSoftResetFlag = 0;
+
+    SetSaveBlocksPointers(GetSaveBlocksPointersBaseOffset());
+    ResetMenuAndMonGlobals();
+    Save_ResetSaveCounters();
+    LoadGameSave(SAVE_NORMAL);
+    if (gSaveFileStatus == SAVE_STATUS_EMPTY || gSaveFileStatus == SAVE_STATUS_CORRUPT)
+        Sav2_ClearSetDefault();
+    SetPokemonCryStereo(gSaveBlock2Ptr->optionsSound);
+    SetMainCallback2(CB2_InitMainMenu);
 }
