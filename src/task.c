@@ -1,10 +1,14 @@
 #include "global.h"
 #include "task.h"
+#include "task.h"
+#include "speedchoice.h"
 
 struct Task gTasks[NUM_TASKS];
 
 static void InsertTask(u8 newTaskId);
 static u8 FindFirstActiveTask(void);
+
+u32 gGlobalSpeed;
 
 void ResetTasks(void)
 {
@@ -116,6 +120,10 @@ void RunTasks(void)
         do
         {
             gTasks[taskId].func(taskId);
+
+            if ((gGlobalSpeed & (1 << MED_SPEED_ON)))
+                gTasks[taskId].func(taskId);
+
             taskId = gTasks[taskId].next;
         } while (taskId != TAIL_SENTINEL);
     }

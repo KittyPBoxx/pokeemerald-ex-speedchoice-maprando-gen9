@@ -26,6 +26,7 @@
 #include "constants/rgb.h"
 #include "constants/battle_palace.h"
 #include "constants/battle_move_effects.h"
+#include "speedchoice.h"
 
 
 extern const struct CompressedSpriteSheet gSpriteSheet_EnemyShadow;
@@ -388,6 +389,10 @@ void SpriteCB_TrainerSlideIn(struct Sprite *sprite)
     if (!(gIntroSlideFlags & 1))
     {
         sprite->x2 += sprite->sSpeedX;
+
+        if ((gGlobalSpeed & (1 << MED_SPEED_ON)))
+            sprite->x2 += sprite->sSpeedX;
+
         if (sprite->x2 == 0)
         {
             if (sprite->y2 != 0)

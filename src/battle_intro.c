@@ -11,6 +11,7 @@
 #include "trig.h"
 #include "constants/battle_partner.h"
 #include "constants/trainers.h"
+#include "speedchoice.h"
 
 static void BattleIntroSlide1(u8);
 static void BattleIntroSlide2(u8);
@@ -104,6 +105,8 @@ void HandleIntroSlide(u8 terrain)
 {
     u8 taskId;
 
+    SetSpeed(MED_SPEED_ON);
+
     if ((gBattleTypeFlags & BATTLE_TYPE_INGAME_PARTNER) && gPartnerTrainerId < TRAINER_PARTNER(PARTNER_NONE))
     {
         taskId = CreateTask(BattleIntroSlidePartner, 0);
@@ -137,6 +140,8 @@ void HandleIntroSlide(u8 terrain)
 
 static void BattleIntroSlideEnd(u8 taskId)
 {
+    ClearSpeed(MED_SPEED_ON);
+
     DestroyTask(taskId);
     gBattle_BG1_X = 0;
     gBattle_BG1_Y = 0;
@@ -237,6 +242,8 @@ static void BattleIntroSlide1(u8 taskId)
 static void BattleIntroSlide2(u8 taskId)
 {
     int i;
+
+    SetSpeed(MED_SPEED_ON);
 
     switch (gTasks[taskId].tTerrain)
     {

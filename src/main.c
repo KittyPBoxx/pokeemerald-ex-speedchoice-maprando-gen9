@@ -28,6 +28,7 @@
 #include "done_button.h"
 #include "palette.h"
 #include "region_map.h"
+#include "speedchoice.h"
 
 static void VBlankIntr(void);
 static void HBlankIntr(void);
@@ -351,6 +352,16 @@ static void ReadKeys(void)
 
     if (JOY_NEW(gMain.watchedKeysMask))
         gMain.watchedKeysPressed = TRUE;
+
+    if (JOY_HELD(R_BUTTON))
+    {
+        SetSpeed(MAX_SPEED_ON);
+    }
+    else 
+    {
+        ClearSpeed(MAX_SPEED_ON);
+    }
+        
 }
 
 void InitIntrHandlers(void)
@@ -481,13 +492,29 @@ static void WaitForVBlank(void)
     //     // and we call VBlankIntrWait();
     //     while (!(gMain.intrCheck & INTR_FLAG_VBLANK))
     //         ;
-    // }
-    
-    if (!(gMain.heldKeysRaw & R_BUTTON) || gPaletteFade.active) 
+    // }    if (!(gMain.heldKeysRaw & R_BUTTON) || gPaletteFade.active) 
+
+    if (gPaletteFade.active)
     {
-        // We should create speedchoice settings for this
         VBlankIntrWait();
     }
+    else if (gGlobalSpeed & (1 << MAX_SPEED_ON))
+    {
+        return;
+    } 
+    // else if (gGlobalSpeed & (1 << MED_SPEED_ON))
+    // {
+    //     if (gMain.vblankCounter1 % 3 == 0)
+    //     {
+    //         VBlankIntrWait();
+    //         // VBlankIntrWait();
+    //     }
+    // }
+    else 
+    {
+        VBlankIntrWait();
+    }
+
 
 }
 

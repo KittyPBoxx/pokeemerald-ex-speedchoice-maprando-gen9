@@ -818,6 +818,16 @@ bool8 CheckSpeedchoiceOption(u8 option, u8 selection)
     }
 }
 
+void SetSpeed(u32 level)
+{
+    gGlobalSpeed |= (1<<(level));
+}
+
+void ClearSpeed(u32 level)
+{
+    gGlobalSpeed &= ~(1<<(level));
+}
+
 /*
  * Invoked to locally format the passed text and add it to the text printer to render it.
  */

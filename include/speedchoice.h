@@ -436,10 +436,19 @@ struct MapObjectTimerBackup
  */
 extern u32 gRandomizerCheckValue;
 
+#define MAX_SPEED_ON 16
+#define MED_SPEED_ON 12
+
+extern u32 gGlobalSpeed;
+
 // ----------------------
 // Prototypes
 // ----------------------
 void CB2_InitSpeedchoiceMenu(void);
 bool8 CheckSpeedchoiceOption(u8, u8);
+
+void SetSpeed(u32);
+void ClearSpeed(u32);
+
 
 #endif // _GUARD_SPEEDCHOICE_H
