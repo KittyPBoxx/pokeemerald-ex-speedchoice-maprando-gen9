@@ -64,7 +64,7 @@ enum
 };
 
 // Exported RAM declarations
-extern bool8 gUnusedBikeCameraAheadPanback;
+// extern bool8 gUnusedBikeCameraAheadPanback;
 
 // Exported ROM declarations
 void MovePlayerOnBike(u8 direction, u16 newKeys, u16 heldKeys);
@@ -78,5 +78,6 @@ void Bike_UpdateBikeCounterSpeed(u8 counter);
 s16 GetPlayerSpeed(void);
 void Bike_HandleBumpySlopeJump(void);
 bool32 IsRunningDisallowed(u8 metatile);
+void TrySwitchBike();
 
 #endif // GUARD_BIKE_H

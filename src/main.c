@@ -33,6 +33,7 @@
 #include "save.h"
 #include "new_game.h"
 #include "io_reg.h"
+#include "bike.h"
 
 static void VBlankIntr(void);
 static void HBlankIntr(void);
@@ -379,6 +380,11 @@ static void ReadKeys(void)
     else 
     {
         ClearSpeed(MAX_SPEED_ON);   
+    }
+
+    if(JOY_HELD_RAW(L_BUTTON) && JOY_NEW(B_BUTTON))
+    {
+        TrySwitchBike();
     }
         
 }

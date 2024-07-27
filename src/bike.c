@@ -10,6 +10,7 @@
 #include "constants/map_types.h"
 #include "constants/songs.h"
 #include "speedchoice.h"
+#include "script.h"
 
 // this file's functions
 static void MovePlayerOnMachBike(u8, u16, u16);
@@ -52,6 +53,7 @@ static void Bike_TryAdvanceCyclingRoadCollisions();
 static u8 CanBikeFaceDirOnMetatile(u8, u8);
 static bool8 WillPlayerCollideWithCollision(u8, u8);
 static void Bike_SetBikeStill(void);
+
 
 // const rom data
 
@@ -124,19 +126,35 @@ static const struct BikeHistoryInputInfo sAcroBikeTricksList[] =
     {DIR_EAST, B_BUTTON, 0xF, 0xF, sAcroBikeJumpTimerList, sAcroBikeJumpTimerList, DIR_EAST},
 };
 
+bool8 gShouldSwitchBikes;
+
+// Quickly switching bike feels unresponsive if we do it in MovePlayerOnBike
+void TrySwitchBike()
+{
+    if ((gPlayerAvatar.flags & PLAYER_AVATAR_FLAG_ACRO_BIKE || gPlayerAvatar.flags & PLAYER_AVATAR_FLAG_MACH_BIKE) 
+        && !ArePlayerFieldControlsLocked())
+        gShouldSwitchBikes = TRUE;
+}
+
 // -----------------------------------------
 // SPEEDCHOICE CHANGE
 // -----------------------------------------
 // Change: Super Bike used to be set here, but is default now.
 void MovePlayerOnBike(u8 direction, u16 newKeys, u16 heldKeys)
 {
-    if(JOY_HELD_RAW(L_BUTTON) && JOY_NEW(B_BUTTON))
+    if (gShouldSwitchBikes)
     {
-        PlaySE(SE_BIKE_BELL);
-        if(gPlayerAvatar.flags & PLAYER_AVATAR_FLAG_ACRO_BIKE)
+        if (gPlayerAvatar.flags & PLAYER_AVATAR_FLAG_ACRO_BIKE)
+        {
             SetPlayerAvatarTransitionFlags(PLAYER_AVATAR_FLAG_MACH_BIKE);
-        else
+        }
+        else 
+        {
             SetPlayerAvatarTransitionFlags(PLAYER_AVATAR_FLAG_ACRO_BIKE);
+        }
+
+        PlaySE(SE_BIKE_BELL);
+        gShouldSwitchBikes = FALSE;
     }
 
     if (gPlayerAvatar.flags & PLAYER_AVATAR_FLAG_MACH_BIKE)
@@ -984,7 +1002,7 @@ bool8 IsPlayerNotUsingAcroBikeOnBumpySlope(void)
 
 void GetOnOffBike(u8 transitionFlags)
 {
-    gUnusedBikeCameraAheadPanback = FALSE;
+    // gUnusedBikeCameraAheadPanback = FALSE;
 
     if (gPlayerAvatar.flags & (PLAYER_AVATAR_FLAG_MACH_BIKE | PLAYER_AVATAR_FLAG_ACRO_BIKE))
     {
