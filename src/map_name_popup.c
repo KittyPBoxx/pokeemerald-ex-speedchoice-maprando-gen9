@@ -42,7 +42,7 @@ enum MapPopUp_Themes_BW
 
 // static functions
 static void Task_MapNamePopUpWindow(u8 taskId);
-static void ShowMapNamePopUpWindow(void);
+static void ShowMapNamePopUpWindow(u8 overrideTextFlag);
 static void LoadMapNamePopUpWindowBg(void);
 
 // EWRAM
@@ -358,6 +358,19 @@ enum {
 #define tYOffset       data[2]
 #define tIncomingPopUp data[3]
 #define tPrintTimer    data[4]
+#define tTextOverride  data[5]
+
+void ShowMemePopup(void)
+{
+    if (!FuncIsActiveTask(Task_MapNamePopUpWindow))
+    {
+        gPopupTaskId = CreateTask(Task_MapNamePopUpWindow, 90);
+        SetGpuReg(REG_OFFSET_BG0VOFS, POPUP_OFFSCREEN_Y);
+        gTasks[gPopupTaskId].tState = STATE_PRINT;
+        gTasks[gPopupTaskId].tYOffset = POPUP_OFFSCREEN_Y;
+        gTasks[gPopupTaskId].tTextOverride = TEXT_NICE_TRY;
+    }
+}
 
 void ShowMapNamePopup(void)
 {
@@ -379,6 +392,7 @@ void ShowMapNamePopup(void)
                 SetGpuReg(REG_OFFSET_BG0VOFS, POPUP_OFFSCREEN_Y);
             }
 
+            gTasks[gPopupTaskId].tTextOverride = TEXT_OVERRIDE_OFF;
             gTasks[gPopupTaskId].tState = STATE_PRINT;
             gTasks[gPopupTaskId].tYOffset = POPUP_OFFSCREEN_Y;
         }
@@ -405,7 +419,7 @@ static void Task_MapNamePopUpWindow(u8 taskId)
         {
             task->tState = STATE_SLIDE_IN;
             task->tPrintTimer = 0;
-            ShowMapNamePopUpWindow();
+            ShowMapNamePopUpWindow(task->tTextOverride);
             if (OW_POPUP_GENERATION == GEN_5)
             {
                 EnableInterrupts(INTR_FLAG_HBLANK);
@@ -507,7 +521,9 @@ const u8 sText_TimeOfDay_Day[] = _("DAY ");
 const u8 sText_TimeOfDay_Evening[] = _("DUSK ");
 const u8 sText_TimeOfDay_Night[] = _("NIGHT ");
 
-static void ShowMapNamePopUpWindow(void)
+const u8 sText_Text_Override_NiceTry[] = _("NICE TRY ");
+
+static void ShowMapNamePopUpWindow(u8 overrideTextFlag)
 {
     u8 mapDisplayHeader[24];
     u8 *withoutPrefixPtr;
@@ -533,7 +549,16 @@ static void ShowMapNamePopUpWindow(void)
     else
     {
         withoutPrefixPtr = &(mapDisplayHeader[3]);
-        GetMapName(withoutPrefixPtr, gMapHeader.regionMapSectionId, 0);
+
+
+        if (TEXT_NICE_TRY == overrideTextFlag)
+        {
+            StringCopy(withoutPrefixPtr, sText_Text_Override_NiceTry);
+        }
+        else 
+        {
+            GetMapName(withoutPrefixPtr, gMapHeader.regionMapSectionId, 0);
+        }
     }
 
     if (OW_POPUP_GENERATION == GEN_5)

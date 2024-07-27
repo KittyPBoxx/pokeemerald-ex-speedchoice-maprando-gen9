@@ -56,6 +56,8 @@
 #include "day_night.h"
 #include "constants/metatile_behaviors.h"
 #include "bike.h"
+#include "constants/layouts.h"
+#include "map_name_popup.h"
 
 // this file was known as evobjmv.c in Game Freak's original source
 
@@ -9361,8 +9363,24 @@ u8 GetLedgeJumpDirection(s16 x, s16 y, u8 direction)
     {
         behavior = MapGridGetMetatileBehaviorAt(x, y - 1);
         collisionType = GetCollisionAtCoords(playerObjEvent, x, y - 1, direction);
-        if (canHopUpWithAcro(behavior) && (collisionType == COLLISION_NONE || collisionType == COLLISION_ELEVATION_MISMATCH) && !IsMapTypeIndoors(gMapHeader.mapType))
+        if (canHopUpWithAcro(behavior) && (collisionType == COLLISION_NONE || collisionType == COLLISION_ELEVATION_MISMATCH))
+        {
+            if (IsMapTypeIndoors(gMapHeader.mapType))
+            {
+                // Check if the player is trying to skip the gym puzzles in fortree/lavaridge
+                // Show a popup so they don't feel bad for trying
+                if (gMapHeader.mapLayoutId == LAYOUT_LAVARIDGE_TOWN_GYM_1F || 
+                    gMapHeader.mapLayoutId == LAYOUT_LAVARIDGE_TOWN_GYM_1F || 
+                    gMapHeader.mapLayoutId == LAYOUT_FORTREE_CITY_GYM)
+                {
+                    ShowMemePopup();
+                }
+
+                return DIR_NONE;
+            }
+
             return index + 1;
+        }
     }
     else if (gPlayerAvatar.acroBikeState == ACRO_STATE_BUNNY_HOP && behavior == MB_JUMP_WEST)
     {

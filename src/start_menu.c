@@ -53,6 +53,7 @@
 #include "day_night.h"
 #include "rtc.h"
 #include "link.h"
+#include "region_map.h"
 
 // Menu actions
 enum
@@ -543,6 +544,58 @@ static void ShowSafariBallsWindow(void)
     CopyWindowToVram(sSafariBallsWindowId, COPYWIN_GFX);
 }
 
+EWRAM_DATA u8 sStartMenuTimeWindowId = 0;
+
+const u8 sText_StartMenu_TimeOfDay_Morning[] = _("DAWN ");
+const u8 sText_StartMenu_TimeOfDay_Day[] = _("DAY ");
+const u8 sText_StartMenu_TimeOfDay_Evening[] = _("DUSK ");
+const u8 sText_StartMenu_TimeOfDay_Night[] = _("NIGHT ");
+
+static void ShowTimeWindow(void)
+{
+    u8 timeOfDayTextLetters = 0;
+
+    sStartMenuTimeWindowId = AddWindow(&sWindowTemplate_SafariBalls);
+    PutWindowTilemap(sStartMenuTimeWindowId);
+    DrawStdWindowFrame(sStartMenuTimeWindowId, FALSE);
+
+    GetMapName(gStringVar1, gMapHeader.regionMapSectionId, 0);
+
+    // Patch up and reigon names that are too long 
+    // Desert underpass is also too long but not sure what to do (shows as Desert Underpas)
+    if (gMapHeader.regionMapSectionId == MAPSEC_EVER_GRANDE_CITY)
+        gStringVar1[11] = EOS;
+
+    AddTextPrinterParameterized(sStartMenuTimeWindowId, FONT_NARROW, gStringVar1, 0, 1, TEXT_SKIP_DRAW, NULL);
+
+    switch(GetCurrentTimeOfDay()) 
+    {
+        case TIME_MORNING:
+        default:
+            StringCopy(gStringVar1, sText_StartMenu_TimeOfDay_Morning);
+            timeOfDayTextLetters = 4;
+            break;
+        case TIME_DAY:
+            StringCopy(gStringVar1, sText_StartMenu_TimeOfDay_Day);
+            timeOfDayTextLetters = 3;
+            break;
+        case TIME_EVENING:
+            StringCopy(gStringVar1, sText_StartMenu_TimeOfDay_Evening);
+            timeOfDayTextLetters = 4;
+            break;
+        case TIME_NIGHT:
+            StringCopy(gStringVar1, sText_StartMenu_TimeOfDay_Night);
+            timeOfDayTextLetters = 5;
+            break;
+    }
+
+    FormatDecimalTimeWithoutSeconds(&(gStringVar1[timeOfDayTextLetters + 1]), gLocalTime.hours, gLocalTime.minutes, FALSE);
+    AddTextPrinterParameterized(sStartMenuTimeWindowId, FONT_SMALL, gStringVar1, 0, 16, TEXT_SKIP_DRAW, NULL);
+    CopyWindowToVram(sStartMenuTimeWindowId, 2);
+}
+
+
+
 static void ShowPyramidFloorWindow(void)
 {
     if (gSaveBlock2Ptr->frontier.curChallengeBattleNum == FRONTIER_STAGES_PER_CHALLENGE)
@@ -620,6 +673,7 @@ static bool32 InitStartMenuStep(void)
     case 2:
         LoadMessageBoxAndBorderGfx();
         DrawStdWindowFrame(AddStartMenuWindow(sNumStartMenuActions), FALSE);
+        ShowTimeWindow();
         sInitStartMenuData[1] = 0;
         sInitStartMenuData[0]++;
         break;
@@ -1579,6 +1633,7 @@ void SaveForBattleTowerLink(void)
 
 static void HideStartMenuWindow(void)
 {
+    ClearStdWindowAndFrame(sStartMenuTimeWindowId, TRUE);
     ClearStdWindowAndFrame(GetStartMenuWindowId(), TRUE);
     RemoveStartMenuWindow();
     ScriptUnfreezeObjectEvents();
