@@ -9334,6 +9334,8 @@ u8 GetLedgeJumpDirection(s16 x, s16 y, u8 direction)
     };
 
     u8 behavior;
+    u8 collisionType;
+    struct ObjectEvent *playerObjEvent = &gObjectEvents[gPlayerAvatar.objectEventId];
     u8 index = direction;
 
     if (index == DIR_NONE)
@@ -9351,13 +9353,22 @@ u8 GetLedgeJumpDirection(s16 x, s16 y, u8 direction)
     else if (gPlayerAvatar.acroBikeState == ACRO_STATE_BUNNY_HOP && behavior == MB_JUMP_EAST)
     {
         behavior = MapGridGetMetatileBehaviorAt(x - 1, y);
-        if (canHopUpWithAcro(behavior) && MapGridGetCollisionAt(x - 1, y) == 0)
+        collisionType = GetCollisionAtCoords(playerObjEvent, x - 1, y, direction);
+        if (canHopUpWithAcro(behavior) && (collisionType == COLLISION_NONE || collisionType == COLLISION_ELEVATION_MISMATCH) && !IsMapTypeIndoors(gMapHeader.mapType))
             return index + 1;
     }
     else if (gPlayerAvatar.acroBikeState == ACRO_STATE_BUNNY_HOP && behavior == MB_JUMP_SOUTH)
     {
         behavior = MapGridGetMetatileBehaviorAt(x, y - 1);
-        if (canHopUpWithAcro(behavior) && MapGridGetCollisionAt(x, y - 1) == 0)
+        collisionType = GetCollisionAtCoords(playerObjEvent, x, y - 1, direction);
+        if (canHopUpWithAcro(behavior) && (collisionType == COLLISION_NONE || collisionType == COLLISION_ELEVATION_MISMATCH) && !IsMapTypeIndoors(gMapHeader.mapType))
+            return index + 1;
+    }
+    else if (gPlayerAvatar.acroBikeState == ACRO_STATE_BUNNY_HOP && behavior == MB_JUMP_WEST)
+    {
+        behavior = MapGridGetMetatileBehaviorAt(x + 1, y);
+        collisionType = GetCollisionAtCoords(playerObjEvent, x + 1, y, direction);
+        if (canHopUpWithAcro(behavior) && (collisionType == COLLISION_NONE || collisionType == COLLISION_ELEVATION_MISMATCH) && !IsMapTypeIndoors(gMapHeader.mapType))
             return index + 1;
     }
 
