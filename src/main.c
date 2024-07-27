@@ -372,16 +372,13 @@ static void ReadKeys(void)
     if (JOY_NEW(gMain.watchedKeysMask))
         gMain.watchedKeysPressed = TRUE;
 
-    if (JOY_HELD_RAW(R_BUTTON) && JOY_NEW(L_BUTTON))
+    if (JOY_HELD_RAW(R_BUTTON))
     {
-        if (gGlobalSpeed & (1 << MAX_SPEED_ON))
-        {
-            ClearSpeed(MAX_SPEED_ON);
-        }
-        else
-        {
-            SetSpeed(MAX_SPEED_ON);   
-        }
+        SetSpeed(MAX_SPEED_ON);   
+    }
+    else 
+    {
+        ClearSpeed(MAX_SPEED_ON);   
     }
         
 }

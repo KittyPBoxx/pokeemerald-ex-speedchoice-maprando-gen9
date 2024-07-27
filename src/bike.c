@@ -130,7 +130,7 @@ static const struct BikeHistoryInputInfo sAcroBikeTricksList[] =
 // Change: Super Bike used to be set here, but is default now.
 void MovePlayerOnBike(u8 direction, u16 newKeys, u16 heldKeys)
 {
-    if(JOY_HELD_RAW(R_BUTTON) && JOY_NEW(B_BUTTON))
+    if(JOY_HELD_RAW(L_BUTTON) && JOY_NEW(B_BUTTON))
     {
         PlaySE(SE_BIKE_BELL);
         if(gPlayerAvatar.flags & PLAYER_AVATAR_FLAG_ACRO_BIKE)
