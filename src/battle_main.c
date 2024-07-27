@@ -3681,8 +3681,18 @@ static void DoBattleIntro(void)
         if (!IsBattlerMarkedForControllerExec(GetBattlerAtPosition(B_POSITION_PLAYER_LEFT)))
             (*state)++;
         break;
-    case 16: // print player sends out
-        if (!(gBattleTypeFlags & BATTLE_TYPE_SAFARI))
+    case 16: // print player sends out    
+        if (JOY_HELD(B_BUTTON) && !(gBattleTypeFlags & BATTLE_TYPE_TRAINER))
+        {
+            battler = GetBattlerAtPosition(B_POSITION_PLAYER_LEFT);
+            if (!IsRunningFromBattleImpossible(battler) && TryRunFromBattle(battler))
+            {
+                gBattleMainFunc = HandleEndTurn_RanFromBattle;
+                return;
+            }
+            PrepareStringBattle(STRINGID_CANTESCAPE, battler);
+        }
+        else if (!(gBattleTypeFlags & BATTLE_TYPE_SAFARI))
         {
             if (gBattleTypeFlags & BATTLE_TYPE_RECORDED_LINK && !(gBattleTypeFlags & BATTLE_TYPE_RECORDED_IS_MASTER))
                 battler = GetBattlerAtPosition(B_POSITION_OPPONENT_LEFT);
