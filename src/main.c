@@ -219,7 +219,6 @@ static void InitMainCallbacks(void)
     gMain.vblankCounter2 = 0;
     gMain.callback1 = NULL;
    
-    DebugPrintfLevel(MGBA_LOG_DEBUG, "Reading soft %x", gSoftResetFlag);
     if(gSoftResetFlag)
     {
         SetMainCallback2(CB2_PostSoftResetInit);
@@ -373,13 +372,16 @@ static void ReadKeys(void)
     if (JOY_NEW(gMain.watchedKeysMask))
         gMain.watchedKeysPressed = TRUE;
 
-    if (JOY_HELD(R_BUTTON))
+    if (JOY_HELD_RAW(R_BUTTON) && JOY_NEW(L_BUTTON))
     {
-        SetSpeed(MAX_SPEED_ON);
-    }
-    else 
-    {
-        ClearSpeed(MAX_SPEED_ON);
+        if (gGlobalSpeed & (1 << MAX_SPEED_ON))
+        {
+            ClearSpeed(MAX_SPEED_ON);
+        }
+        else
+        {
+            SetSpeed(MAX_SPEED_ON);   
+        }
     }
         
 }

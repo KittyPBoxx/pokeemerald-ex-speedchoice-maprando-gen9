@@ -54,6 +54,8 @@
 #include "constants/weather.h"
 #include "speedchoice.h"
 #include "day_night.h"
+#include "constants/metatile_behaviors.h"
+#include "bike.h"
 
 // this file was known as evobjmv.c in Game Freak's original source
 
@@ -206,6 +208,7 @@ static bool8 IsElevationMismatchAt(u8, s16, s16);
 static bool8 AreElevationsCompatible(u8, u8);
 static u16 PackGraphicsId(const struct ObjectEventTemplate *template);
 static void CopyObjectGraphicsInfoToSpriteTemplate_WithMovementType(u16 graphicsId, u16 movementType, struct SpriteTemplate *spriteTemplate, const struct SubspriteTable **subspriteTables);
+static bool8 canHopUpWithAcro(u8 behavior);
 
 static const struct SpriteFrameImage sPicTable_PechaBerryTree[];
 
@@ -9307,6 +9310,20 @@ static u8 GetReflectionTypeByMetatileBehavior(u32 behavior)
         return REFL_TYPE_NONE;
 }
 
+static bool8 canHopUpWithAcro(u8 behavior)
+{
+    return behavior == MB_NORMAL || 
+           behavior == MB_TALL_GRASS ||
+           behavior == MB_LONG_GRASS ||
+           behavior == MB_SHORT_GRASS ||
+           behavior == MB_CAVE ||
+           behavior == MB_PUDDLE || 
+           behavior == MB_ICE || 
+           behavior == MB_SAND || 
+           behavior == MB_ASHGRASS || 
+           MB_MOUNTAIN_TOP;
+}
+
 u8 GetLedgeJumpDirection(s16 x, s16 y, u8 direction)
 {
     static bool8 (*const ledgeBehaviorFuncs[])(u8) = {
@@ -9328,7 +9345,21 @@ u8 GetLedgeJumpDirection(s16 x, s16 y, u8 direction)
     behavior = MapGridGetMetatileBehaviorAt(x, y);
 
     if (ledgeBehaviorFuncs[index](behavior) == TRUE)
+    {
         return index + 1;
+    }
+    else if (gPlayerAvatar.acroBikeState == ACRO_STATE_BUNNY_HOP && behavior == MB_JUMP_EAST)
+    {
+        behavior = MapGridGetMetatileBehaviorAt(x - 1, y);
+        if (canHopUpWithAcro(behavior) && MapGridGetCollisionAt(x - 1, y) == 0)
+            return index + 1;
+    }
+    else if (gPlayerAvatar.acroBikeState == ACRO_STATE_BUNNY_HOP && behavior == MB_JUMP_SOUTH)
+    {
+        behavior = MapGridGetMetatileBehaviorAt(x, y - 1);
+        if (canHopUpWithAcro(behavior) && MapGridGetCollisionAt(x, y - 1) == 0)
+            return index + 1;
+    }
 
     return DIR_NONE;
 }
