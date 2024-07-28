@@ -9352,18 +9352,18 @@ u8 GetLedgeJumpDirection(s16 x, s16 y, u8 direction)
     {
         return index + 1;
     }
-    else if (gPlayerAvatar.acroBikeState == ACRO_STATE_BUNNY_HOP && behavior == MB_JUMP_EAST)
+    else if (gPlayerAvatar.acroBikeState == ACRO_STATE_BUNNY_HOP && behavior == MB_JUMP_EAST && direction == DIR_WEST)
     {
         behavior = MapGridGetMetatileBehaviorAt(x - 1, y);
         collisionType = GetCollisionAtCoords(playerObjEvent, x - 1, y, direction);
-        if (canHopUpWithAcro(behavior) && (collisionType == COLLISION_NONE || collisionType == COLLISION_ELEVATION_MISMATCH) && !IsMapTypeIndoors(gMapHeader.mapType))
+        if (canHopUpWithAcro(behavior) && (collisionType == COLLISION_NONE || collisionType == COLLISION_ELEVATION_MISMATCH) && !IsMapTypeIndoors(gMapHeader.mapType) && !MapGridGetCollisionAt(x - 1, y))
             return index + 1;
     }
-    else if (gPlayerAvatar.acroBikeState == ACRO_STATE_BUNNY_HOP && behavior == MB_JUMP_SOUTH)
+    else if (gPlayerAvatar.acroBikeState == ACRO_STATE_BUNNY_HOP && behavior == MB_JUMP_SOUTH && direction == DIR_NORTH)
     {
         behavior = MapGridGetMetatileBehaviorAt(x, y - 1);
         collisionType = GetCollisionAtCoords(playerObjEvent, x, y - 1, direction);
-        if (canHopUpWithAcro(behavior) && (collisionType == COLLISION_NONE || collisionType == COLLISION_ELEVATION_MISMATCH))
+        if (canHopUpWithAcro(behavior) && (collisionType == COLLISION_NONE || collisionType == COLLISION_ELEVATION_MISMATCH) && !MapGridGetCollisionAt(x, y - 1))
         {
             if (IsMapTypeIndoors(gMapHeader.mapType))
             {
@@ -9382,11 +9382,11 @@ u8 GetLedgeJumpDirection(s16 x, s16 y, u8 direction)
             return index + 1;
         }
     }
-    else if (gPlayerAvatar.acroBikeState == ACRO_STATE_BUNNY_HOP && behavior == MB_JUMP_WEST)
+    else if (gPlayerAvatar.acroBikeState == ACRO_STATE_BUNNY_HOP && behavior == MB_JUMP_WEST && direction == DIR_EAST)
     {
         behavior = MapGridGetMetatileBehaviorAt(x + 1, y);
         collisionType = GetCollisionAtCoords(playerObjEvent, x + 1, y, direction);
-        if (canHopUpWithAcro(behavior) && (collisionType == COLLISION_NONE || collisionType == COLLISION_ELEVATION_MISMATCH) && !IsMapTypeIndoors(gMapHeader.mapType))
+        if (canHopUpWithAcro(behavior) && (collisionType == COLLISION_NONE || collisionType == COLLISION_ELEVATION_MISMATCH) && !IsMapTypeIndoors(gMapHeader.mapType) && !MapGridGetCollisionAt(x + 1, y))
             return index + 1;
     }
 
