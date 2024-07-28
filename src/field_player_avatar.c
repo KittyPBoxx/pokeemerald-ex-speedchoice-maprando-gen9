@@ -689,6 +689,46 @@ static u8 CheckForPlayerAvatarStaticCollision(u8 direction)
     return CheckForObjectEventStaticCollision(playerObjEvent, x, y, direction, MapGridGetMetatileBehaviorAt(x, y));
 }
 
+static u8 isShort(u16 graphicsId)
+{
+  if (graphicsId == OBJ_EVENT_GFX_GAMEBOY_KID
+     //|| graphicsId == OBJ_EVENT_GFX_KECLEON // These effect progression and you can softlock yourself
+     //|| graphicsId == OBJ_EVENT_GFX_POOCHYENA
+     || graphicsId == OBJ_EVENT_GFX_LITTLE_BOY
+     || graphicsId == OBJ_EVENT_GFX_LITTLE_BOY_3
+     || graphicsId == OBJ_EVENT_GFX_LITTLE_GIRL
+     || graphicsId == OBJ_EVENT_GFX_NINJA_BOY
+     || graphicsId == OBJ_EVENT_GFX_PIKACHU
+     || graphicsId == OBJ_EVENT_GFX_SKITTY
+     || graphicsId == OBJ_EVENT_GFX_TUBER_F
+     || graphicsId == OBJ_EVENT_GFX_TUBER_M
+     || graphicsId == OBJ_EVENT_GFX_TWIN
+     || graphicsId == OBJ_EVENT_GFX_WINGULL
+     || graphicsId == OBJ_EVENT_GFX_ZIGZAGOON_2
+     || graphicsId == OBJ_EVENT_GFX_AZUMARILL
+     || graphicsId == OBJ_EVENT_GFX_AZURILL)
+     return TRUE;
+
+    return FALSE;
+}
+
+static u8 TryJumpSmallObject(s16 x, s16 y, u8 direction)
+{
+    struct ObjectEvent *playerObjEvent = &gObjectEvents[gPlayerAvatar.objectEventId];
+    u8 objectEventId = GetObjectEventIdByXY(x, y);
+    if (gPlayerAvatar.acroBikeState == ACRO_STATE_BUNNY_HOP && direction == DIR_SOUTH)
+    {
+        if (objectEventId != OBJECT_EVENTS_COUNT && isShort(gObjectEvents[objectEventId].graphicsId))
+        {
+            if (GetCollisionAtCoords(playerObjEvent, x, y - 1, direction) == COLLISION_NONE)
+            {
+                return TRUE;
+            }
+        }
+    }
+    return FALSE;
+}
+
 u8 CheckForObjectEventCollision(struct ObjectEvent *objectEvent, s16 x, s16 y, u8 direction, u8 metatileBehavior)
 {
     u8 collision = GetCollisionAtCoords(objectEvent, x, y, direction);
@@ -709,6 +749,10 @@ u8 CheckForObjectEventCollision(struct ObjectEvent *objectEvent, s16 x, s16 y, u
             return COLLISION_ROTATING_GATE;
         CheckAcroBikeCollision(x, y, metatileBehavior, &collision);
     }
+
+    if (collision == COLLISION_OBJECT_EVENT && TryJumpSmallObject(x, y, direction))
+        return COLLISION_LEDGE_JUMP;
+
     return collision;
 }
 
