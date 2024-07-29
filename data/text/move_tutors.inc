@@ -235,3 +235,21 @@ MoveTutor_Text_ExplosionTaught:
 	.string "to ignite my own EXPLOSION…\p"
 	.string "Maybe it's because deep down,\n"
 	.string "I would rather stay here…$"
+
+MoveTutor_Text_HeadbuttTeach:
+	.string "What am I doing?\p"
+	.string "I'm shaking trees using HEADBUTT\p"
+	.string "It's fun. Here, you try it with your\n"
+	.string "pokemon too!\p"
+	.string "Do you want me to teach your POKéMON?$"
+
+MoveTutor_Text_HeadbuttWhichMon::
+	.string "Which POKéMON do you want me to teach?$"
+
+MoveTutor_Text_HeadbuttDeclined:
+	.string "Okay. I'll be here if you change\n"
+	.string "your mind.$"
+
+MoveTutor_Text_HeadbuttTaught:
+	.string "There. How do you like it?\n"
+	.string "Your POKéMON looks stronger!$"

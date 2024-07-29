@@ -8206,6 +8206,34 @@ bool8 MovementAction_RockSmashBreak_Step2(struct ObjectEvent *objectEvent, struc
     return FALSE;
 }
 
+bool8 MovementAction_HeadbuttShake_Step0(struct ObjectEvent *objectEvent, struct Sprite *sprite)
+{
+    SetAndStartSpriteAnim(sprite, 1, 0);
+    sprite->sActionFuncId = 1;
+    return FALSE;
+}
+
+bool8 MovementAction_HeadbuttShake_Step1(struct ObjectEvent *objectEvent, struct Sprite *sprite)
+{
+    if (SpriteAnimEnded(sprite))
+    {
+        SetMovementDelay(sprite, 32);
+        sprite->sActionFuncId = 2;
+    }
+    return FALSE;
+}
+
+bool8 MovementAction_HeadbuttShake_Step2(struct ObjectEvent *objectEvent, struct Sprite *sprite)
+{
+    objectEvent->invisible ^= TRUE;
+    if (WaitForMovementDelay(sprite))
+    {
+        objectEvent->invisible = TRUE;
+        sprite->sActionFuncId = 3;
+    }
+    return FALSE;
+}
+
 bool8 MovementAction_CutTree_Step0(struct ObjectEvent *objectEvent, struct Sprite *sprite)
 {
     SetAndStartSpriteAnim(sprite, ANIM_REMOVE_OBSTACLE, 0);

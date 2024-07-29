@@ -26,6 +26,7 @@
 #include "speedchoice.h"
 #include "day_night.h"
 #include "rtc.h"
+#include "field_screen_effect.h"
 
 extern const u8 EventScript_SprayWoreOff[];
 
@@ -45,6 +46,7 @@ enum {
     WILD_AREA_WATER,
     WILD_AREA_ROCKS,
     WILD_AREA_FISHING,
+    WILD_AREA_TREE
 };
 
 #define WILD_CHECK_REPEL    (1 << 0)
@@ -319,6 +321,34 @@ static u8 ChooseWildMonIndex_WaterRock(void)
     //     wildMonIndex = 4 - wildMonIndex;
 
     // return wildMonIndex;
+}
+
+// TREE_WILD_COUNT
+static u8 ChooseWildMonIndex_Tree(void)
+{
+    u8 rand = Random() % ENCOUNTER_CHANCE_HEADBUTT_MONS_TOTAL;
+
+    // 35/25/15/15/10 for new wild encounter table
+
+    // COMMONS
+    // slot 1 (35%)
+    if(rand < 35) // 35%
+        return 0;
+    // slot 2 (25%)
+    if(rand >= 35 && rand < 60) // 25%
+        return 1;   
+    // UNCOMMONS
+    // slot 3 (15%)
+    if(rand >= 60 && rand < 75) // 15%
+        return 2;
+    // slot 4 (15%)
+    if(rand >= 75 && rand < 90) // 15%
+        return 3;
+
+    // RARE
+    // slot 5 (10%)
+    return 4; // 10%
+
 }
 
 // FISH_WILD_COUNT
@@ -630,6 +660,8 @@ static bool8 TryGenerateWildMon(const struct WildPokemonInfo *wildMonInfo, u8 ar
         case WILD_AREA_ROCKS:
             wildMonIndex = ChooseWildMonIndex_WaterRock();
             break;
+        case WILD_AREA_TREE:
+            wildMonIndex = ChooseWildMonIndex_Tree();
     }
 
     level = ChooseWildMonLevel(wildMonInfo->wildPokemon[timeOfDay], wildMonIndex, area);
@@ -776,6 +808,7 @@ bool32 IsWildMonInCurrentMap(u16 species)
         const struct WildPokemonInfo *waterMonsInfo = gWildMonHeaders[headerId].waterMonsInfo;
         const struct WildPokemonInfo *rockSmashMonsInfo = gWildMonHeaders[headerId].rockSmashMonsInfo;
         const struct WildPokemonInfo *fishingMonsInfo = gWildMonHeaders[headerId].fishingMonsInfo;
+        const struct WildPokemonInfo *headbuttMonsInfo = gWildMonHeaders[headerId].headbuttMonsInfo;
         int i;
 
         if(landMonsInfo != NULL)
@@ -810,6 +843,15 @@ bool32 IsWildMonInCurrentMap(u16 species)
             for(i = 0; i < FISH_WILD_COUNT; i++)
             {
                 if (fishingMonsInfo->wildPokemon[timeOfDay][i].species == species)
+                    return TRUE;
+            }
+        }
+
+        if(headbuttMonsInfo != NULL)
+        {
+            for(i = 0; i < TREE_WILD_COUNT; i++)
+            {
+                if (headbuttMonsInfo->wildPokemon[timeOfDay][i].species == species)
                     return TRUE;
             }
         }
@@ -1279,6 +1321,9 @@ static u8 GetMaxLevelOfSpeciesInWildTable(const struct WildPokemon *wildMon, u16
     case WILD_AREA_ROCKS:
         numMon = ROCK_WILD_COUNT;
         break;
+    case WILD_AREA_TREE:
+        numMon = TREE_WILD_COUNT;
+        break;
     }
 
     for (i = 0; i < numMon; i++)
@@ -1344,4 +1389,38 @@ bool8 StandardWildEncounter_Debug(void)
 
     DoStandardWildBattle_Debug();
     return TRUE;
+}
+
+
+void HeadbuttWildEncounter(void)
+{
+    u16 headerId = GetCurrentMapWildMonHeaderId();
+
+    if (headerId != 0xFFFF)
+    {
+        const struct WildPokemonInfo *wildPokemonInfo = gWildMonHeaders[headerId].headbuttMonsInfo;
+
+        if (wildPokemonInfo == NULL)
+        {
+            // The shake effect breaks the start menu. This dosn't matter if we fade to battle (as the next full screen refresh will fix things) 
+            /// but if there is no encounter a quick fade from white will fix the menu
+            gSpecialVar_Result = FALSE;
+            FadeInFromWhite();
+        }
+        else if (TryGenerateWildMon(wildPokemonInfo, WILD_AREA_TREE, WILD_CHECK_REPEL | WILD_CHECK_KEEN_EYE) == TRUE)
+        {
+            BattleSetup_StartWildBattle();
+            gSpecialVar_Result = TRUE;
+        }
+        else
+        {
+            gSpecialVar_Result = FALSE;
+            FadeInFromWhite();
+        }
+    }
+    else
+    {
+        gSpecialVar_Result = FALSE;
+        FadeInFromWhite();
+    }
 }

@@ -80,6 +80,7 @@ gFieldEffectScriptPointers::
 	.4byte gFieldEffectScript_TracksBug                 @ FLDEFF_TRACKS_BUG
 	.4byte gFieldEffectScript_TracksSpot                @ FLDEFF_TRACKS_SPOT
 	.4byte gFieldEffectScript_Saving					@ FLDEFF_SAVING
+	.4byte gFieldEffectScript_UseHeadbutt               @ FLDEFF_USE_HEADBUTT
 
 gFieldEffectScript_Saving::
 	field_eff_loadfadedpal_callnative gSpritePalette_SavingFieldEffect, FldEff_Saving
@@ -378,4 +379,8 @@ gFieldEffectScript_TracksSpot::
 
 gFieldEffectScript_TracksSlither::
 	field_eff_loadfadedpaldaynight_callnative gSpritePalette_GeneralFieldEffect0, FldEff_TracksSlither
+	field_eff_end
+
+gFieldEffectScript_UseHeadbutt::
+	field_eff_callnative FldEff_UseHeadbutt
 	field_eff_end

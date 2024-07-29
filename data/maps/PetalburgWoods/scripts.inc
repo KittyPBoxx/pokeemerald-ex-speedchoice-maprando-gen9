@@ -244,10 +244,6 @@ PetalburgWoods_EventScript_Boy1::
 	msgbox PetalburgWoods_Text_StayOutOfTallGrass, MSGBOX_NPC
 	end
 
-PetalburgWoods_EventScript_Boy2::
-	msgbox PetalburgWoods_Text_HiddenItemsExplanation, MSGBOX_NPC
-	end
-
 PetalburgWoods_EventScript_Girl::
 	lock
 	faceplayer
@@ -435,12 +431,6 @@ PetalburgWoods_Text_StayOutOfTallGrass:
 	.string "If your POKéMON are weak and you want\n"
 	.string "to avoid battles, you should stay out\l"
 	.string "of tall grass.$"
-
-PetalburgWoods_Text_HiddenItemsExplanation:
-	.string "Sometimes, there are things on the\n"
-	.string "ground even if you can't see them.\p"
-	.string "That's why I always check where I'm\n"
-	.string "walking.$"
 
 PetalburgWoods_Text_TryUsingThisItem:
 	.string "Oh, neat!\n"

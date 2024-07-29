@@ -295,6 +295,28 @@ gMoveTutorText_7::
 	release
 	end
 
+PetalburgWoods_EventScript_Boy2::
+	lock
+	faceplayer
+	msgbox MoveTutor_Text_HeadbuttTeach, MSGBOX_YESNO
+	goto_if_eq VAR_RESULT, NO, MoveTutor_EventScript_HeadbuttDeclined
+	msgbox MoveTutor_Text_HeadbuttWhichMon, MSGBOX_DEFAULT
+	setvar VAR_0x8005, MOVE_HEADBUTT
+	call MoveTutor_EventScript_OpenPartyMenu
+	goto_if_eq VAR_RESULT, 0, MoveTutor_EventScript_HeadbuttDeclined
+	goto MoveTutor_EventScript_HeadbuttTaught
+	end
+
+MoveTutor_EventScript_HeadbuttDeclined::
+	msgbox MoveTutor_Text_HeadbuttDeclined, MSGBOX_DEFAULT
+	release
+	end
+
+MoveTutor_EventScript_HeadbuttTaught::
+	msgbox MoveTutor_Text_HeadbuttTaught, MSGBOX_DEFAULT
+	release
+	end
+
 MoveTutor_EventScript_OpenPartyMenu::
 	special ChooseMonForMoveTutor
 	waitstate

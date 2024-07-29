@@ -266,6 +266,9 @@ u8 MovementAction_FlyUp_Step1(struct ObjectEvent *, struct Sprite *);
 u8 MovementAction_Fly_Finish(struct ObjectEvent *, struct Sprite *);
 u8 MovementAction_FlyDown_Step0(struct ObjectEvent *, struct Sprite *);
 u8 MovementAction_FlyDown_Step1(struct ObjectEvent *, struct Sprite *);
+u8 MovementAction_HeadbuttShake_Step0(struct ObjectEvent *, struct Sprite *);
+u8 MovementAction_HeadbuttShake_Step1(struct ObjectEvent *, struct Sprite *);
+u8 MovementAction_HeadbuttShake_Step2(struct ObjectEvent *, struct Sprite *);
 
 u8 (*const gMovementActionFuncs_FaceDown[])(struct ObjectEvent *, struct Sprite *);
 u8 (*const gMovementActionFuncs_FaceUp[])(struct ObjectEvent *, struct Sprite *);
@@ -429,6 +432,7 @@ u8 (*const gMovementActionFuncs_FlyUp[])(struct ObjectEvent *, struct Sprite *);
 u8 (*const gMovementActionFuncs_FlyDown[])(struct ObjectEvent *, struct Sprite *);
 u8 (*const gMovementActionFuncs_EmoteX[])(struct ObjectEvent *, struct Sprite *);
 u8 (*const gMovementActionFuncs_EmoteDoubleExclMark[])(struct ObjectEvent *, struct Sprite *);
+u8 (*const gMovementActionFuncs_HeadbuttShake[])(struct ObjectEvent *, struct Sprite *);
 
 u8 (*const *const gMovementActionFuncs[])(struct ObjectEvent *, struct Sprite *) = {
     [MOVEMENT_ACTION_FACE_DOWN] = gMovementActionFuncs_FaceDown,
@@ -593,6 +597,7 @@ u8 (*const *const gMovementActionFuncs[])(struct ObjectEvent *, struct Sprite *)
     [MOVEMENT_ACTION_EMOTE_DOUBLE_EXCL_MARK] = gMovementActionFuncs_EmoteDoubleExclMark,
     [MOVEMENT_ACTION_EXIT_POKEBALL] = gMovementActionFuncs_ExitPokeball,
     [MOVEMENT_ACTION_ENTER_POKEBALL] = gMovementActionFuncs_EnterPokeball,
+    [MOVEMENT_ACTION_HEADBUTT_SHAKE] = gMovementActionFuncs_HeadbuttShake,
 };
 
 u8 (*const gMovementActionFuncs_FaceDown[])(struct ObjectEvent *, struct Sprite *) = {
@@ -1200,6 +1205,13 @@ u8 (*const gMovementActionFuncs_RockSmashBreak[])(struct ObjectEvent *, struct S
     MovementAction_RockSmashBreak_Step0,
     MovementAction_RockSmashBreak_Step1,
     MovementAction_RockSmashBreak_Step2,
+    MovementAction_Finish,
+};
+
+u8 (*const gMovementActionFuncs_HeadbuttShake[])(struct ObjectEvent *, struct Sprite *) = {
+    MovementAction_HeadbuttShake_Step0,
+    MovementAction_HeadbuttShake_Step1,
+    MovementAction_HeadbuttShake_Step2,
     MovementAction_Finish,
 };
 

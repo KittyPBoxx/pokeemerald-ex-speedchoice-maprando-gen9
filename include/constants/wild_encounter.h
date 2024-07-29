@@ -4,6 +4,7 @@
 #define LAND_WILD_COUNT     12
 #define WATER_WILD_COUNT    5
 #define ROCK_WILD_COUNT     5
+#define TREE_WILD_COUNT     5
 #define FISH_WILD_COUNT     10
 
 #define NUM_ALTERING_CAVE_TABLES 9
