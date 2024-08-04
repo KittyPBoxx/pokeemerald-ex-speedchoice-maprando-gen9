@@ -52,9 +52,3 @@
 	.byte 9
 	.4byte \address
 	.endm
-
-	.macro field_eff_loadfadedpaldaynight_callnative palette_address, function_address
-	.byte 0xA
-	.4byte \palette_address
-	.4byte \function_address
-	.endm

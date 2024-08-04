@@ -14101,5 +14101,7 @@ const struct Item gItemsInfo[] =
         .type = 4,
         .fieldUseFunc = ItemUseOutOfBattle_SleepingBag,
         .secondaryId = 0,
+        .iconPic = gItemIcon_SleepingBag,
+        .iconPalette = gItemIconPalette_SleepingBag,
     },
 };

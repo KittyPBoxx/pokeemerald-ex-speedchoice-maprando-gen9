@@ -174,7 +174,7 @@ static void LoadObjectRegularReflectionPalette(struct ObjectEvent *objectEvent, 
         else
             ApplyIceFilter(mainSprite->oam.paletteNum, filteredData);
         paletteNum = LoadSpritePalette(&filteredPal);
-        UpdateSpritePaletteWithWeather(paletteNum);
+        UpdateSpritePaletteWithWeather(paletteNum, TRUE);
     }
     sprite->oam.paletteNum = paletteNum;
     sprite->oam.objMode = ST_OAM_OBJ_BLEND;
@@ -188,7 +188,7 @@ static void LoadObjectHighBridgeReflectionPalette(struct ObjectEvent *objectEven
     struct SpritePalette bluePalette = {.tag = HIGH_BRIDGE_PAL_TAG, .data = blueData};
     CpuFill16(0x55C9, blueData, PLTT_SIZE_4BPP);
     sprite->oam.paletteNum = LoadSpritePalette(&bluePalette);
-    UpdateSpritePaletteWithWeather(sprite->oam.paletteNum);
+    UpdateSpritePaletteWithWeather(sprite->oam.paletteNum, TRUE);
 }
 
 static void UpdateObjectReflectionSprite(struct Sprite *reflectionSprite)
@@ -224,7 +224,7 @@ static void UpdateObjectReflectionSprite(struct Sprite *reflectionSprite)
             else
                 ApplyIceFilter(mainSprite->oam.paletteNum, filteredData);
             paletteNum = LoadSpritePalette(&filteredPal);
-            UpdateSpritePaletteWithWeather(paletteNum);
+            UpdateSpritePaletteWithWeather(paletteNum, TRUE);
         }
         reflectionSprite->oam.paletteNum = paletteNum;
     }
@@ -267,7 +267,6 @@ static void UpdateObjectReflectionSprite(struct Sprite *reflectionSprite)
 #undef sIsStillReflection
 
 extern const struct SpriteTemplate *const gFieldEffectObjectTemplatePointers[];
-extern const struct SpritePalette gSpritePalette_ArrowEmotionsFieldEffect;
 
 #define sPrevX data[0]
 #define sPrevY data[1]
@@ -310,7 +309,6 @@ void ShowWarpArrowSprite(u8 spriteId, u8 direction, s16 x, s16 y)
         sprite->invisible = FALSE;
         sprite->sPrevX = x;
         sprite->sPrevY = y;
-        sprite->oam.paletteNum = LoadSpritePalette(&gSpritePalette_ArrowEmotionsFieldEffect);
         StartSpriteAnim(sprite, direction - 1);
     }
 }
@@ -393,7 +391,7 @@ void UpdateShadowFieldEffect(struct Sprite *sprite)
         sprite->y = linkedSprite->y + sprite->sYOffset;
         #endif
         sprite->invisible = linkedSprite->invisible;
-        if (!objectEvent->active || !objectEvent->hasShadow
+        if (!objectEvent->active || objectEvent->noShadow
          || MetatileBehavior_IsPokeGrass(objectEvent->currentMetatileBehavior)
          || MetatileBehavior_IsSurfableWaterOrUnderwater(objectEvent->currentMetatileBehavior)
          || MetatileBehavior_IsSurfableWaterOrUnderwater(objectEvent->previousMetatileBehavior))

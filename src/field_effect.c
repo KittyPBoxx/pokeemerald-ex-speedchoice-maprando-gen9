@@ -288,9 +288,6 @@ bool8 (*const gFieldEffectScriptFuncs[])(u8 **, u32 *) =
     FieldEffectCmd_loadgfx_callnative,
     FieldEffectCmd_loadtiles_callnative,
     FieldEffectCmd_loadfadedpal_callnative,
-    FieldEffectCmd_loadpaldaynight,
-    FieldEffectCmd_loadfadedpaldaynight,
-    FieldEffectCmd_loadfadedpaldaynight_callnative,
 };
 
 static const struct OamData sOam_64x64 =
@@ -792,7 +789,7 @@ void FieldEffectScript_LoadFadedPalette(u8 **script)
 {
     struct SpritePalette *palette = (struct SpritePalette *)FieldEffectScript_ReadWord(script);
     LoadSpritePalette(palette);
-    UpdateSpritePaletteWithWeather(IndexOfSpritePaletteTag(palette->tag));
+    UpdateSpritePaletteWithWeather(IndexOfSpritePaletteTag(palette->tag), TRUE);
     (*script) += 4;
 }
 
@@ -1620,6 +1617,7 @@ static bool8 EscalatorWarpOut_WaitForPlayer(struct Task *task)
     if (!ObjectEventIsMovementOverridden(objectEvent) || ObjectEventClearHeldMovementIfFinished(objectEvent))
     {
         ObjectEventSetHeldMovement(objectEvent, GetFaceDirectionMovementAction(GetPlayerFacingDirection()));
+        objectEvent->noShadow = TRUE; // hide shadow for cleaner movement
         task->tState++;
         task->data[2] = 0;
         task->data[3] = 0;
@@ -1741,6 +1739,7 @@ static bool8 EscalatorWarpIn_Init(struct Task *task)
     u8 behavior;
     CameraObjectFreeze();
     objectEvent = &gObjectEvents[gPlayerAvatar.objectEventId];
+    objectEvent->noShadow = TRUE;
     ObjectEventSetHeldMovement(objectEvent, GetFaceDirectionMovementAction(DIR_EAST));
     PlayerGetDestCoords(&x, &y);
     behavior = MapGridGetMetatileBehaviorAt(x, y);
@@ -1837,6 +1836,7 @@ static bool8 EscalatorWarpIn_End(struct Task *task)
 {
     struct ObjectEvent *objectEvent;
     objectEvent = &gObjectEvents[gPlayerAvatar.objectEventId];
+    objectEvent->noShadow = FALSE;
     if (ObjectEventClearHeldMovementIfFinished(objectEvent))
     {
         CameraObjectReset();
@@ -1989,6 +1989,7 @@ static bool8 LavaridgeGymB1FWarpEffect_Init(struct Task *task, struct ObjectEven
     SetCameraPanningCallback(NULL);
     gPlayerAvatar.preventStep = TRUE;
     objectEvent->fixedPriority = 1;
+    objectEvent->noShadow = TRUE;
     task->data[1] = 1;
     task->data[0]++;
     if (objectEvent->localId == OBJ_EVENT_ID_PLAYER) // Hide follower before warping
@@ -3303,7 +3304,7 @@ static void FlyOutFieldEffect_FlyOffWithBird(struct Task *task)
         struct ObjectEvent *objectEvent = &gObjectEvents[gPlayerAvatar.objectEventId];
         ObjectEventClearHeldMovementIfActive(objectEvent);
         objectEvent->inanimate = FALSE;
-        objectEvent->hasShadow = FALSE;
+        objectEvent->noShadow = TRUE;
         SetFlyBirdPlayerSpriteId(task->tBirdSpriteId, objectEvent->spriteId);
         CameraObjectFreeze();
         task->tState++;
@@ -3524,6 +3525,7 @@ static void FlyInFieldEffect_BirdSwoopDown(struct Task *task)
         ObjectEventTurn(objectEvent, DIR_WEST);
         StartSpriteAnim(&gSprites[objectEvent->spriteId], ANIM_GET_ON_OFF_POKEMON_WEST);
         objectEvent->invisible = FALSE;
+        objectEvent->noShadow = TRUE;
         task->tBirdSpriteId = CreateFlyBirdSprite();
         StartFlyBirdSwoopDown(task->tBirdSpriteId);
         SetFlyBirdPlayerSpriteId(task->tBirdSpriteId, objectEvent->spriteId);
@@ -3948,43 +3950,6 @@ static void Task_MoveDeoxysRock(u8 taskId)
 #undef tVelocityY
 #undef tMoveSteps
 #undef tObjEventId
-
-bool8 FieldEffectCmd_loadpaldaynight(u8 **script, u32 *val)
-{
-    (*script)++;
-    FieldEffectScript_LoadPaletteDayNight(script);
-    return TRUE;
-}
-
-bool8 FieldEffectCmd_loadfadedpaldaynight(u8 **script, u32 *val)
-{
-    (*script)++;
-    FieldEffectScript_LoadFadedPaletteDayNight(script);
-    return TRUE;
-}
-
-bool8 FieldEffectCmd_loadfadedpaldaynight_callnative(u8 **script, u32 *val)
-{
-    (*script)++;
-    FieldEffectScript_LoadFadedPaletteDayNight(script);
-    FieldEffectScript_CallNative(script, val);
-    return TRUE;
-}
-
-void FieldEffectScript_LoadFadedPaletteDayNight(u8 **script)
-{
-    struct SpritePalette *palette = (struct SpritePalette *)FieldEffectScript_ReadWord(script);
-    LoadSpritePaletteDayNight(palette);
-    UpdateSpritePaletteWithWeather(IndexOfSpritePaletteTag(palette->tag));
-    (*script) += 4;
-}
-
-void FieldEffectScript_LoadPaletteDayNight(u8 **script)
-{
-    struct SpritePalette *palette = (struct SpritePalette *)FieldEffectScript_ReadWord(script);
-    LoadSpritePaletteDayNight(palette);
-    (*script) += 4;
-}
 
 static void (*const sUseVsSeekerEffectFuncs[])(struct Task *task) = {
     UseVsSeeker_StopPlayerMovement,

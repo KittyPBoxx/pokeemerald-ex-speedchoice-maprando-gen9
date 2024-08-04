@@ -148,6 +148,12 @@ bool8 ScrCmd_callnative(struct ScriptContext *ctx)
     return FALSE;
 }
 
+bool8 ScrCmd_callfunc(struct ScriptContext *ctx)
+{
+    u32 func = ScriptReadWord(ctx);
+    return ((ScrCmdFunc) func)(ctx);
+}
+
 bool8 ScrCmd_waitstate(struct ScriptContext *ctx)
 {
     ScriptContext_Stop();
@@ -634,6 +640,14 @@ static bool8 IsPaletteNotActive(void)
         return FALSE;
 }
 
+// pauses script until palette fade inactive
+bool8 ScrFunc_WaitPaletteNotActive(struct ScriptContext *ctx) 
+{
+    SetupNativeScript(ctx, IsPaletteNotActive);
+    return TRUE;
+}
+
+
 bool8 ScrCmd_fadescreen(struct ScriptContext *ctx)
 {
     FadeScreen(ScriptReadByte(ctx), 0);
@@ -654,6 +668,7 @@ bool8 ScrCmd_fadescreenspeed(struct ScriptContext *ctx)
 bool8 ScrCmd_fadescreenswapbuffers(struct ScriptContext *ctx)
 {
     u8 mode = ScriptReadByte(ctx);
+    u8 nowait = ScriptReadByte(ctx);
 
     switch (mode)
     {
@@ -669,6 +684,9 @@ bool8 ScrCmd_fadescreenswapbuffers(struct ScriptContext *ctx)
         FadeScreen(mode, 0);
         break;
     }
+
+    if (nowait)
+        return FALSE;
 
     SetupNativeScript(ctx, IsPaletteNotActive);
     return TRUE;
@@ -1697,6 +1715,22 @@ bool8 ScrCmd_bufferspeciesname(struct ScriptContext *ctx)
     u16 species = VarGet(ScriptReadHalfword(ctx)) & ((1 << 10) - 1); // ignore possible shiny / form bits
 
     StringCopy(sScriptStringVars[stringVarIndex], GetSpeciesName(species));
+    return FALSE;
+}
+
+bool8 ScrFunc_bufferlivemonnickname(struct ScriptContext *ctx)
+{
+    u8 stringVarIndex = ScriptReadByte(ctx);
+
+    GetMonData(GetFirstLiveMon(), MON_DATA_NICKNAME, sScriptStringVars[stringVarIndex]);
+    StringGet_Nickname(sScriptStringVars[stringVarIndex]);
+    return FALSE;
+}
+
+bool8   ScrFunc_playfirstmoncry(struct ScriptContext *ctx)
+{
+    u16 species = GetMonData(GetFirstLiveMon(), MON_DATA_SPECIES);
+    PlayCry_Script(species, 0);
     return FALSE;
 }
 

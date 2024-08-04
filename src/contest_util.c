@@ -2493,6 +2493,12 @@ void SetLinkContestPlayerGfx(void)
     }
 }
 
+// copied from event_object_movement
+#define OBJ_EVENT_PAL_TAG_BRENDAN                 0x1100
+#define OBJ_EVENT_PAL_TAG_MAY                     0x1110
+#define OBJ_EVENT_PAL_TAG_RS_BRENDAN              0x1122
+#define OBJ_EVENT_PAL_TAG_RS_MAY                  0x1123
+
 void LoadLinkContestPlayerPalettes(void)
 {
     int i;
@@ -2508,7 +2514,7 @@ void LoadLinkContestPlayerPalettes(void)
         for (i = 0; i < gNumLinkContestPlayers; i++)
         {
             objectEventId = GetObjectEventIdByLocalIdAndMap(sContestantLocalIds[i], gSaveBlock1Ptr->location.mapNum, gSaveBlock1Ptr->location.mapGroup);
-            sprite = &gSprites[gObjectEvents[objectEventId].spriteId];
+            sprite = &gSprites[gObjectEvents[objectEventId].graphicsId];
             version = (u8)gLinkPlayers[i].version;
             if (version == VERSION_RUBY || version == VERSION_SAPPHIRE)
             {

@@ -15,12 +15,7 @@ extern EWRAM_DATA const struct PaletteOverride *gPaletteOverrides[];
 
 u8 GetCurrentTimeOfDay(void);
 void LoadCompressedPaletteDayNight(const u32 *src, u16 offset, u16 size);
-void LoadPaletteDayNight(const void *src, u16 offset, u16 size);
-void CheckClockForImmediateTimeEvents(void);
 void ProcessImmediateTimeEvents(void);
-
-void LoadCompressedPalette_HandleDayNight(const u32 *src, u16 offset, u16 size, bool32 isDayNight);
-void LoadPalette_HandleDayNight(const void *src, u16 offset, u16 size, bool32 isDayNight);
 void AdvanceTimeToNextPeriod(void);
 
 #endif // GUARD_DAY_NIGHT_H

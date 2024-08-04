@@ -20,6 +20,8 @@
 EWRAM_DATA static u16 sPlttBufferPreDN[PLTT_BUFFER_SIZE] = {0};
 EWRAM_DATA const struct PaletteOverride *gPaletteOverrides[4] = {NULL};
 
+static void LoadCompressedPalette_HandleDayNight(const u32 *src, u16 offset, u16 size, bool32 isDayNight);
+
 static EWRAM_DATA struct {
     bool8 initialized:1;
     bool8 retintPhase:1;
@@ -240,17 +242,6 @@ void LoadCompressedPaletteDayNight(const u32 *src, u16 offset, u16 size)
     LoadCompressedPalette_HandleDayNight(src, offset, size, TRUE);
 }
 
-void LoadPaletteDayNight(const void *src, u16 offset, u16 size)
-{
-    LoadPalette_HandleDayNight(src, offset, size, TRUE);
-}
-
-void CheckClockForImmediateTimeEvents(void)
-{
-    if (!sDNSystemControl.retintPhase && IsMapTypeOutdoors(gMapHeader.mapType))
-        RtcCalcLocalTimeFast();
-}
-
 void ProcessImmediateTimeEvents(void)
 {
     u32 period;
@@ -306,7 +297,7 @@ void ProcessImmediateTimeEvents(void)
     #undef currentTimeOfDay
 }
 
-void LoadCompressedPalette_HandleDayNight(const u32 *src, u16 offset, u16 size, bool32 isDayNight)
+static void LoadCompressedPalette_HandleDayNight(const u32 *src, u16 offset, u16 size, bool32 isDayNight)
 {
     LZ77UnCompWram(src, gPaletteDecompressionBuffer);
     if (isDayNight)
@@ -319,20 +310,5 @@ void LoadCompressedPalette_HandleDayNight(const u32 *src, u16 offset, u16 size, 
     {
         CpuCopy16(gPaletteDecompressionBuffer, &gPlttBufferUnfaded[offset], size);
         CpuCopy16(gPaletteDecompressionBuffer, &gPlttBufferFaded[offset], size);
-    }
-}
-
-void LoadPalette_HandleDayNight(const void *src, u16 offset, u16 size, bool32 isDayNight)
-{
-    if (isDayNight)
-    {
-        CpuCopy16(src, &sPlttBufferPreDN[offset], size);
-        TintPaletteForDayNight(offset, size);
-        CpuCopy16(&gPlttBufferUnfaded[offset], &gPlttBufferFaded[offset], size);
-    }
-    else
-    {
-        CpuCopy16(src, &gPlttBufferUnfaded[offset], size);
-        CpuCopy16(src, &gPlttBufferFaded[offset], size);
     }
 }

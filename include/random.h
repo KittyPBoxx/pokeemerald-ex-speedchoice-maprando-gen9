@@ -81,6 +81,7 @@ typedef u32 rng_value_t;
 //Returns a 16-bit pseudorandom number
 u16 Random(void);
 u16 Random2(void);
+u8 RandomWeightedIndex(u8 *weights, u8 length);
 
 //Sets the initial seed value of the pseudorandom number generator
 void SeedRng(u16 seed);
