@@ -1663,6 +1663,29 @@ void UpdatePalettesWithTime(u32 palettes)
   }
 }
 
+void UpdateBattlePalettesWithTime(u32 palettes) 
+{
+  if (MapHasNaturalLight(gMapHeader.mapType) &&  !(currentTimeBlend.time0 == TIME_OF_DAY_DAY  && currentTimeBlend.time1 == TIME_OF_DAY_DAY)) 
+  {
+    u32 i;
+    u32 mask = 1 << 16;
+    if (palettes >= 0x10000)
+      for (i = 0; i < 16; i++, mask <<= 1)
+        if (GetSpritePaletteTagByPaletteNum(i) >> 15) // Don't blend special sprite palette tags
+          palettes &= ~(mask);
+
+    palettes &= 0xFFFF1F1C; // Don't blend UI palettes
+    if (!palettes)
+      return;
+    TimeMixPalettes(palettes,
+      gPlttBufferUnfaded,
+      gPlttBufferFaded,
+      (struct BlendSettings *)&gTimeOfDayBlend[currentTimeBlend.time0],
+      (struct BlendSettings *)&gTimeOfDayBlend[currentTimeBlend.time1],
+      currentTimeBlend.weight);
+  }
+}
+
 u8 UpdateSpritePaletteWithTime(u8 paletteNum) 
 {
   if (MapHasNaturalLight(gMapHeader.mapType)) 
@@ -1692,14 +1715,9 @@ static void OverworldBasic(void)
     UpdatePaletteFade();
     UpdateTilesetAnimations();
     DoScheduledBgTilemapCopiesToVram();
-
-    // Prevents bug where sprite palettes are getting set to wrong time of day
-    if (!gPaletteFade.active && gTimeUpdateCounter % 60 == 0)
-        UpdatePalettesWithTime(PALETTES_ALL);
-
-    // Every minute if no palette fade is active, update TOD blending as needed
     if (!gPaletteFade.active && ++gTimeUpdateCounter >= 3600) 
     {
+        // Every minute if no palette fade is active, update TOD blending as needed
         struct TimeBlendSettings cachedBlend = {
             .time0 = currentTimeBlend.time0,
             .time1 = currentTimeBlend.time1,
@@ -1709,9 +1727,14 @@ static void OverworldBasic(void)
         UpdateTimeOfDay();
         if (cachedBlend.time0 != currentTimeBlend.time0 || cachedBlend.time1 != currentTimeBlend.time1 || cachedBlend.weight != currentTimeBlend.weight) 
         {
-            UpdateAltBgPalettes(PALETTES_BG);
+            UpdateAltBgPalettes(PALETTES_BG); 
             UpdatePalettesWithTime(PALETTES_ALL);
         }
+    }
+    else if (!gPaletteFade.active && gTimeUpdateCounter % 30 == 0)
+    {
+        // Prevents bug where sprite palettes are getting set to wrong time of day
+        UpdatePalettesWithTime(PALETTES_ALL);
     }
 }
 

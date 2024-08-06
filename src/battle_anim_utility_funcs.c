@@ -11,6 +11,7 @@
 #include "util.h"
 #include "constants/rgb.h"
 #include "constants/songs.h"
+#include "overworld.h"
 
 struct AnimStatsChangeData
 {
@@ -184,7 +185,10 @@ static void AnimTask_BlendSpriteColor_Step2(u8 taskId)
         else if (gTasks[taskId].data[10] > gTasks[taskId].data[4])
             gTasks[taskId].data[10]--;
         else
+        {
+            UpdateBattlePalettesWithTime(PALETTES_ALL);
             DestroyAnimVisualTask(taskId);
+        }
     }
     else
     {
@@ -692,6 +696,7 @@ static void AnimTask_Flash_Step(u8 taskId)
         }
         break;
     case 2:
+        UpdateBattlePalettesWithTime(PALETTES_ALL);
         DestroyAnimVisualTask(taskId);
         break;
     }

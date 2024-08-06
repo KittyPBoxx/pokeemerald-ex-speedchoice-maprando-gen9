@@ -171,8 +171,6 @@ static void Task_RunTimeBasedEvents(u8 taskId)
 {
     s16 *data = gTasks[taskId].data;
 
-    ProcessImmediateTimeEvents();
-
     if (!ArePlayerFieldControlsLocked())
     {
         RunTimeBasedEvents(data);
