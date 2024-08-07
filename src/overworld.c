@@ -1731,7 +1731,7 @@ static void OverworldBasic(void)
             UpdatePalettesWithTime(PALETTES_ALL);
         }
     }
-    else if (!gPaletteFade.active && gTimeUpdateCounter % 30 == 0)
+    else if (!gPaletteFade.active && gTimeUpdateCounter % 30 == 0 && !(currentTimeBlend.time0 == TIME_OF_DAY_DAY && currentTimeBlend.time1 == TIME_OF_DAY_DAY) && MapHasNaturalLight(gMapHeader.mapType))
     {
         // Prevents bug where sprite palettes are getting set to wrong time of day
         UpdatePalettesWithTime(PALETTES_ALL);
