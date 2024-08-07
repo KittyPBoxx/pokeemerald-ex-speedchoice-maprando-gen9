@@ -9162,7 +9162,7 @@ const struct SpeciesInfo gSpeciesInfoGen3[] =
         .iconSprite = gMonIcon_Spheal,
         .iconPalIndex = 2,
         FOOTPRINT(Spheal)
-        OVERWORLD(
+        OVERWORLD2(
             sPicTable_Spheal,
             SIZE_32x32,
             SHADOW_SIZE_M,
