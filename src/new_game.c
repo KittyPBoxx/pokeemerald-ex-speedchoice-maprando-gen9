@@ -246,6 +246,8 @@ void NewGameInitData(void)
     AddBagItem(ITEM_Z_POWER_RING, 1);
     //AddBagItem(ITEM_DYNAMAX_BAND, 1);
 
+    FlagSet(FLAG_DISABLE_FOLLOWER);
+
     gSaveBlock1Ptr->registeredItem = ITEM_MACH_BIKE;
 }
 
