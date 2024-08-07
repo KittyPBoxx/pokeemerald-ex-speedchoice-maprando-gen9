@@ -564,6 +564,26 @@ SlateportCity_EventScript_PowerTMClerk::
 	release
 	end
 
+SlateportCity_EventScript_ExtraEvoItems::
+	lock
+	faceplayer
+	message gText_HowMayIServeYou
+	waitmessage
+	pokemart SlateportCity_Pokemart_Speedchoice2
+	msgbox gText_PleaseComeAgain, MSGBOX_DEFAULT
+	release
+	end
+
+SlateportCity_EventScript_TeraShards::
+	lock
+	faceplayer
+	message gText_HowMayIServeYou
+	waitmessage
+	pokemart SlateportCity_Pokemart_Tera
+	msgbox gText_PleaseComeAgain, MSGBOX_DEFAULT
+	release
+	end
+
 	.align 2
 SlateportCity_Pokemart_PowerTMs:
 	.2byte ITEM_TM10  @ Hidden Power
@@ -581,7 +601,6 @@ SlateportCity_Pokemart_Speedchoice:
     .2byte ITEM_FIRE_STONE
     .2byte ITEM_THUNDER_STONE
     .2byte ITEM_WATER_STONE
-    .2byte ITEM_LEAF_STONE
     .2byte ITEM_DAWN_STONE
     .2byte ITEM_DUSK_STONE
     .2byte ITEM_LEAF_STONE
@@ -596,6 +615,12 @@ SlateportCity_Pokemart_Speedchoice:
     .2byte ITEM_ROSE_INCENSE
     .2byte ITEM_LUCK_INCENSE
     .2byte ITEM_PURE_INCENSE
+    .2byte ITEM_NONE
+    release
+    end
+
+    .align 2
+SlateportCity_Pokemart_Speedchoice2:
     .2byte ITEM_UP_GRADE
     .2byte ITEM_DUBIOUS_DISC
     .2byte ITEM_DRAGON_SCALE
@@ -619,6 +644,17 @@ SlateportCity_Pokemart_Speedchoice:
     .2byte ITEM_GALARICA_WREATH
     .2byte ITEM_SWEET_APPLE
     .2byte ITEM_TART_APPLE
+	.2byte ITEM_AUSPICIOUS_ARMOR
+	.2byte ITEM_MALICIOUS_ARMOR
+	.2byte ITEM_SCROLL_OF_DARKNESS
+	.2byte ITEM_SCROLL_OF_WATERS
+	.2byte ITEM_BLACK_AUGURITE
+	.2byte ITEM_LINKING_CORD
+	.2byte ITEM_PEAT_BLOCK
+	.2byte ITEM_UNREMARKABLE_TEACUP
+	.2byte ITEM_SYRUPY_APPLE
+	.2byte ITEM_MASTERPIECE_TEACUP
+	.2byte ITEM_METAL_ALLOY
     .2byte ITEM_STRAWBERRY_SWEET
     .2byte ITEM_LOVE_SWEET
     .2byte ITEM_BERRY_SWEET
@@ -635,6 +671,31 @@ SlateportCity_Pokemart_Speedchoice:
 	.2byte ITEM_N_SOLARIZER
 	.2byte ITEM_N_LUNARIZER
 	.2byte ITEM_REINS_OF_UNITY
+    .2byte ITEM_NONE
+    release
+    end
+
+    .align 2
+SlateportCity_Pokemart_Tera:
+    .2byte ITEM_BUG_TERA_SHARD
+    .2byte ITEM_DARK_TERA_SHARD
+    .2byte ITEM_DRAGON_TERA_SHARD
+    .2byte ITEM_ELECTRIC_TERA_SHARD
+    .2byte ITEM_FAIRY_TERA_SHARD
+    .2byte ITEM_FIGHTING_TERA_SHARD
+    .2byte ITEM_FIRE_TERA_SHARD
+    .2byte ITEM_FLYING_TERA_SHARD
+    .2byte ITEM_GHOST_TERA_SHARD
+    .2byte ITEM_GRASS_TERA_SHARD
+    .2byte ITEM_GROUND_TERA_SHARD
+    .2byte ITEM_ICE_TERA_SHARD
+    .2byte ITEM_NORMAL_TERA_SHARD
+    .2byte ITEM_POISON_TERA_SHARD
+    .2byte ITEM_PSYCHIC_TERA_SHARD
+    .2byte ITEM_ROCK_TERA_SHARD
+    .2byte ITEM_STEEL_TERA_SHARD
+    .2byte ITEM_WATER_TERA_SHARD
+    .2byte ITEM_STELLAR_TERA_SHARD
     .2byte ITEM_NONE
     release
     end
