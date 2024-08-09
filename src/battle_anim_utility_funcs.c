@@ -175,7 +175,10 @@ static void AnimTask_BlendSpriteColor_Step2(u8 taskId)
         while (selectedPalettes != 0)
         {
             if (selectedPalettes & 1)
+            {
                 BlendPalette(singlePaletteOffset, 16, gTasks[taskId].data[10], gTasks[taskId].data[5]);
+                UpdateBattlePalettesWithTime(PALETTES_ALL);
+            }
             singlePaletteOffset += 16;
             selectedPalettes >>= 1;
         }
@@ -186,7 +189,6 @@ static void AnimTask_BlendSpriteColor_Step2(u8 taskId)
             gTasks[taskId].data[10]--;
         else
         {
-            UpdateBattlePalettesWithTime(PALETTES_ALL);
             DestroyAnimVisualTask(taskId);
         }
     }
@@ -685,10 +687,16 @@ static void AnimTask_Flash_Step(u8 taskId)
             for (i = 0; i < 16; i++)
             {
                 if ((task->data[15] >> i) & 1)
+                {
                     BlendPalette(BG_PLTT_ID(i), 16, task->data[2], 0xFFFF);
+                    UpdateBattlePalettesWithTime(PALETTES_ALL);
+                }
 
                 if ((task->data[14] >> i) & 1)
+                {
                     BlendPalette(OBJ_PLTT_ID(i), 16, task->data[2], 0);
+                    UpdateBattlePalettesWithTime(PALETTES_ALL);
+                }
             }
 
             if (task->data[2] == 0)
@@ -696,7 +704,6 @@ static void AnimTask_Flash_Step(u8 taskId)
         }
         break;
     case 2:
-        UpdateBattlePalettesWithTime(PALETTES_ALL);
         DestroyAnimVisualTask(taskId);
         break;
     }

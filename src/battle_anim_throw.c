@@ -22,6 +22,7 @@
 #include "constants/songs.h"
 #include "constants/rgb.h"
 #include "speedchoice.h"
+#include "overworld.h"
 
 // iwram
 u32 gMonShrinkDuration;
@@ -841,6 +842,7 @@ static void AnimTask_FlashHealthboxOnLevelUp_Step(u8 taskId)
 
             paletteOffset = OBJ_PLTT_ID(paletteNum);
             BlendPalette(paletteOffset + colorOffset, 1, gTasks[taskId].data[2], RGB(20, 27, 31));
+            UpdateBattlePalettesWithTime(PALETTES_ALL);
             if (gTasks[taskId].data[2] == 16)
                 gTasks[taskId].data[1]++;
             break;
@@ -851,6 +853,7 @@ static void AnimTask_FlashHealthboxOnLevelUp_Step(u8 taskId)
 
             paletteOffset = OBJ_PLTT_ID(paletteNum);
             BlendPalette(paletteOffset + colorOffset, 1, gTasks[taskId].data[2], RGB(20, 27, 31));
+            UpdateBattlePalettesWithTime(PALETTES_ALL);
             if (gTasks[taskId].data[2] == 0)
                 DestroyAnimVisualTask(taskId);
             break;
@@ -1583,6 +1586,7 @@ static void SpriteCB_Ball_Capture_Step(struct Sprite *sprite)
     {
         PlaySE(SE_RG_BALL_CLICK);
         BlendPalettes(0x10000 << sprite->oam.paletteNum, 6, RGB_BLACK);
+        UpdateBattlePalettesWithTime(PALETTES_ALL);
         MakeCaptureStars(sprite);
     }
     else if (sprite->sTimer == 60)
@@ -2304,11 +2308,13 @@ u8 LaunchBallFadeMonTask(bool8 unfadeLater, u8 spritePalNum, u32 selectedPalette
     if (!unfadeLater)
     {
         BlendPalette(OBJ_PLTT_ID(spritePalNum), 16, 0, gBallOpenFadeColors[ballId]);
+        UpdateBattlePalettesWithTime(PALETTES_ALL);
         gTasks[taskId].tdCoeff = 1;
     }
     else
     {
         BlendPalette(OBJ_PLTT_ID(spritePalNum), 16, 16, gBallOpenFadeColors[ballId]);
+        UpdateBattlePalettesWithTime(PALETTES_ALL);
         gTasks[taskId].tCoeff = 16;
         gTasks[taskId].tdCoeff = -1;
         gTasks[taskId].func = Task_FadeMon_ToNormal;
@@ -2325,6 +2331,7 @@ static void Task_FadeMon_ToBallColor(u8 taskId)
     if (gTasks[taskId].tTimer <= 16)
     {
         BlendPalette(OBJ_PLTT_ID(gTasks[taskId].tPalOffset), 16, gTasks[taskId].tCoeff, gBallOpenFadeColors[ballId]);
+        UpdateBattlePalettesWithTime(PALETTES_ALL);
         gTasks[taskId].tCoeff += gTasks[taskId].tdCoeff;
         gTasks[taskId].tTimer++;
     }
@@ -2332,6 +2339,7 @@ static void Task_FadeMon_ToBallColor(u8 taskId)
     {
         u32 selectedPalettes = (u16)gTasks[taskId].tPaletteLo | ((u16)gTasks[taskId].tPaletteHi << 16);
         BeginNormalPaletteFade(selectedPalettes, 0, 16, 0, RGB_WHITE);
+        UpdateBattlePalettesWithTime(PALETTES_ALL);
         DestroyTask(taskId);
     }
 }
@@ -2353,6 +2361,7 @@ static void Task_FadeMon_ToNormal_Step(u8 taskId)
     if (gTasks[taskId].tTimer <= 16)
     {
         BlendPalette(OBJ_PLTT_ID(gTasks[taskId].tPalOffset), 16, gTasks[taskId].tCoeff, gBallOpenFadeColors[ballId]);
+        UpdateBattlePalettesWithTime(PALETTES_ALL);
         gTasks[taskId].tCoeff += gTasks[taskId].tdCoeff;
         gTasks[taskId].tTimer++;
     }
