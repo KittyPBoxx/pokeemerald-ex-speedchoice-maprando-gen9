@@ -12,6 +12,7 @@ void ItemUseOutOfBattle_PowderJar(u8);
 void ItemUseOutOfBattle_SSTicket(u8);
 void ItemUseOutOfBattle_WailmerPail(u8);
 void ItemUseOutOfBattle_Medicine(u8);
+void ItemUseOutOfBattle_TeraShard(u8);
 void ItemUseOutOfBattle_AbilityCapsule(u8);
 void ItemUseOutOfBattle_AbilityPatch(u8);
 void ItemUseOutOfBattle_Mint(u8);
