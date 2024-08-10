@@ -2511,7 +2511,7 @@ bool8 ScrCmd_checkspeedchoice(struct ScriptContext *ctx)
     u8 option = ScriptReadByte(ctx);
     u8 setting = ScriptReadByte(ctx);
 
-    ctx->comparisonResult = CheckSpeedchoiceOption(option, setting);
+    gSpecialVar_Result = CheckSpeedchoiceOption(option, setting);
     return TRUE;
 }
 

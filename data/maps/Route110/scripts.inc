@@ -442,11 +442,8 @@ Route110_EventScript_MayBattleMudkip::
 Route110_EventScript_MayDefeated::
 	msgbox Route110_Text_MayTakeThis, MSGBOX_DEFAULT
 	checkspeedchoice EARLYFLY, FLY_YES
-	call_if TRUE, Speedchoice_GiveFly
-	checkspeedchoice EARLYFLY, FLY_NO
-	call_if TRUE, Route110_EventScript_GiveItemfinder @ im sure there's a better way to do this than a double check. i cannot be sure that the callif instructions don't modify callif conditional.
-	msgbox Route110_Text_MayExplainItemfinder, MSGBOX_DEFAULT
-	goto Route110_EventScript_RivalExit
+	goto_if_eq VAR_RESULT, TRUE, Route110_Speedchoice_MayGiveFlyHM
+	goto Route110_Speedchoice_MayGiveItemfinder
 	end
 
 Route110_EventScript_BrendanBattle::
@@ -475,20 +472,37 @@ Route110_EventScript_BrendanBattleMudkip::
 Route110_EventScript_BrendanDefeated::
 	msgbox Route110_Text_BrendanTakeThis, MSGBOX_DEFAULT
 	checkspeedchoice EARLYFLY, FLY_YES
-	call_if TRUE, Speedchoice_GiveFly
-	checkspeedchoice EARLYFLY, FLY_NO
-	call_if TRUE, Route110_EventScript_GiveItemfinder @ im sure there's a better way to do this than a double check. i cannot be sure that the callif instructions don't modify callif conditional.
-	msgbox Route110_Text_BrendanExplainItemfinder, MSGBOX_DEFAULT
+	goto_if_eq VAR_RESULT, TRUE, Route110_Speedchoice_BrendanGiveFlyHM
+	goto Route110_Speedchoice_BrendanGiveItemfinder
+	end
+
+Route110_Speedchoice_MayGiveFlyHM::
+	giveitem ITEM_HM02
+	setflag FLAG_RECEIVED_HM_FLY
+	msgbox Route119_Text_MayExplainFly, MSGBOX_DEFAULT
 	goto Route110_EventScript_RivalExit
 	end
 
-Route110_EventScript_GiveItemfinder::
+Route110_Speedchoice_MayGiveItemfinder::
 	giveitem ITEM_ITEMFINDER
-	return
+	setflag FLAG_RECEIVED_HM_FLY
+	msgbox Route110_Text_MayExplainItemfinder, MSGBOX_DEFAULT
+	goto Route110_EventScript_RivalExit
+	end
 
-Speedchoice_GiveFly::
+Route110_Speedchoice_BrendanGiveFlyHM::
 	giveitem ITEM_HM02
-	return
+	setflag FLAG_RECEIVED_HM_FLY
+	msgbox Route119_Text_BrendanExplainFly, MSGBOX_DEFAULT
+	goto Route110_EventScript_RivalExit
+	end
+
+Route110_Speedchoice_BrendanGiveItemfinder::
+	giveitem ITEM_ITEMFINDER
+	setflag FLAG_RECEIVED_HM_FLY
+	msgbox Route110_Text_BrendanExplainItemfinder, MSGBOX_DEFAULT
+	goto Route110_EventScript_RivalExit
+	end
 
 Route110_EventScript_RivalExit::
 	closemessage

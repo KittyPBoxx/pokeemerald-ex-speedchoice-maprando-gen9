@@ -237,7 +237,7 @@ Route120_EventScript_StevenGiveDeconScope::
 	special DrawWholeMapView
 
 	checkspeedchoice PLOTLESS, PLOT_KEEP
-	goto_if TRUE, AfterKekleon
+	goto_if_eq VAR_RESULT, TRUE, AfterKekleon
 	setflag FLAG_HIDE_MT_PYRE_SUMMIT_ARCHIE
 	setflag FLAG_HIDE_MT_PYRE_SUMMIT_TEAM_AQUA
 	setflag FLAG_RECEIVED_RED_OR_BLUE_ORB

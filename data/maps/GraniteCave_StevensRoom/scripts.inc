@@ -31,9 +31,9 @@ GraniteCave_StevensRoom_EventScript_Steven::
 	playse SE_EXIT
 	removeobject LOCALID_STEVEN
 	checkspeedchoice PLOTLESS, PLOT_KEEP
-	goto_if TRUE, StevenRoomEventEnd
+	goto_if_eq VAR_RESULT, TRUE, StevenRoomEventEnd
 	checkspeedchoice PLOTLESS, PLOT_SEMI
-	goto_if TRUE, StevenRoomEventEnd
+	goto_if_eq VAR_RESULT, TRUE, StevenRoomEventEnd
 	setflag FLAG_DOCK_REJECTED_DEVON_GOODS
 	setflag FLAG_HIDE_SLATEPORT_CITY_TEAM_AQUA
 	setflag FLAG_HIDE_SLATEPORT_CITY_OCEANIC_MUSEUM_AQUA_GRUNTS

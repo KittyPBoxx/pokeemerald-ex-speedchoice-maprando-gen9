@@ -63,7 +63,7 @@ MossdeepCity_StevensHouse_EventScript_StevenGivesDive::
 	setvar VAR_STEVENS_HOUSE_STATE, 2
 
 	checkspeedchoice PLOTLESS, PLOT_KEEP
-	goto_if TRUE, AfterStevenDive
+	goto_if_eq VAR_RESULT, TRUE, AfterStevenDive
 	@ seafloor cavern
 	setvar VAR_ROUTE128_STATE, 1
 	setvar VAR_SOOTOPOLIS_CITY_STATE, 1

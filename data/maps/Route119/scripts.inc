@@ -107,11 +107,8 @@ Route119_EventScript_BattleMayMudkip::
 Route119_EventScript_DefeatedMay::
 	msgbox Route119_Text_MayPresentForYou, MSGBOX_DEFAULT
 	checkspeedchoice EARLYFLY, FLY_YES
-	call_if TRUE, Speedchoice_GiveItemfinder
-	checkspeedchoice EARLYFLY, FLY_NO
-	call_if TRUE, Route119_EventScript_GiveFlyHM @ im still not sure if there's a better way to do this than a double check. i cannot be sure that the callif instructions don't modify callif conditional.
-	msgbox Route119_Text_MayExplainFly, MSGBOX_DEFAULT
-	goto Route119_EventScript_RivalExitScottArrive
+	goto_if_eq VAR_RESULT, TRUE, Route119_Speedchoice_MayGiveItemfinder
+	goto Route119_Speedchoice_MayGiveFlyHM 
 	end
 
 Route119_EventScript_BattleBrendan::
@@ -140,22 +137,37 @@ Route119_EventScript_BattleBrendanMudkip::
 Route119_EventScript_DefeatedBrendan::
 	msgbox Route119_Text_BrendanIllGiveYouThis, MSGBOX_DEFAULT
 	checkspeedchoice EARLYFLY, FLY_YES
-	call_if TRUE, Speedchoice_GiveItemfinder
-	checkspeedchoice EARLYFLY, FLY_NO
-	call_if TRUE, Route119_EventScript_GiveFlyHM @ im still not sure if there's a better way to do this than a double check. i cannot be sure that the callif instructions don't modify callif conditional.
+	goto_if_eq VAR_RESULT, TRUE, Route119_Speedchoice_BrendanGiveItemfinder
+	goto Route119_Speedchoice_BrendanGiveFlyHM 
+	end
+
+Route119_Speedchoice_MayGiveFlyHM::
+	giveitem ITEM_HM02
+	setflag FLAG_RECEIVED_HM_FLY
+	msgbox Route119_Text_MayExplainFly, MSGBOX_DEFAULT
+	goto Route119_EventScript_RivalExitScottArrive
+	end
+
+Route119_Speedchoice_MayGiveItemfinder::
+	giveitem ITEM_ITEMFINDER
+	setflag FLAG_RECEIVED_HM_FLY
+	msgbox Route110_Text_MayExplainItemfinder, MSGBOX_DEFAULT
+	goto Route119_EventScript_RivalExitScottArrive
+	end
+
+Route119_Speedchoice_BrendanGiveFlyHM::
+	giveitem ITEM_HM02
+	setflag FLAG_RECEIVED_HM_FLY
 	msgbox Route119_Text_BrendanExplainFly, MSGBOX_DEFAULT
 	goto Route119_EventScript_RivalExitScottArrive
 	end
 
-Route119_EventScript_GiveFlyHM::
-	giveitem ITEM_HM02
-	setflag FLAG_RECEIVED_HM_FLY
-	return
-
-Speedchoice_GiveItemfinder::
+Route119_Speedchoice_BrendanGiveItemfinder::
 	giveitem ITEM_ITEMFINDER
 	setflag FLAG_RECEIVED_HM_FLY
-	return
+	msgbox Route110_Text_BrendanExplainItemfinder, MSGBOX_DEFAULT
+	goto Route119_EventScript_RivalExitScottArrive
+	end
 
 Route119_EventScript_RivalExitScottArrive::
 	closemessage
@@ -174,22 +186,28 @@ Route119_EventScript_RivalExitScottArrive::
 	setvar VAR_ROUTE119_STATE, 1
 	savebgm MUS_DUMMY
 	fadedefaultbgm
-	delay 60
-	compare VAR_TEMP_1, 1
-	call_if_eq Route119_EventScript_SetScottPos1
-	compare VAR_TEMP_1, 2
-	call_if_eq Route119_EventScript_SetScottPos2
-	addobject LOCALID_SCOTT
-	applymovement LOCALID_SCOTT, Route119_Movement_ScottEnter
-	waitmovement 0
-	addvar VAR_SCOTT_STATE, 1
-	msgbox Route119_Text_ScottWayToGoBeSeeingYou, MSGBOX_DEFAULT
-	closemessage
-	compare VAR_TEMP_1, 1
-	call_if_eq Route119_EventScript_ScottExit1
-	compare VAR_TEMP_1, 2
-	call_if_eq Route119_EventScript_ScottExit2
-	removeobject LOCALID_SCOTT
+	goto Route119_EventScript_SkipScott
+	end
+	@ delay 60
+	@ compare VAR_TEMP_1, 1
+	@ call_if_eq Route119_EventScript_SetScottPos1
+	@ compare VAR_TEMP_1, 2
+	@ call_if_eq Route119_EventScript_SetScottPos2
+	@ addobject LOCALID_SCOTT
+	@ applymovement LOCALID_SCOTT, Route119_Movement_ScottEnter
+	@ waitmovement 0
+	@ addvar VAR_SCOTT_STATE, 1
+	@ msgbox Route119_Text_ScottWayToGoBeSeeingYou, MSGBOX_DEFAULT
+	@ closemessage
+	@ compare VAR_TEMP_1, 1
+	@ call_if_eq Route119_EventScript_ScottExit1
+	@ compare VAR_TEMP_1, 2
+	@ call_if_eq Route119_EventScript_ScottExit2
+	@ removeobject LOCALID_SCOTT
+	@ releaseall
+	@ end
+
+Route119_EventScript_SkipScott::
 	releaseall
 	end
 

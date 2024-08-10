@@ -2,7 +2,7 @@ SlateportCity_PokemonFanClub_EventScript_SwaggerTutor::
 	lock
 	faceplayer
 	checkspeedchoice EASY_FALSE_SWIPE, EASY_FALSE_SWIPE_TUTOR
-	goto_if TRUE, SpeedchoiceSlateportEasyFalseSwipe
+	goto_if_eq VAR_RESULT, TRUE, SpeedchoiceSlateportEasyFalseSwipe
 	goto_if_set FLAG_MOVE_TUTOR_TAUGHT_SWAGGER, MoveTutor_EventScript_SwaggerTaught
 gMoveTutorText_20::
 	msgbox MoveTutor_Text_SwaggerTeach, MSGBOX_YESNO

@@ -27,9 +27,9 @@ RustboroCity_Gym_EventScript_RoxanneDefeated::
 
 RustboroCity_Gym_EventScript_GiveRockTomb::
 	checkspeedchoice PLOTLESS, PLOT_KEEP
-	goto_if TRUE, RoxanneNoAqualess
+	goto_if_eq VAR_RESULT, TRUE, RoxanneNoAqualess
 	checkspeedchoice PLOTLESS, PLOT_SEMI
-	goto_if TRUE, RoxanneNoAqualess
+	goto_if_eq VAR_RESULT, TRUE, RoxanneNoAqualess
 	giveitem ITEM_LETTER
 	@ give pokenav
 	message RustboroCity_DevonCorp_3F_Text_ReceivedPokenav

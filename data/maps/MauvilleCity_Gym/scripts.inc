@@ -86,9 +86,9 @@ MauvilleCity_Gym_EventScript_Wattson::
 MauvilleCity_Gym_EventScript_WattsonDefeated::
 	message MauvilleCity_Gym_Text_ReceivedDynamoBadge
 	checkspeedchoice PLOTLESS, PLOT_KEEP
-	goto_if TRUE, WattsonAfter
+	goto_if_eq VAR_RESULT, TRUE, WattsonAfter
 	checkspeedchoice PLOTLESS, PLOT_SEMI
-	goto_if TRUE, WattsonAfter
+	goto_if_eq VAR_RESULT, TRUE, WattsonAfter
 	setflag FLAG_HIDE_ROUTE_112_TEAM_MAGMA
 	setvar VAR_METEOR_FALLS_STATE, 1
 	setflag FLAG_HIDE_METEOR_FALLS_TEAM_AQUA
@@ -100,7 +100,7 @@ MauvilleCity_Gym_EventScript_WattsonDefeated::
 	setflag FLAG_HIDE_METEOR_FALLS_1F_1R_COZMO
 	@ prevent weather institute from being required on Semi+Full and Early Surf since the player can surf there early. The other 3 instances of this were guards for older saves since I didn't feel like replaying the game for the 20th time.
 	checkspeedchoice PLOTLESS, PLOT_KEEP @ seems weird checking for keep since it was checked earlier, but im actually just checking for SEMI or FULL.
-	goto_if TRUE, WattsonAfter
+	goto_if_eq VAR_RESULT, TRUE, WattsonAfter
 	setvar VAR_WEATHER_INSTITUTE_STATE, 2
 	setflag FLAG_HIDE_ROUTE_119_TEAM_AQUA
 	clearflag FLAG_HIDE_WEATHER_INSTITUTE_1F_WORKERS

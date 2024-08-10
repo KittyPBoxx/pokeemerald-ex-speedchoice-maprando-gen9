@@ -162,6 +162,7 @@ MauvilleCity_EventScript_DefeatedWally::
 	setflag FLAG_DEFEATED_WALLY_MAUVILLE
 	setvar VAR_WALLY_CALL_STEP_COUNTER, 0
 	setflag FLAG_ENABLE_FIRST_WALLY_POKENAV_CALL
+	goto MauvilleCity_EventScript_SkipScott
 	call_if_eq VAR_FACING, DIR_NORTH, MauvilleCity_EventScript_ScottApproachPlayerNorth
 	call_if_eq VAR_FACING, DIR_EAST, MauvilleCity_EventScript_ScottApproachPlayerEast
 	applymovement OBJ_EVENT_ID_PLAYER, Common_Movement_WalkInPlaceFasterDown
@@ -172,6 +173,10 @@ MauvilleCity_EventScript_DefeatedWally::
 	call_if_eq VAR_FACING, DIR_NORTH, MauvilleCity_EventScript_ScottExitNorth
 	call_if_eq VAR_FACING, DIR_EAST, MauvilleCity_EventScript_ScottExitEast
 	removeobject LOCALID_SCOTT
+	releaseall
+	end
+
+MauvilleCity_EventScript_SkipScott::
 	releaseall
 	end
 

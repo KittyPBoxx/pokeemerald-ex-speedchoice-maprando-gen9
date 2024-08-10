@@ -94,9 +94,9 @@ PetalburgCity_Gym_EventScript_ReturnFromWallyTutorial::
 	msgbox PetalburgCity_Gym_Text_DadGoCollectBadges, MSGBOX_DEFAULT
 	setvar VAR_PETALBURG_GYM_STATE, 2
 	checkspeedchoice PLOTLESS, PLOT_KEEP
-	goto_if TRUE, EndOfWallyTutorial
+	goto_if_eq VAR_RESULT, TRUE, EndOfWallyTutorial
 	checkspeedchoice PLOTLESS, PLOT_SEMI
-	goto_if TRUE, EndOfWallyTutorial
+	goto_if_eq VAR_RESULT, TRUE, EndOfWallyTutorial
 	setvar VAR_PETALBURG_WOODS_STATE, 1
 	setflag FLAG_HIDE_PETALBURG_WOODS_DEVON_EMPLOYEE
 	setflag FLAG_HIDE_PETALBURG_WOODS_AQUA_GRUNT
@@ -391,7 +391,7 @@ PetalburgCity_Gym_EventScript_NormanBattle::
 	msgbox PetalburgCity_Gym_Text_NormanIntro, MSGBOX_DEFAULT
 	trainerbattle_no_intro TRAINER_NORMAN_1, PetalburgCity_Gym_Text_NormanDefeat
 	checkspeedchoice PLOTLESS, PLOT_KEEP
-	goto_if TRUE, AfterNorman
+	goto_if_eq VAR_RESULT, TRUE, AfterNorman
 	setvar VAR_WEATHER_INSTITUTE_STATE, 2
 	setflag FLAG_HIDE_ROUTE_119_TEAM_AQUA
 	clearflag FLAG_HIDE_WEATHER_INSTITUTE_1F_WORKERS

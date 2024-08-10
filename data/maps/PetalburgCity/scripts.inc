@@ -503,6 +503,7 @@ PetalburgCity_Movement_PlayerWalkToGym3:
 	step_end
 
 PetalburgCity_EventScript_Scott0::
+	goto PetalburgCity_EventScript_SkipScott
 	lockall
 	addobject LOCALID_SCOTT
 	setvar VAR_0x8008, 0
@@ -511,6 +512,7 @@ PetalburgCity_EventScript_Scott0::
 	end
 
 PetalburgCity_EventScript_Scott1::
+	goto PetalburgCity_EventScript_SkipScott
 	lockall
 	addobject LOCALID_SCOTT
 	setvar VAR_0x8008, 1
@@ -519,6 +521,7 @@ PetalburgCity_EventScript_Scott1::
 	end
 
 PetalburgCity_EventScript_Scott2::
+	goto PetalburgCity_EventScript_SkipScott
 	lockall
 	addobject LOCALID_SCOTT
 	setvar VAR_0x8008, 2
@@ -527,6 +530,7 @@ PetalburgCity_EventScript_Scott2::
 	end
 
 PetalburgCity_EventScript_Scott3::
+	goto PetalburgCity_EventScript_SkipScott
 	lockall
 	addobject LOCALID_SCOTT
 	setvar VAR_0x8008, 3
@@ -565,6 +569,11 @@ PetalburgCity_EventScript_Scott::
 	call_if_eq VAR_0x8008, 3, PetalburgCity_EventScript_ScottExit3
 	setvar VAR_SCOTT_PETALBURG_ENCOUNTER, 1
 	removeobject LOCALID_SCOTT
+	releaseall
+	end
+
+PetalburgCity_EventScript_SkipScott::
+	setvar VAR_SCOTT_STATE, 1
 	releaseall
 	end
 

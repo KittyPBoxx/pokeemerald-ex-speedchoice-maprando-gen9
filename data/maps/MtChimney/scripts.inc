@@ -79,7 +79,7 @@ MtChimney_EventScript_Maxie::
 	clearflag FLAG_HIDE_MT_CHIMNEY_LAVA_COOKIE_LADY
 	@ we only need to do this for Semi, since the player can do gym 5 on Early Surf, and thus use the Weather Institute early.
 	checkspeedchoice PLOTLESS, PLOT_SEMI
-	goto_if FALSE, AfterChimney
+	goto_if_eq VAR_RESULT, FALSE, AfterChimney
 	setvar VAR_WEATHER_INSTITUTE_STATE, 2
 	setflag FLAG_HIDE_ROUTE_119_TEAM_AQUA
 	clearflag FLAG_HIDE_WEATHER_INSTITUTE_1F_WORKERS
