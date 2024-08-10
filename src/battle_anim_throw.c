@@ -1223,6 +1223,7 @@ static void SpriteCB_Ball_MonShrink_Step(struct Sprite *sprite)
     default:
         if (gTasks[taskId].data[1] > 10)
         {
+            UpdateBattlePalettesWithTime(PALETTES_ALL);
             DestroyTask(taskId);
             StartSpriteAnim(sprite, 2);
             sprite->data[5] = 0;
