@@ -177,6 +177,7 @@ static void TransitionMapMusic(void);
 static u8 GetAdjustedInitialTransitionFlags(struct InitialPlayerAvatarState *, u16, u8);
 static u8 GetAdjustedInitialDirection(struct InitialPlayerAvatarState *, u8, u16, u8);
 static u16 GetCenterScreenMetatileBehavior(void);
+static void applyFlashTints(u8 flashLevel);
 
 static void *sUnusedOverworldCallback;
 static u8 sPlayerLinkStates[MAX_LINK_PLAYERS];
@@ -1062,6 +1063,8 @@ void SetFlashLevel(s32 flashLevel)
     if (flashLevel < 0 || flashLevel > gMaxFlashLevel)
         flashLevel = 0;
     gSaveBlock1Ptr->flashLevel = flashLevel;
+
+    applyFlashTints(flashLevel);
 }
 
 u8 GetFlashLevel(void)
@@ -1556,6 +1559,10 @@ u8 UpdateTimeOfDay(void)
     RtcCalcLocalTime();
     hours = gLocalTime.hours;
     minutes = gLocalTime.minutes;
+
+    if (GetFlashLevel())
+        return gTimeOfDay;
+
     if (hours < 4) 
     { // night
         currentTimeBlend.weight = 256;
@@ -1628,8 +1635,10 @@ void UpdateAltBgPalettes(u16 palettes)
     palettes >>= 1; // start at palette 1
     if (!palettes)
         return;
-    while (palettes) {
-        if (palettes & 1) {
+    while (palettes) 
+    {
+        if (palettes & 1) 
+        {
             if (i < NUM_PALS_IN_PRIMARY)
                 AvgPaletteWeighted(&((u16*)primary->palettes)[i*16], &((u16*)primary->palettes)[((i+9)%16)*16], gPlttBufferUnfaded + i * 16, currentTimeBlend.altWeight);
             else
@@ -1665,7 +1674,7 @@ void UpdatePalettesWithTime(u32 palettes)
 
 void UpdateBattlePalettesWithTime(u32 palettes) 
 {
-  if (MapHasNaturalLight(gMapHeader.mapType) &&  !(currentTimeBlend.time0 == TIME_OF_DAY_DAY  && currentTimeBlend.time1 == TIME_OF_DAY_DAY)) 
+  if (MapHasNaturalLight(gMapHeader.mapType) && !(currentTimeBlend.time0 == TIME_OF_DAY_DAY  && currentTimeBlend.time1 == TIME_OF_DAY_DAY)) 
   {
     u32 i;
     u32 mask = 1 << 16;
@@ -1686,9 +1695,69 @@ void UpdateBattlePalettesWithTime(u32 palettes)
   }
 }
 
+static void applyFlashTints(u8 flashLevel)
+{
+    u32 i;
+    u32 palettes = PALETTES_ALL;
+    u32 mask = 1 << 16;
+    if (palettes >= 0x10000)
+      for (i = 0; i < 16; i++, mask <<= 1)
+        if (GetSpritePaletteTagByPaletteNum(i) >> 15) // Don't blend special sprite palette tags
+          palettes &= ~(mask);
+
+    if (GetFlashLevel() > 2)
+    {
+        currentTimeBlend.weight = 256;
+        currentTimeBlend.altWeight = 0;
+        gTimeOfDay = currentTimeBlend.time0 = currentTimeBlend.time1 = TIME_OF_DAY_NIGHT;
+    }
+    else 
+    {
+        currentTimeBlend.time0 = TIME_OF_DAY_TWILIGHT;
+        currentTimeBlend.time1 = TIME_OF_DAY_DAY;
+        currentTimeBlend.weight = 200;
+        currentTimeBlend.altWeight = (256 - currentTimeBlend.weight) / 2 + 128;
+        gTimeOfDay = TIME_OF_DAY_DAY;
+    }
+
+    palettes &= 0xFFFF1FFF; // Don't blend UI BG palettes [13,15]
+    if (palettes)
+    {
+        TimeMixPalettes(palettes,
+        gPlttBufferUnfaded,
+        gPlttBufferFaded,
+      (struct BlendSettings *)&gTimeOfDayBlend[currentTimeBlend.time0],
+      (struct BlendSettings *)&gTimeOfDayBlend[currentTimeBlend.time1],
+        currentTimeBlend.weight);
+    }
+
+    const struct Tileset *primary = gMapHeader.mapLayout->primaryTileset;
+    const struct Tileset *secondary = gMapHeader.mapLayout->secondaryTileset;
+    i = 1;
+    palettes &= ~((1 << NUM_PALS_IN_PRIMARY) - 1) | primary->swapPalettes;
+    palettes &= ((1 << NUM_PALS_IN_PRIMARY) - 1) | (secondary->swapPalettes << NUM_PALS_IN_PRIMARY);
+    palettes &= 0x1FFE; // don't blend palette 0, [13,15]
+    palettes >>= 1; // start at palette 1
+    if (palettes)
+    {
+        while (palettes) 
+        {
+            if (palettes & 1) 
+            {
+                if (i < NUM_PALS_IN_PRIMARY)
+                    AvgPaletteWeighted(&((u16*)primary->palettes)[i*16], &((u16*)primary->palettes)[((i+9)%16)*16], gPlttBufferUnfaded + i * 16, currentTimeBlend.altWeight);
+                else
+                    AvgPaletteWeighted(&((u16*)secondary->palettes)[i*16], &((u16*)secondary->palettes)[((i+9)%16)*16], gPlttBufferUnfaded + i * 16, currentTimeBlend.altWeight);
+            }
+            i++;
+            palettes >>= 1;
+        }
+    }
+}
+
 u8 UpdateSpritePaletteWithTime(u8 paletteNum) 
 {
-  if (MapHasNaturalLight(gMapHeader.mapType)) 
+  if (MapHasNaturalLight(gMapHeader.mapType) || GetFlashLevel()) 
   {
     u16 offset;
     if (GetSpritePaletteTagByPaletteNum(paletteNum) >> 15)
@@ -1712,10 +1781,15 @@ static void OverworldBasic(void)
     CameraUpdate();
     UpdateCameraPanning();
     BuildOamBuffer();
+
+    // Prevents bug where sprite palettes are getting set to wrong time of day
+    if (MapHasNaturalLight(gMapHeader.mapType) || GetFlashLevel())
+        gPaletteFade.mode = 3;
+
     UpdatePaletteFade();
     UpdateTilesetAnimations();
     DoScheduledBgTilemapCopiesToVram();
-    if (!gPaletteFade.active && ++gTimeUpdateCounter >= 3600) 
+    if (!gPaletteFade.active && ++gTimeUpdateCounter >= 3600 && MapHasNaturalLight(gMapHeader.mapType)) 
     {
         // Every minute if no palette fade is active, update TOD blending as needed
         struct TimeBlendSettings cachedBlend = {
@@ -1730,11 +1804,6 @@ static void OverworldBasic(void)
             UpdateAltBgPalettes(PALETTES_BG); 
             UpdatePalettesWithTime(PALETTES_ALL);
         }
-    }
-    else if (!gPaletteFade.active && gTimeUpdateCounter % 30 == 0 && !(currentTimeBlend.time0 == TIME_OF_DAY_DAY && currentTimeBlend.time1 == TIME_OF_DAY_DAY) && MapHasNaturalLight(gMapHeader.mapType))
-    {
-        // Prevents bug where sprite palettes are getting set to wrong time of day
-        UpdatePalettesWithTime(PALETTES_ALL);
     }
 }
 
@@ -2077,8 +2146,16 @@ static void InitCurrentFlashLevelScanlineEffect(void)
     }
     else if ((flashLevel = GetFlashLevel()))
     {
-        WriteFlashScanlineEffectBuffer(flashLevel);
-        ScanlineEffect_SetParams(sFlashEffectParams);
+        if (gMapHeader.mapLayoutId == LAYOUT_DEWFORD_TOWN_GYM)
+        {
+            WriteFlashScanlineEffectBuffer(flashLevel);
+            ScanlineEffect_SetParams(sFlashEffectParams);
+            applyFlashTints(6);
+        }
+        else 
+        {
+            applyFlashTints(flashLevel);
+        }
     }
 }
 
