@@ -14123,4 +14123,53 @@ const struct Item gItemsInfo[] =
         .iconPic = gItemIcon_SleepingBag,
         .iconPalette = gItemIconPalette_SleepingBag,
     },
+
+    [ITEM_FLY_TOOL] =
+    {
+        .name = _("Eon Flute"),
+        .price = 0,
+        .description = COMPOUND_STRING(
+            "Use FLY\n"
+            "outside battle."),
+        .type = ITEM_USE_FIELD,
+        .importance = 1,
+        .pocket = POCKET_KEY_ITEMS,
+        .fieldUseFunc = ItemUseOutOfBattle_FlyTool,
+        .secondaryId = 0,
+        .iconPic = gItemIcon_PokeFlute,
+        .iconPalette = gItemIconPalette_PokeFlute,
+    },
+
+    [ITEM_TELEPORT_TOOL] =
+    {
+        .name = _("Teleporter"),
+        .price = 0,
+        .description = COMPOUND_STRING(
+            "Use TELEPORT\n"
+            "outside battle."),
+        .type = ITEM_USE_FIELD,   
+        .importance = 1,
+        .pocket = POCKET_KEY_ITEMS,
+        .fieldUseFunc = ItemUseOutOfBattle_TeleportTool,
+        .secondaryId = 0,
+        .iconPic = gItemIcon_FameChecker,
+        .iconPalette = gItemIconPalette_FameChecker,
+    },
+
+    [ITEM_SWEETSCENT_TOOL] =
+    {
+        .name = _("Scent Pouch"),
+        .price = 0,
+        .description = COMPOUND_STRING(
+            "Use SWEETSCENT\n"
+            "outside battle."),
+        .type = ITEM_USE_FIELD,   
+        .importance = 1,
+        .pocket = POCKET_KEY_ITEMS,
+        .fieldUseFunc = ItemUseOutOfBattle_SweetScentTool,
+        .secondaryId = 0,
+        .iconPic = gItemIcon_BerryPouch,
+        .iconPalette = gItemIconPalette_BerryPouch,
+    },
+
 };

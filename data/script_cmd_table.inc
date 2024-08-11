@@ -231,6 +231,7 @@ gScriptCmdTable::
 	.4byte ScrCmd_dynmultipush                      @ 0xe4
 	.4byte ScrCmd_checkspeedchoice                  @ 0xe5 speedchoice addition
 	.4byte ScrCmd_callfunc                  		@ 0xe6
+	.4byte ScrCmd_checkpartylearnknowsfieldmove     @ 0xe7 qol_field_moves
 
 gScriptCmdTableEnd::
 	.4byte ScrCmd_nop

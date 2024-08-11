@@ -77,6 +77,10 @@
 #define FLDEFF_TRACKS_BUG                72
 #define FLDEFF_SAVING					 73
 #define FLDEFF_USE_HEADBUTT              74
+#define FLDEFF_USE_SURF_TOOL             75
+#define FLDEFF_USE_WATERFALL_TOOL        76
+#define FLDEFF_USE_DIVE_TOOL             77
+#define FLDEFF_USE_TELEPORT_TOOL         78
 
 #define FLDEFFOBJ_SHADOW_S              0
 #define FLDEFFOBJ_SHADOW_M              1

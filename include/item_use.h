@@ -62,4 +62,11 @@ enum {
 bool32 CanThrowBall(void);
 bool32 CannotUseItemsInBattle(u16 itemId, struct Pokemon *mon);
 
+void ItemUseOutOfBattle_FlyTool(u8);
+
+void ItemUseOutOfBattle_TeleportTool(u8);
+
+void ItemUseOutOfBattle_SweetScentTool(u8);
+void ItemUseOnFieldCB_SweetScentTool(u8);
+
 #endif // GUARD_ITEM_USE_H

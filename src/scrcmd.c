@@ -55,6 +55,7 @@
 #include "speedchoice.h"
 #include "done_button.h"
 #include "day_night.h"
+#include "qol_field_moves.h"
 
 typedef u16 (*SpecialFunc)(void);
 typedef void (*NativeFunc)(struct ScriptContext *ctx);
@@ -2504,6 +2505,15 @@ bool8 ScrCmd_warpwhitefade(struct ScriptContext *ctx)
     DoWhiteFadeWarp();
     ResetInitialPlayerAvatarState();
     return TRUE;
+}
+
+bool8 ScrCmd_checkpartylearnknowsfieldmove(struct ScriptContext *ctx)
+{
+    u16 machine = ScriptReadHalfword(ctx);
+
+    PartyHasMonLearnsKnowsFieldMove(machine);
+
+    return FALSE;
 }
 
 bool8 ScrCmd_checkspeedchoice(struct ScriptContext *ctx)
