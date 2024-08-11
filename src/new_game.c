@@ -202,7 +202,8 @@ void NewGameInitData(void)
     ZeroPlayerPartyMons();
     ResetPokemonStorageSystem();
     DeactivateAllRoamers();
-    gSaveBlock1Ptr->registeredItem = ITEM_NONE;
+    gSaveBlock1Ptr->registeredItemCompat = ITEM_NONE;
+    memset(gSaveBlock1Ptr->registeredItems, 0, sizeof(gSaveBlock1Ptr->registeredItems));
     ClearBag();
     NewGameInitPCItems();
     ClearPokeblocks();
@@ -248,7 +249,8 @@ void NewGameInitData(void)
 
     FlagSet(FLAG_DISABLE_FOLLOWER);
 
-    gSaveBlock1Ptr->registeredItem = ITEM_MACH_BIKE;
+    gSaveBlock1Ptr->registeredItemCompat = ITEM_MACH_BIKE;
+    gSaveBlock1Ptr->registeredItems[0] = ITEM_MACH_BIKE;
 }
 
 static void ResetMiniGamesRecords(void)
