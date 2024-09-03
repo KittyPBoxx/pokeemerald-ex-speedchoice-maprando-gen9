@@ -40,17 +40,22 @@ MossdeepCity_StevensHouse_EventScript_StevenGivesDive::
 	applymovement LOCALID_STEVEN, MossdeepCity_StevensHouse_Movement_StevenApproachPlayer
 	waitmovement 0
 	msgbox MossdeepCity_StevensHouse_Text_YouveEarnedHMDive, MSGBOX_DEFAULT
+gGiveKeyItem_HM_DIVE::
 	giveitem ITEM_HM_DIVE
 	setflag FLAG_RECEIVED_HM_DIVE
     @ speedchoice benefits regardless of settings
     @ give the player the event items.
 	setflag FLAG_ENABLE_SHIP_SOUTHERN_ISLAND
+gGiveKeyItem_EON_TICKET::
 	giveitem ITEM_EON_TICKET
 	setflag FLAG_ENABLE_SHIP_BIRTH_ISLAND
+gGiveKeyItem_AURORA_TICKET::
 	giveitem ITEM_AURORA_TICKET
 	setflag FLAG_ENABLE_SHIP_FARAWAY_ISLAND
+gGiveKeyItem_OLD_SEA_MAP::
 	giveitem ITEM_OLD_SEA_MAP
 	setflag FLAG_ENABLE_SHIP_NAVEL_ROCK
+gGiveKeyItem_MYSTIC_TICKET::
 	giveitem ITEM_MYSTIC_TICKET
 	setflag FLAG_OMIT_DIVE_FROM_STEVEN_LETTER
 	msgbox MossdeepCity_StevensHouse_Text_ExplainDive, MSGBOX_DEFAULT

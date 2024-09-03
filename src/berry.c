@@ -14,6 +14,7 @@
 #include "text.h"
 #include "constants/event_object_movement.h"
 #include "constants/items.h"
+#include "upr_support.h"
 
 static u16 BerryTypeToItemId(u16 berry);
 static u8 BerryTreeGetNumStagesWatered(struct BerryTree *tree);
@@ -2127,6 +2128,10 @@ void ObjectEventInteractionGetBerryTreeData(void)
     else
         gSpecialVar_0x8004 = GetStageByBerryTreeId(id);
     gSpecialVar_0x8005 = GetNumStagesWateredByBerryTreeId(id);
+
+    if (handleRandomizedBerryTreeDataText(id, GetBerryCountByBerryTreeId(id), berry))
+        return;
+
     gSpecialVar_0x8006 = GetBerryCountByBerryTreeId(id);
     CopyItemNameHandlePlural(BerryTypeToItemId(berry), gStringVar1, gSpecialVar_0x8006);
 }
@@ -2142,6 +2147,10 @@ void ObjectEventInteractionGetBerryCountString(void)
     u8 treeId = GetObjectEventBerryTreeId(gSelectedObjectEvent);
     u8 berry = GetBerryTypeByBerryTreeId(treeId);
     u8 count = GetBerryCountByBerryTreeId(treeId);
+
+    if (handleRandomizedBerryTreeItemCountText(treeId, count, berry))
+        return;
+
     CopyItemNameHandlePlural(BerryTypeToItemId(berry), gStringVar1, count);
     berry = GetTreeMutationValue(treeId);
     if (berry > 0)
@@ -2185,6 +2194,9 @@ void ObjectEventInteractionPickBerryTree(void)
     u8 id = GetObjectEventBerryTreeId(gSelectedObjectEvent);
     u8 berry = GetBerryTypeByBerryTreeId(id);
     u8 mutation = GetTreeMutationValue(id);
+
+    if (handleRandomizedBerryTreeGive(id, GetBerryCountByBerryTreeId(id), berry))
+        return;
 
     if (!OW_BERRY_MUTATIONS || mutation == 0)
     {

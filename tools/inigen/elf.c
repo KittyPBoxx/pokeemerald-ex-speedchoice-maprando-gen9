@@ -244,10 +244,15 @@ void InitElf(FILE * file)
 {
     elfFile = file;
 
+    fprintf(stderr, "Reading ELF header\n");
     ReadElfHeader();
+    fprintf(stderr, "Reading program headers\n");
     ReadProgramHeaders();
+    fprintf(stderr, "Reading section headers\n");
     ReadSectionHeaders();
+    fprintf(stderr, "Reading string tables\n");
     ReadStringTables();
+    fprintf(stderr, "Reading symbols\n");
     ReadSymbols();
 }
 

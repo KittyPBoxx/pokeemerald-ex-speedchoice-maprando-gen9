@@ -555,3 +555,4 @@ gSpecials::
 	def_special Script_GetChosenMonOffensiveIVs
 	def_special Script_GetChosenMonDefensiveIVs
 	def_special HeadbuttWildEncounter
+	def_special Special_AskFossils

@@ -484,6 +484,7 @@ Route110_Speedchoice_MayGiveFlyHM::
 	end
 
 Route110_Speedchoice_MayGiveItemfinder::
+gGiveKeyItem_ITEM_FINDER_May::
 	giveitem ITEM_ITEMFINDER
 	setflag FLAG_RECEIVED_HM_FLY
 	msgbox Route110_Text_MayExplainItemfinder, MSGBOX_DEFAULT
@@ -498,6 +499,7 @@ Route110_Speedchoice_BrendanGiveFlyHM::
 	end
 
 Route110_Speedchoice_BrendanGiveItemfinder::
+gGiveKeyItem_ITEM_FINDER_Brendan::
 	giveitem ITEM_ITEMFINDER
 	setflag FLAG_RECEIVED_HM_FLY
 	msgbox Route110_Text_BrendanExplainItemfinder, MSGBOX_DEFAULT

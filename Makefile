@@ -37,7 +37,7 @@ EXE :=
 endif
 
 TITLE        := POKEMON EMER
-GAME_CODE    := SPDC
+GAME_CODE    := SPDX
 MAKER_CODE   := 01
 REVISION     := 0
 MODERN       ?= 1

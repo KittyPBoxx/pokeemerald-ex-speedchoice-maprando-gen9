@@ -142,6 +142,7 @@ Route119_EventScript_DefeatedBrendan::
 	end
 
 Route119_Speedchoice_MayGiveFlyHM::
+gGiveKeyItem_HM02_May::
 	giveitem ITEM_HM02
 	setflag FLAG_RECEIVED_HM_FLY
 	msgbox Route119_Text_MayExplainFly, MSGBOX_DEFAULT
@@ -156,6 +157,7 @@ Route119_Speedchoice_MayGiveItemfinder::
 	end
 
 Route119_Speedchoice_BrendanGiveFlyHM::
+gGiveKeyItem_HM02_Brendan::
 	giveitem ITEM_HM02
 	setflag FLAG_RECEIVED_HM_FLY
 	msgbox Route119_Text_BrendanExplainFly, MSGBOX_DEFAULT

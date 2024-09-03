@@ -64,6 +64,7 @@ RusturfTunnel_EventScript_ClearTunnelScene::
 	call_if_eq VAR_TEMP_1, 3, RusturfTunnel_EventScript_WandasBoyfriendApproachPlayer
 	checkspeedchoice EARLYSURF, SURF_ON
 	goto_if_eq VAR_RESULT, TRUE, Speedchoice_EarlySurf2
+gGiveKeyItem_HM04::
 	giveitem ITEM_HM04
 	setflag FLAG_RECEIVED_HM_STRENGTH
 	goto AfterEarlySurf2
@@ -316,6 +317,7 @@ RusturfTunnel_EventScript_Grunt::
 	msgbox RusturfTunnel_Text_GruntIntro, MSGBOX_DEFAULT
 	trainerbattle_no_intro TRAINER_GRUNT_RUSTURF_TUNNEL, RusturfTunnel_Text_GruntDefeat
 	msgbox RusturfTunnel_Text_GruntTakePackage, MSGBOX_DEFAULT
+gGiveKeyItem_DEVON_GOODS::
 	giveitem ITEM_DEVON_GOODS
 	closemessage
 	applymovement OBJ_EVENT_ID_PLAYER, RusturfTunnel_Movement_PushPlayerAsideForGrunt

@@ -60,8 +60,20 @@ MossdeepCity_EventScript_Woman::
 	end
 
 MossdeepCity_EventScript_WhiteRock::
+    checkitem ITEM_ODD_KEYSTONE, 1
+	goto_if_eq VAR_RESULT, TRUE, MossdeepCity_DoSpiritombEncounter
 	msgbox MossdeepCity_Text_ItsAWhiteRock, MSGBOX_SIGN
 	end
+
+MossdeepCity_DoSpiritombEncounter::
+	playmoncry SPECIES_SPIRITOMB, 0
+	msgbox MossdeepCity_Text_SpiritombEncounter, MSGBOX_DEFAULT
+	waitmoncry
+    waitbuttonpress
+    setwildbattle SPECIES_SPIRITOMB, 25, ITEM_NONE
+	dowildbattle
+	removeitem ITEM_ODD_KEYSTONE
+    end
 
 MossdeepCity_EventScript_GymSign::
 	msgbox MossdeepCity_Text_GymSign, MSGBOX_SIGN
@@ -235,6 +247,7 @@ MossdeepCity_EventScript_KingsRockBoy::
 	msgbox MossdeepCity_Text_WantKingsRockStevenGaveMe, MSGBOX_YESNO
 	goto_if_eq VAR_RESULT, NO, MossdeepCity_EventScript_DeclineKingsRock
 	msgbox MossdeepCity_Text_YouCanKeepIt, MSGBOX_DEFAULT
+gGiveItem_8::
 	giveitem ITEM_KINGS_ROCK
 	goto_if_eq VAR_RESULT, FALSE, Common_EventScript_ShowBagIsFull
 	setflag FLAG_RECEIVED_KINGS_ROCK
@@ -433,3 +446,5 @@ MossdeepCity_Text_SootopolisNewGymLeader:
 	.string "People tell me the new LEADER once\n"
 	.string "mentored WALLACE.$"
 
+MossdeepCity_Text_SpiritombEncounter:
+    .string "Yulaaah!$" @ ugh stupid preproc not recognizing that...

@@ -17,6 +17,7 @@ DesertUnderpass_EventScript_Fossil::
 	end
 
 DesertUnderpass_EventScript_GiveClawFossil::
+gGiveItem_1::
 	giveitem ITEM_CLAW_FOSSIL
 	goto_if_eq VAR_RESULT, FALSE, Common_EventScript_ShowBagIsFull
 	removeobject LOCALID_FOSSIL
@@ -24,6 +25,7 @@ DesertUnderpass_EventScript_GiveClawFossil::
 	end
 
 DesertUnderpass_EventScript_GiveRootFossil::
+gGiveItem_2::
 	giveitem ITEM_ROOT_FOSSIL
 	goto_if_eq VAR_RESULT, FALSE, Common_EventScript_ShowBagIsFull
 	removeobject LOCALID_FOSSIL

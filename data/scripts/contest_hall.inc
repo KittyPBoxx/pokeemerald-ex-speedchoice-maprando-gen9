@@ -30,6 +30,7 @@ LilycoveCity_ContestLobby_EventScript_ReceptionWelcome::
 
 LilycoveCity_ContestLobby_EventScript_GivePokeblockCase::
 	msgbox LilycoveCity_ContestLobby_Text_ReceptionDontHavePokeblockCase, MSGBOX_DEFAULT
+gGiveKeyItem_POKEBLOCK_CASE::
 	giveitem ITEM_POKEBLOCK_CASE
 	goto_if_eq VAR_RESULT, FALSE, Common_EventScript_ShowBagIsFull
 	setflag FLAG_RECEIVED_POKEBLOCK_CASE
@@ -43,6 +44,7 @@ LilycoveCity_ContestLobby_EventScript_PickUpPrize::
 	end
 
 LilycoveCity_ContestLobby_EventScript_GiveLuxuryBallAtCounter::
+gGiveItem_51_Counter::
 	giveitem ITEM_LUXURY_BALL
 	goto_if_eq VAR_RESULT, FALSE, LilycoveCity_ContestLobby_EventScript_NoRoomForLuxuryBallAtCounter
 	setvar VAR_CONTEST_PRIZE_PICKUP, 0
@@ -1150,6 +1152,7 @@ ContestHall_EventScript_NoRoomForLuxuryBall::
 	return
 
 ContestHall_EventScript_GiveLuxuryBall::
+gGiveItem_51::
 	giveitem ITEM_LUXURY_BALL
 	goto_if_eq VAR_RESULT, FALSE, ContestHall_EventScript_NoRoomForLuxuryBall
 	lockall

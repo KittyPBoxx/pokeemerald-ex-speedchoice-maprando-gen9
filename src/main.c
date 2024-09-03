@@ -34,6 +34,8 @@
 #include "new_game.h"
 #include "io_reg.h"
 #include "bike.h"
+#include "boot_error_screen.h"
+#include "AgbAccuracy.h"
 
 static void VBlankIntr(void);
 static void HBlankIntr(void);
@@ -86,6 +88,9 @@ static EWRAM_DATA u16 sTrainerId = 0;
 //EWRAM_DATA void (**gFlashTimerIntrFunc)(void) = NULL;
 EWRAM_DATA u8 gSoftResetFlag;
 
+// 0 for accurate. Non 0 will bring up the error screen.
+EWRAM_DATA u64 gAgbAccuracyResult = 0;
+
 static void DoSoftResetWithoutRTCReset(void);
 static void UpdateLinkAndCallCallbacks(void);
 static void InitMainCallbacks(void);
@@ -112,6 +117,10 @@ void AgbMain()
     REG_WAITCNT = WAITCNT_PREFETCH_ENABLE | WAITCNT_WS0_S_1 | WAITCNT_WS0_N_3;
     InitKeys();
     InitIntrHandlers();
+
+    if(!gSoftResetFlag)
+        gAgbAccuracyResult = RunAgbAccuracyTests(TEST_MASK(TEST_TIMER_PRESCALER) | TEST_MASK(TEST_INSN_PREFETCH)); // only do first 2 tests
+
     m4aSoundInit();
     EnableVCountIntrAtLine150();
     InitRFU();
@@ -128,6 +137,13 @@ void AgbMain()
     InitHeap(gHeap, HEAP_SIZE);
 
     gSoftResetDisabled = FALSE;
+
+    if (gFlashMemoryPresent == FALSE)
+        gWhichErrorMessage = FATAL_NO_FLASH;
+    else if (gAgbAccuracyResult)
+        gWhichErrorMessage = FATAL_ACCU_FAIL;
+    else
+        gWhichErrorMessage = FATAL_OKAY;
 
     if (gFlashMemoryPresent != TRUE)
         SetMainCallback2(NULL);

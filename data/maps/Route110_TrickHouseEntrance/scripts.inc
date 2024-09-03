@@ -338,6 +338,7 @@ Route110_TrickHouseEntrance_EventScript_GiveReward::
 	end
 
 Route110_TrickHouseEntrance_EventScript_GivePuzzle1Reward::
+gGiveItem_18_trick1_start::
 	giveitem ITEM_RARE_CANDY
 	goto_if_eq VAR_RESULT, TRUE, Route110_TrickHouseEntrance_EventScript_GotReward
 	call_if_eq VAR_RESULT, FALSE, Common_EventScript_BagIsFull
@@ -346,6 +347,7 @@ Route110_TrickHouseEntrance_EventScript_GivePuzzle1Reward::
 	end
 
 Route110_TrickHouseEntrance_EventScript_GivePuzzle2Reward::
+gGiveItem_19_trick2_start::
 	giveitem ITEM_TIMER_BALL
 	goto_if_eq VAR_RESULT, TRUE, Route110_TrickHouseEntrance_EventScript_GotReward
 	call_if_eq VAR_RESULT, FALSE, Common_EventScript_BagIsFull
@@ -354,6 +356,7 @@ Route110_TrickHouseEntrance_EventScript_GivePuzzle2Reward::
 	end
 
 Route110_TrickHouseEntrance_EventScript_GivePuzzle3Reward::
+gGiveItem_20_trick3_start::
 	giveitem ITEM_HARD_STONE
 	goto_if_eq VAR_RESULT, TRUE, Route110_TrickHouseEntrance_EventScript_GotReward
 	call_if_eq VAR_RESULT, FALSE, Common_EventScript_BagIsFull
@@ -362,6 +365,7 @@ Route110_TrickHouseEntrance_EventScript_GivePuzzle3Reward::
 	end
 
 Route110_TrickHouseEntrance_EventScript_GivePuzzle4Reward::
+gGiveItem_21_trick4_start::
 	giveitem ITEM_SMOKE_BALL
 	goto_if_eq VAR_RESULT, TRUE, Route110_TrickHouseEntrance_EventScript_GotReward
 	call_if_eq VAR_RESULT, FALSE, Common_EventScript_BagIsFull
@@ -370,6 +374,7 @@ Route110_TrickHouseEntrance_EventScript_GivePuzzle4Reward::
 	end
 
 Route110_TrickHouseEntrance_EventScript_GivePuzzle5Reward::
+gGiveItem_22_trick5_start::
 	giveitem ITEM_TM_TAUNT
 	goto_if_eq VAR_RESULT, TRUE, Route110_TrickHouseEntrance_EventScript_GotReward
 	call_if_eq VAR_RESULT, FALSE, Common_EventScript_BagIsFull
@@ -378,6 +383,7 @@ Route110_TrickHouseEntrance_EventScript_GivePuzzle5Reward::
 	end
 
 Route110_TrickHouseEntrance_EventScript_GivePuzzle6Reward::
+gGiveItem_23_trick6_start::
 	giveitem ITEM_MAGNET
 	goto_if_eq VAR_RESULT, TRUE, Route110_TrickHouseEntrance_EventScript_GotReward
 	call_if_eq VAR_RESULT, FALSE, Common_EventScript_BagIsFull
@@ -386,6 +392,7 @@ Route110_TrickHouseEntrance_EventScript_GivePuzzle6Reward::
 	end
 
 Route110_TrickHouseEntrance_EventScript_GivePuzzle7Reward::
+gGiveItem_24_trick7_start::
 	giveitem ITEM_PP_MAX
 	goto_if_eq VAR_RESULT, TRUE, Route110_TrickHouseEntrance_EventScript_GotReward
 	call_if_eq VAR_RESULT, FALSE, Common_EventScript_BagIsFull

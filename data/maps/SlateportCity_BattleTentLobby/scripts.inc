@@ -204,6 +204,7 @@ SlateportCity_BattleTentLobby_EventScript_TormentGiver::
 	giveitem ITEM_TM_TORMENT
 	goto_if_eq VAR_RESULT, FALSE, Common_EventScript_ShowBagIsFull
 	setflag FLAG_RECEIVED_TM_TORMENT
+gTMText_12::
 	msgbox SlateportCity_BattleTentLobby_Text_ExplainTorment, MSGBOX_DEFAULT
 	release
 	end

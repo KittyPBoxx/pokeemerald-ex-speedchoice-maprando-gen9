@@ -48,6 +48,7 @@
 #include "speedchoice.h"
 #include "constants/items.h"
 #include "done_button.h"
+#include "upr_support.h"
 
 extern const u8 EventScript_ResetAllMapFlags[];
 
@@ -225,6 +226,9 @@ void NewGameInitData(void)
     WipeTrainerNameRecords();
     ResetTrainerHillResults();
     ResetContestLinkResults();
+
+    // UPR Support Setup
+    handleRandomizedBerryTreeSetup();
 
     // ADD SPEEDCHOICE EXTRAS
     AddBagItem(ITEM_DONE_BUTTON, 1);

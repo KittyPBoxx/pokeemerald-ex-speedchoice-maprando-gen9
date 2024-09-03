@@ -60,6 +60,7 @@
 #include "map_name_popup.h"
 #include "battle_script_commands.h"
 #include "rtc.h"
+#include "upr_support.h"
 
 // this file was known as evobjmv.c in Game Freak's original source
 
@@ -2694,9 +2695,13 @@ void TrySpawnObjectEvents(s16 cameraX, s16 cameraY)
             if (top <= npcY && bottom >= npcY && left <= npcX && right >= npcX && !FlagGet(template->flagId)) 
             {
                 if (template->graphicsId == OBJ_EVENT_GFX_LIGHT_SPRITE) 
-                {  // light sprite instead
-                    SpawnLightSprite(npcX, npcY, cameraX, cameraY, template->trainerRange_berryTreeId);
-                } else
+                    SpawnLightSprite(npcX, npcY, cameraX, cameraY, template->trainerRange_berryTreeId); 
+                else if (template->graphicsId == OBJ_EVENT_GFX_ZIGZAGOON_1)
+                {   // So we can randomize the sprite chasing birch
+                    template->graphicsId = gUprStaticVars[BATTLE_TUTORIAL_OPPONENT_INDEX] + OBJ_EVENT_GFX_MON_BASE;
+                    TrySpawnObjectEventTemplate(template, gSaveBlock1Ptr->location.mapNum, gSaveBlock1Ptr->location.mapGroup, cameraX, cameraY);
+                }
+                else
                     TrySpawnObjectEventTemplate(template, gSaveBlock1Ptr->location.mapNum, gSaveBlock1Ptr->location.mapGroup, cameraX, cameraY);
             }
         }
@@ -2970,7 +2975,9 @@ static void SetBerryTreeGraphics(struct ObjectEvent *objectEvent, struct Sprite 
     {
         objectEvent->invisible = FALSE;
         sprite->invisible = FALSE;
-        berryId = GetBerryTypeByBerryTreeId(objectEvent->trainerRange_berryTreeId) - 1;
+        //berryId = GetBerryTypeByBerryTreeId(objectEvent->trainerRange_berryTreeId) - 1;
+        berryId = handleRandomizedBerryTreeGraphics(GetBerryTypeByBerryTreeId(objectEvent->trainerRange_berryTreeId), objectEvent->trainerRange_berryTreeId) - 1;
+
         berryStage--;
         if (berryId > ITEM_TO_BERRY(LAST_BERRY_INDEX))
             berryId = 0;

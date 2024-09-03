@@ -30,6 +30,7 @@ RustboroCity_Gym_EventScript_GiveRockTomb::
 	goto_if_eq VAR_RESULT, TRUE, RoxanneNoAqualess
 	checkspeedchoice PLOTLESS, PLOT_SEMI
 	goto_if_eq VAR_RESULT, TRUE, RoxanneNoAqualess
+gGiveKeyItem_LETTER_Roxanne::
 	giveitem ITEM_LETTER
 	@ give pokenav
 	message RustboroCity_DevonCorp_3F_Text_ReceivedPokenav
@@ -64,6 +65,7 @@ RoxanneNoAqualess::
 	giveitem ITEM_TM_ROCK_TOMB
 	goto_if_eq VAR_RESULT, FALSE, Common_EventScript_ShowBagIsFull
 	setflag FLAG_RECEIVED_TM_ROCK_TOMB
+gTMText_10::
 	msgbox RustboroCity_Gym_Text_ExplainRockTomb, MSGBOX_DEFAULT
 	release
 	end

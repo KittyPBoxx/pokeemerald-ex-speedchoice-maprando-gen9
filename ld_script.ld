@@ -363,6 +363,9 @@ SECTIONS {
         src/day_night.o(.text);
         src/speedchoice.o(.text);
         src/done_button.o(.text);
+        src/boot_error_screen.o(.text);
+        src/AgbAccuracy.o(.text);
+        src/special_fossils.o(.text);
     } > ROM =0
 
     script_data :
@@ -731,6 +734,9 @@ SECTIONS {
         src/speedchoice.o(.rodata);
         src/done_button.o(.rodata);
         data/rando_cv.o(.rodata);
+        src/AgbAccuracy.o(.rodata);
+        src/boot_error_screen.o(.rodata);
+        src/special_fossils.o(.rodata);
         src/m4a_tables.o(.rodata);
         data/sound_data.o(.rodata);
         src/pokemon_sprite_visualizer.o(.rodata);

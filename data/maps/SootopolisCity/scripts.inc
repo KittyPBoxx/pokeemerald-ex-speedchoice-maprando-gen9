@@ -745,6 +745,7 @@ SootopolisCity_EventScript_KiriGiveBerry::
 	end
 
 SootopolisCity_EventScript_GiveFigyBerry::
+gGiveItem_46::
 	giveitem ITEM_FIGY_BERRY
 	goto_if_eq VAR_RESULT, FALSE, Common_EventScript_ShowBagIsFull
 	msgbox SootopolisCity_Text_WhatKindOfWishInYourName, MSGBOX_DEFAULT
@@ -752,6 +753,7 @@ SootopolisCity_EventScript_GiveFigyBerry::
 	end
 
 SootopolisCity_EventScript_GiveIapapaBerry::
+gGiveItem_47::
 	giveitem ITEM_IAPAPA_BERRY
 	goto_if_eq VAR_RESULT, FALSE, Common_EventScript_ShowBagIsFull
 	msgbox SootopolisCity_Text_WhatKindOfWishInYourName, MSGBOX_DEFAULT
@@ -1309,6 +1311,7 @@ SootopolisCity_EventScript_Wallace::
 
 SootopolisCity_EventScript_GiveWaterfall::
 	msgbox SootopolisCity_Text_ThankYouForHelpAcceptThis, MSGBOX_DEFAULT
+gGiveKeyItem_MH_WATERFALL::
 	giveitem ITEM_HM_WATERFALL
 	setflag FLAG_RECEIVED_HM_WATERFALL
 	msgbox SootopolisCity_Text_ExplainWaterfallGoToGym, MSGBOX_DEFAULT

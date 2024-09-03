@@ -23,6 +23,7 @@
  */
 
 #define len(arr) (sizeof(arr)/sizeof(*arr))
+#define UNUSED __attribute__((unused))
 
 //struct TMText {
 //    int tmno;
@@ -42,6 +43,15 @@ struct TMText {
 struct StaticPokemon {
     const char * label;
     int offset;
+};
+
+struct Mart {
+    int size;
+    const char * label;
+};
+
+struct GivenItems {
+    const char * label;
 };
 
 static csh sCapstone;
@@ -90,9 +100,9 @@ const struct StaticPokemon gStaticPokemon[][8] = {
     {{"RustboroCity_DevonCorp_2F_EventScript_AerodactylReady", 0x2}, {"RustboroCity_DevonCorp_2F_EventScript_ReceiveAerodactyl", 0x3}, {"RustboroCity_DevonCorp_2F_EventScript_ReceiveAerodactyl", 0x6}, {"RustboroCity_DevonCorp_2F_EventScript_ReceivedAerodactylFanfare", 0x2}, {"RustboroCity_DevonCorp_2F_EventScript_ReceivedAerodactylFanfare", 0x10}},
     {{"MarineCave_End_EventScript_Kyogre", 0x17}, {"MarineCave_End_EventScript_Kyogre", 0x25}, {"MarineCave_End_EventScript_RanFromKyogre", 0x3}},
     {{"TerraCave_End_EventScript_Groudon", 0x17}, {"TerraCave_End_EventScript_Groudon", 0x25}, {"TerraCave_End_EventScript_RanFromGroudon", 0x3}},
-    {{"DesertRuins_EventScript_Regirock", 0x4}, {"DesertRuins_EventScript_Regirock", 0xD}, {"DesertRuins_EventScript_RanFromRegirock", 0x3}},
-    {{"IslandCave_EventScript_Regice", 0x4}, {"IslandCave_EventScript_Regice", 0xD}, {"IslandCave_EventScript_RanFromRegice", 0x3}},
-    {{"AncientTomb_EventScript_Registeel", 0x4}, {"AncientTomb_EventScript_Registeel", 0xD}, {"AncientTomb_EventScript_RanFromRegisteel", 0x3}},
+    {{"DesertRuins_EventScript_Regirock", 0x2}, {"DesertRuins_EventScript_Regirock", 0x8}, {"DesertRuins_EventScript_RanFromRegirock", 0x3}},
+    {{"IslandCave_EventScript_Regice", 0x2}, {"IslandCave_EventScript_Regice", 0x8}, {"IslandCave_EventScript_RanFromRegice", 0x3}},
+    {{"AncientTomb_EventScript_Registeel", 0x2}, {"AncientTomb_EventScript_Registeel", 0x8}, {"AncientTomb_EventScript_RanFromRegisteel", 0x3}},
     {{"SkyPillar_Top_EventScript_Rayquaza", 0x3}, {"SkyPillar_Top_EventScript_Rayquaza", 0xC}, {"SkyPillar_Top_EventScript_RanFromRayquaza", 0x3}},
     {{"EventScript_BattleKecleon", 0x1F}, {"EventScript_BattleKecleon", 0x28}},
     {{"Route120_EventScript_StevenBattleKecleon", 0x4B}, {"Route120_EventScript_StevenBattleKecleon", 0x54}},
@@ -156,315 +166,95 @@ const struct TMText gMoveTutorTexts[] = {
     {25, "gMoveTutorText_22", "I’ll just praise my POKéMON from now on without the [move]."}
 };
 
-/*
- * ----------------------------------------------
- * Capstone callbacks
- * ----------------------------------------------
- */
+// Size is hard coded (rather than scanning till it finds item none) because I don't want to randomize the entire mart in all cases
+const struct Mart gMarts[][2] = {
+    {{13, "BattleFrontier_Mart_Pokemart"}},
+    {{7, "EverGrandeCity_PokemonLeague_1F_Pokemart"}},
+    {{12, "FallarborTown_Mart_Pokemart"}},
+    {{10, "FortreeCity_Mart_Pokemart"}},
+    {{4, "LavaridgeTown_HerbShop_Pokemart"}},
+    {{9, "LavaridgeTown_Mart_Pokemart"}},
+    {{11, "LilycoveCity_DepartmentStore_2F_Pokemart1"}},
+    {{10, "LilycoveCity_DepartmentStore_2F_Pokemart2"}},
+    {{6, "LilycoveCity_DepartmentStore_3F_Pokemart_Vitamins"}},
+    {{7, "LilycoveCity_DepartmentStore_3F_Pokemart_StatBoosters"}},
+    {{14, "MauvilleCitySpeedchoice_Mart_Items"}},
+    {{9, "MossdeepCity_Mart_Pokemart"}},
+    {{9, "SlateportCity_Mart_Pokemart"}},
+    {{9, "SootopolisCity_Mart_Pokemart"}},
+    {{11, "VerdanturfTown_Mart_Pokemart"}},
+    {{6, "OldaleTownSpeedchoice_Mart_Items1"}, {6, "OldaleTownSpeedchoice_Mart_Items2"}},
+    {{11, "PetalburgCity_Mart_Pokemart_Basic"}, {13, "PetalburgCity_Mart_Pokemart_Expanded"}},
+    {{12, "RustboroCitySpeedchoice_Mart_Items1"}, {14, "RustboroCitySpeedchoice_Mart_Items2"}},
+    {{11, "TrainerHill_Entrance_Pokemart_Basic"}, {12, "TrainerHill_Entrance_Pokemart_Expanded"}},
+    {{6, "SlateportCity_Pokemart_EnergyGuru"}} // Only the first 6, because then we have all the patches, mints, feathers e.t.c
+};
 
-static int IsLoadingStarterItems(const struct cs_insn * insn)
-{
-    static int to_return;
-    Elf32_Sym *sym = GetSymbolByName("ScriptGiveMon");
-    cs_arm_op * ops = insn->detail->arm.operands;
-    // mov r2, #0
-    if (insn->id == ARM_INS_MOV
-     && ops[0].type == ARM_OP_REG
-     && ops[0].reg == ARM_REG_R2
-     && ops[1].type == ARM_OP_IMM
-     && ops[1].imm == 0)
-        to_return = insn->address;
-    // bl ScriptGiveMon
-    else if (insn->id == ARM_INS_BL)
-    {
-        uint32_t target = ops[0].imm;
-        if (target == (sym->st_value & ~1))
-            return to_return;
-    }
-    return -1;
-}
+const struct GivenItems gGivenItems[][2] = {
+    {{"gGiveItem_1"}},
+    {{"gGiveItem_2"}},
+    {{"gGiveItem_3"}},
+    {{"gGiveItem_4"}},
+    {{"gGiveItem_5_May"}, {"gGiveItem_5_Brendan"}},
+    {{"gGiveItem_6"}},
+    {{"gGiveItem_7"}},
+    {{"gGiveItem_8"}},
+    {{"gGiveItem_9_Man"}, {"gGiveItem_9_MagmaMan"}},
+    {{"gGiveItem_10"}},
+    {{"gGiveItem_11"}},
+    {{"gGiveItem_12"}},
+    {{"gGiveItem_13"}},
+    {{"gGiveItem_14"}},
+    {{"gGiveItem_15"}},
+    {{"gGiveItem_16"}},
+    {{"gGiveItem_17"}},
+    {{"gGiveItem_18_trick1"}, {"gGiveItem_18_trick1_start"}},
+    {{"gGiveItem_19_trick2"}, {"gGiveItem_19_trick2_start"}},
+    {{"gGiveItem_20_trick3"}, {"gGiveItem_20_trick3_start"}},
+    {{"gGiveItem_21_trick4"}, {"gGiveItem_21_trick4_start"}},
+    {{"gGiveItem_22_trick5"}, {"gGiveItem_22_trick5_start"}},
+    {{"gGiveItem_23_trick6"}, {"gGiveItem_23_trick6_start"}},
+    {{"gGiveItem_24_trick7"}, {"gGiveItem_24_trick7_start"}},
+    {{"gGiveItem_25"}},
+    {{"gGiveItem_26"}},
+    {{"gGiveItem_27"}},
+    {{"gGiveItem_28"}},
+    {{"gGiveItem_29"}},
+    {{"gGiveItem_30"}},
+    {{"gGiveItem_31"}},
+    {{"gGiveItem_32"}},
+    {{"gGiveItem_33"}},
+    {{"gGiveItem_34"}},
+    {{"gGiveItem_35"}},
+    {{"gGiveItem_36"}},
+    {{"gGiveItem_37"}},
+    {{"gGiveItem_38"}},
+    {{"gGiveItem_39"}},
+    {{"gGiveItem_40"}},
+    {{"gGiveItem_41"}},
+    {{"gGiveItem_42"}},
+    {{"gGiveItem_43"}},
+    {{"gGiveItem_44"}},
+    {{"gGiveItem_45"}},
+    {{"gGiveItem_46"}},
+    {{"gGiveItem_47"}},
+    {{"gGiveItem_48"}},
+    {{"gGiveItem_49"}},
+    {{"gGiveItem_50"}, {"gGiveItem_50_Spare"}},
+    {{"gGiveItem_51"}, {"gGiveItem_51_Counter"}},
+    {{"gGiveItem_52_6Soda"}, {"gGiveItem_52_1Soda"}}
+};
 
-static int IsIntroLotadForCry_1(const struct cs_insn * insn)
-{
-    static int to_return;
-    static unsigned tmp_reg, tmp_reg2;
-    cs_arm_op * ops = insn->detail->arm.operands;
-    // mov rX, SPECIES_LOTAD / 2
-    if (insn->id == ARM_INS_MOV
-    && ops[0].type == ARM_OP_REG
-    && ops[1].type == ARM_OP_IMM
-    && ops[1].imm == SPECIES_LOTAD / 2)
-    {
-        to_return = insn->address;
-        tmp_reg = ops[0].reg;
-    }
-    // lsl rX, rY, 1
-    else if (insn->id == ARM_INS_LSL
-    && ops[0].type == ARM_OP_REG
-    && ops[1].type == ARM_OP_REG
-    && ops[1].reg == tmp_reg
-    && ops[2].type == ARM_OP_IMM
-    && ops[2].imm == 1
-    )
-        tmp_reg2 = ops[0].reg;
-    // str rX, [sp, 16]
-    else if (insn->id == ARM_INS_STR
-             && ops[0].type == ARM_OP_REG
-             && ops[0].reg == tmp_reg2
-             && ops[1].type == ARM_OP_MEM
-             && !ops[1].subtracted
-             && ops[1].mem.base == ARM_REG_SP
-             && ops[1].mem.index == ARM_REG_INVALID
-             && ops[1].mem.disp == 16)
-        return to_return;
-
-    return -1;
-}
-
-static int IsIntroLotadForCry_2(const struct cs_insn * insn)
-{
-    static int to_return;
-    static unsigned tmp_reg;
-    cs_arm_op * ops = insn->detail->arm.operands;
-    // ldr rX, =SPECIES_LOTAD
-    if (insn->id == ARM_INS_LDR
-        && ops[0].type == ARM_OP_REG
-        && ops[1].type == ARM_OP_MEM
-        && !ops[1].subtracted
-        && ops[1].mem.base == ARM_REG_PC
-        && ops[1].mem.index == ARM_REG_INVALID)
-    {
-        to_return = (insn->address & ~3) + ops[1].mem.disp + 4;
-        tmp_reg = ops[0].reg;
-    }
-    // str rX, [sp, #0x10]
-    else if (insn->id == ARM_INS_STR
-             && ops[0].type == ARM_OP_REG
-             && ops[0].reg == tmp_reg
-             && ops[1].type == ARM_OP_MEM
-             && !ops[1].subtracted
-             && ops[1].mem.base == ARM_REG_SP
-             && ops[1].mem.index == ARM_REG_INVALID
-             && ops[1].mem.disp == 16)
-        return to_return;
-    return -1;
-}
-
-static int IsIntroLotadForCry(const struct cs_insn * insn)
-{
-    int retval = IsIntroLotadForCry_1(insn);
-    if (retval >= 0)
-        return retval;
-    return IsIntroLotadForCry_2(insn);
-}
-
-static int IsIntroLotadForPic_1(const struct cs_insn * insn)
-{
-    static int to_return;
-    static unsigned tmp_reg;
-    cs_arm_op * ops = insn->detail->arm.operands;
-    // mov rX, SPECIES_LOTAD / 2
-    if (insn->id == ARM_INS_MOV
-    && ops[0].type == ARM_OP_REG
-    && ops[1].type == ARM_OP_IMM
-    && ops[1].imm == SPECIES_LOTAD / 2)
-    {
-        to_return = insn->address;
-        tmp_reg = ops[0].reg;
-    }
-    // lsl rX, rY, 1
-    else if (insn->id == ARM_INS_LSL
-    && ops[0].type == ARM_OP_REG
-    && ops[1].type == ARM_OP_REG
-    && ops[1].reg == tmp_reg
-    && ops[2].type == ARM_OP_IMM
-    && ops[2].imm == 1
-    )
-        return to_return;
-
-    return -1;
-}
-
-static int IsIntroLotadForPic_2(const struct cs_insn * insn)
-{
-    cs_arm_op * ops = insn->detail->arm.operands;
-    // ldr rX, =SPECIES_LOTAD
-    if (insn->id == ARM_INS_LDR
-        && ops[0].type == ARM_OP_REG
-        && ops[1].type == ARM_OP_MEM
-        && !ops[1].subtracted
-        && ops[1].mem.base == ARM_REG_PC
-        && ops[1].mem.index == ARM_REG_INVALID)
-        return (insn->address & ~3) + ops[1].mem.disp + 4;
-    return -1;
-}
-
-static int IsIntroLotadForPic(const struct cs_insn * insn)
-{
-    int retval = IsIntroLotadForPic_1(insn);
-    if (retval >= 0)
-        return retval;
-    return IsIntroLotadForPic_2(insn);
-}
-
-static int IsRunIndoorsTweakOffset(const struct cs_insn * insn)
-{
-    cs_arm_op * ops = insn->detail->arm.operands;
-    if (insn->id == ARM_INS_AND
-        && ops[0].type == ARM_OP_REG
-        && ops[1].type == ARM_OP_REG
-        && (insn - 1)->id == ARM_INS_MOV
-        && (insn - 1)->detail->arm.operands[0].type == ARM_OP_REG
-        && (insn - 1)->detail->arm.operands[1].type == ARM_OP_IMM
-        && (insn - 1)->detail->arm.operands[0].reg == ops[0].reg
-        && (insn - 1)->detail->arm.operands[1].imm == 4)
-        return insn->address;
-    return -1;
-}
-
-static int IsWallyZigzagoon_1(const struct cs_insn * insn)
-{
-    static int to_return;
-    static unsigned tmp_reg;
-    cs_arm_op * ops = insn->detail->arm.operands;
-    // mov rX, SPECIES_ZIGZAGOON / 2
-    if (insn->id == ARM_INS_MOV
-        && ops[0].type == ARM_OP_REG
-        && ops[1].type == ARM_OP_IMM
-        && ops[1].imm == SPECIES_ZIGZAGOON / 2)
-    {
-        to_return = insn->address;
-        tmp_reg = ops[0].reg;
-    }
-        // lsl rX, rY, 1
-    else if (insn->id == ARM_INS_LSL
-             && ops[0].type == ARM_OP_REG
-             && ops[0].reg == ARM_REG_R1
-             && ops[1].type == ARM_OP_REG
-             && ops[1].reg == tmp_reg
-             && ops[2].type == ARM_OP_IMM
-             && ops[2].imm == 1
-        )
-        return to_return;
-
-    return -1;
-}
-
-static int IsWallyZigzagoon_2(const struct cs_insn * insn)
-{
-    cs_arm_op * ops = insn->detail->arm.operands;
-    // ldr rX, =SPECIES_ZIGZAGOON
-    if (insn->id == ARM_INS_LDR
-        && ops[0].type == ARM_OP_REG
-        && ops[0].reg == ARM_REG_R1
-        && ops[1].type == ARM_OP_MEM
-        && !ops[1].subtracted
-        && ops[1].mem.base == ARM_REG_PC
-        && ops[1].mem.index == ARM_REG_INVALID)
-        return (insn->address & ~3) + ops[1].mem.disp + 4;
-    return -1;
-}
-
-static int IsWallyZigzagoon(const struct cs_insn * insn)
-{
-    int retval = IsWallyZigzagoon_1(insn);
-    if (retval >= 0)
-        return retval;
-    return IsWallyZigzagoon_2(insn);
-}
-
-static int IsWallyRalts_1(const struct cs_insn * insn)
-{
-    static int to_return;
-    static unsigned tmp_reg;
-    cs_arm_op * ops = insn->detail->arm.operands;
-    // mov rX, SPECIES_RALTS / 2
-    if (insn->id == ARM_INS_MOV
-        && ops[0].type == ARM_OP_REG
-        && ops[1].type == ARM_OP_IMM
-        && ops[1].imm == SPECIES_RALTS / 2)
-    {
-        to_return = insn->address;
-        tmp_reg = ops[0].reg;
-    }
-        // lsl rX, rY, 1
-    else if (insn->id == ARM_INS_LSL
-             && ops[0].type == ARM_OP_REG
-             && ops[0].reg == ARM_REG_R1
-             && ops[1].type == ARM_OP_REG
-             && ops[1].reg == tmp_reg
-             && ops[2].type == ARM_OP_IMM
-             && ops[2].imm == 1
-        )
-        return to_return;
-
-    return -1;
-}
-
-static int IsWallyRalts_2(const struct cs_insn * insn)
-{
-    cs_arm_op * ops = insn->detail->arm.operands;
-    // ldr rX, =SPECIES_RALTS
-    if (insn->id == ARM_INS_LDR
-        && ops[0].type == ARM_OP_REG
-        && ops[0].reg == ARM_REG_R1
-        && ops[1].type == ARM_OP_MEM
-        && !ops[1].subtracted
-        && ops[1].mem.base == ARM_REG_PC
-        && ops[1].mem.index == ARM_REG_INVALID)
-        return (insn->address & ~3) + ops[1].mem.disp + 4;
-    return -1;
-}
-
-static int IsWallyRalts(const struct cs_insn * insn)
-{
-    int retval = IsWallyRalts_1(insn);
-    if (retval >= 0)
-        return retval;
-    return IsWallyRalts_2(insn);
-}
-
-/*
- * ---------------------------------------------------------
- * get_instr_addr(
- *   FILE * elfFile,
- *   const char * symname,
- *   int (*callback)(const struct cs_insn *)
- * )
- *
- * Disassembles the function of the provided name until the
- * callback returns a positive integer, then returns that
- * integer. If the end of the function is reached and the
- * callback never returns positive, -1 is returned instead.
- * The callback takes a single argument, a pointer to a
- * disassembled instruction. It then runs internal logic to
- * determine whether the instruction or sequence of in-
- * structions is what is desired, then returns the address
- * of that instruction.
- * ---------------------------------------------------------
- */
-
-static int get_instr_addr(FILE * elfFile, const char * symname, int (*callback)(const struct cs_insn *))
-{
-    int retval = -1;
-    Elf32_Sym * sym = GetSymbolByName(symname);
-    fseek(elfFile, (sym->st_value & ~1) - sh_text->sh_addr + sh_text->sh_offset, SEEK_SET);
-    unsigned char * data = malloc(sym->st_size);
-    if (fread(data, 1, sym->st_size, elfFile) != sym->st_size)
-        FATAL_ERROR("fread");
-    struct cs_insn *insn;
-    int count = cs_disasm(sCapstone, data, sym->st_size, sym->st_value & ~1, 0, &insn);
-    for (int i = 0; i < count; i++) {
-        int to_return = callback(&insn[i]);
-        if (to_return >= 0) {
-            retval = to_return;
-            break;
-        }
-    }
-    cs_free(insn, count);
-    free(data);
-    return retval;
-}
+/** These symbols have been completely changed, we need a way around that
+gLevelUpLearnsets
+gTMHMLearnsets
+gTrainerClassNames
+gMoveDescriptionPointers
+gAbilityNames
+sTMHMMoves
+gTutorMoves
+gItemIconTable
+*/
 
 int main(int argc, char ** argv)
 {
@@ -509,28 +299,34 @@ int main(int argc, char ** argv)
         FATAL_ERROR("usage: %s ELF OUTPUT [--name NAME] [--code CODE]\n", argv[0]);
     }
 
+    fprintf(stderr, "Loading ELF\n");
+
     // Load the ELF metadata
     InitElf(elfFile);
-#ifdef _MSC_VER
-#define print(format, ...) (fprintf(outFile, format, __VA_ARGS__))
-#else
-#define print(format, ...) (fprintf(outFile, format, ##__VA_ARGS__))
-#endif
-#define config_set(name, value) (print("%s=0x%X\n", (name), (value)))
-#define sym_get(name) (GetSymbolByName((name))->st_value)
-#define config_sym(name, symname) (config_set((name), sym_get(symname) - 0x08000000))
+    #ifdef _MSC_VER
+    #define print(format, ...) (fprintf(outFile, format, __VA_ARGS__))
+    #else
+    #define print(format, ...) (fprintf(outFile, format, ##__VA_ARGS__))
+    #endif
+    #define config_set(name, value) (print("%s=0x%X\n", (name), (value)))
+    #define sym_get(name) (GetSymbolByName((name))->st_value)
+    #define config_sym(name, symname) (config_set((name), sym_get(symname) - 0x08000000))
 
+    
+    fprintf(stderr, "Capstone Init\n");
     // Initialize Capstone
     cs_open(CS_ARCH_ARM, CS_MODE_THUMB, &sCapstone);
     cs_option(sCapstone, CS_OPT_DETAIL, CS_OPT_ON);
     sh_text = GetSectionHeaderByName(".text");
 
+    fprintf(stderr, "Start writing INI\n");
     // Start writing the INI
     print("[%s]\n", romName);
     print("Game=%s\n", romCode);
     print("Version=0\n");
     print("TableFile=gba_english\n");
 
+    fprintf(stderr, "Finding free space\n");
     // Find the first block after the ROM
     int shnum = GetSectionHeaderCount();
     uint32_t entry = GetEntryPoint();
@@ -546,41 +342,66 @@ int main(int argc, char ** argv)
     print("FreeSpace=0x%X\n", end);
 
     // Pokemon data
-    config_sym("PokedexOrder", "gSpeciesToNationalPokedexNum");
+    fprintf(stderr, "Configuring Pokemon data\n");
     print("PokemonCount=%d\n", NUM_SPECIES - 1);
     print("PokemonNameLength=%d\n", POKEMON_NAME_LENGTH + 1);
-    config_sym("PokemonMovesets", "gLevelUpLearnsets");
-    config_sym("PokemonTMHMCompat", "gTMHMLearnsets");
-    config_sym("PokemonEvolutions", "gEvolutionTable");
+
+    config_sym("SpeciesInfo", "gSpeciesInfo");
+    config_sym("MapBanksPtr", "gMapGroups");
+    config_sym("MapLabelsPtr", "gRegionMapEntries");
+
+    config_sym("StaticVars", "gUprStaticVars");
+
+    //fprintf(stderr, "Configuring moves\n");
+    //config_sym("PokemonMovesets", "gLevelUpLearnsets");
+    //config_sym("PokemonTMHMCompat", "gTMHMLearnsets");
+
+    fprintf(stderr, "Configuring Starters\n");
     config_sym("StarterPokemon", "sStarterMon");
-    // This symbol is inside a C function, so we must take an assist from capstone.
-    config_set("StarterItems", get_instr_addr(elfFile, "CB2_GiveStarter", IsLoadingStarterItems) - 0x08000000);
+
+    fprintf(stderr, "Configuring trainers\n");
     config_sym("TrainerData", "gTrainers");
     Elf32_Sym * Em_gTrainers = GetSymbolByName("gTrainers");
+
+    fprintf(stderr, "Configuring wild mons\n");
     config_sym("WildPokemon", "gWildMonHeaders");
+
+    fprintf(stderr, "Configuring trainer names and classes\n");
     print("TrainerEntrySize=%d\n", Em_gTrainers->st_size / (TRAINERS_COUNT - 1));
-    config_set("TrainerCount", (TRAINERS_COUNT - 1));
-    config_sym("TrainerClassNames", "gTrainerClassNames");
-    Elf32_Sym * Em_gTrainerClassNames = GetSymbolByName("gTrainerClassNames");
+    config_set("TrainerCount", TRAINERS_COUNT);
+    config_sym("TrainerClasses", "gTrainerClasses");
     print("TrainerClassCount=%d\n", TRAINER_CLASS_COUNT);
-    print("TrainerClassNameLength=%d\n", Em_gTrainerClassNames->st_size / TRAINER_CLASS_COUNT);
+    print("TrainerClassNameLength=%d\n", 13); // hardcoded for now
+    print("TrainerClassStructSize=%d\n", 16); // hardcoded for now (Size of trainer TrainerClass Struct)
     print("TrainerNameLength=%d\n", 12); // hardcoded for now
     print("DoublesTrainerClasses=[%d, %d, %d, %d, %d]\n", TRAINER_CLASS_SR_AND_JR, TRAINER_CLASS_TWINS, TRAINER_CLASS_YOUNG_COUPLE, TRAINER_CLASS_OLD_COUPLE, TRAINER_CLASS_SIS_AND_BRO); // hardcoded for now
-    Elf32_Sym * Em_gItems = GetSymbolByName("gItems");
+
+    fprintf(stderr, "Configuring items\n");
+    Elf32_Sym * Em_gItems = GetSymbolByName("gItemsInfo");
     print("ItemEntrySize=%d\n", Em_gItems->st_size / ITEMS_COUNT);
-    print("ItemCount=%d\n", ITEMS_COUNT - 2); // NONE, DONE_BUTTON
+    print("ItemCount=%d\n", ITEMS_COUNT);
+
+    fprintf(stderr, "Configuring move names\n");
     print("MoveCount=%d\n", MOVES_COUNT - 1);
-    config_sym("MoveDescriptions", "gMoveDescriptionPointers");
-    Elf32_Sym * Em_gMoveNames = GetSymbolByName("gMoveNames");
-    print("MoveNameLength=%d\n", Em_gMoveNames->st_size / MOVES_COUNT);
-    Elf32_Sym * Em_gAbilityNames = GetSymbolByName("gAbilityNames");
-    print("AbilityNameLength=%d\n", Em_gAbilityNames->st_size / ABILITIES_COUNT);
-    config_sym("TmMoves", "sTMHMMoves");
+    //config_sym("MoveDescriptions", "gMoveDescriptionPointers");
+    // Elf32_Sym * Em_gMoveNames = GetSymbolByName("gMoveNames");
+    // print("MoveNameLength=%d\n", Em_gMoveNames->st_size / MOVES_COUNT);
+
+    //fprintf(stderr, "Configuring Ability names\n");
+    // Elf32_Sym * Em_gAbilityNames = GetSymbolByName("gAbilityNames");
+    // print("AbilityNameLength=%d\n", Em_gAbilityNames->st_size / ABILITIES_COUNT);
+
+    //fprintf(stderr, "Configuring tmhm moves\n");
+    //config_sym("TmMoves", "sTMHMMoves");
     //config_sym("TmMovesDuplicate", "sUnused_StatStrings");
-    config_sym("MoveTutorData", "gTutorMoves");
-    Elf32_Sym* Em_gTutorMoves = GetSymbolByName("gTutorMoves");
-    print("MoveTutorMoves=%d\n", Em_gTutorMoves->st_size / 2);
-    config_sym("ItemImages", "gItemIconTable");
+
+    //fprintf(stderr, "Configuring tutor moves\n");
+    //config_sym("MoveTutorData", "gTutorMoves");
+    //Elf32_Sym* Em_gTutorMoves = GetSymbolByName("gTutorMoves");
+    //print("MoveTutorMoves=%d\n", Em_gTutorMoves->st_size / 2);
+    
+    fprintf(stderr, "Configuring item images and palettes\n");
+    //config_sym("ItemImages", "gItemIconTable");
 
     print("TmPals=[");
     char buffer[64];
@@ -591,18 +412,17 @@ int main(int argc, char ** argv)
         print("0x%X", GetSymbolByName(buffer)->st_value - 0x08000000);
     }
     print("]\n");
-
-    config_set("IntroCryOffset", get_instr_addr(elfFile, "Task_NewGameBirchSpeechSub_InitPokeBall", IsIntroLotadForCry) - 0x08000000);
-    config_set("IntroSpriteOffset", get_instr_addr(elfFile, "NewGameBirchSpeech_CreateLotadSprite", IsIntroLotadForPic) - 0x08000000);
+    
+    fprintf(stderr, "Configuring ball pic\n");
     print("ItemBallPic=%d\n", OBJ_EVENT_GFX_ITEM_BALL);
+    
+    fprintf(stderr, "Configuring in game trades\n");
     config_sym("TradeTableOffset", "sIngameTrades");
     Elf32_Sym * Em_gIngameTrades = GetSymbolByName("sIngameTrades");
     print("TradeTableSize=%d\n", Em_gIngameTrades->st_size / 60); // hardcoded for now
     print("TradesUnused=[]\n"); // so randomizer doesn't complain
-    config_set("CatchingTutorialOpponentMonOffset", get_instr_addr(elfFile, "StartWallyTutorialBattle", IsWallyRalts) - 0x08000000);
-    config_set("CatchingTutorialPlayerMonOffset", get_instr_addr(elfFile, "PutZigzagoonInPlayerParty", IsWallyZigzagoon) - 0x08000000);
-    config_sym("PCPotionOffset", "gNewGamePCItems");
 
+    fprintf(stderr, "Configuring static pokemon\n");
     // These may need some fixing to support dynamic offsets.
     print("StaticPokemonSupport=1\n");
     for (int i = 0; i < len(gStaticPokemon); i++) {
@@ -615,16 +435,95 @@ int main(int argc, char ** argv)
         }
         print("]\n");
     }
+
+    fprintf(stderr, "Configuring Berry Trees\n");
+    config_sym("BerryTrees", "gUprBerryTrees");
+
+    fprintf(stderr, "Configuring Pickup tables\n");
+    config_sym("PickUpTables", "sPickupTable");
+
+    fprintf(stderr, "Configuring Marts\n");
+    for (int i = 0; i < len(gMarts); i++) {
+        print("Marts[]=[");
+        for (int j = 0; j < 2; j++) {
+            if (gMarts[i][j].label == NULL) break;
+            if (j != 0)
+                print(",");
+            print("[0x%X,0x%X]", sym_get(gMarts[i][j].label) - 0x08000000, gMarts[i][j].size);
+        }
+        print("]\n");
+    }
+
+    fprintf(stderr, "Configuring Given Items\n");
+    for (int i = 0; i < len(gGivenItems); i++) {
+        print("GivenItems[]=[");
+        for (int j = 0; j < 2; j++) {
+            if (gGivenItems[i][j].label == NULL) break;
+            if (j != 0)
+                print(",");
+            print("[0x%X]", sym_get(gGivenItems[i][j].label) - 0x08000000);
+        }
+        print("]\n");
+    }
+
+    // TODO: what's happening with 
+    // Contest Prizes, Vending Machines / slateport drinks / lilycove roof / mauville prizes / lava cookie
+    // TODO: these should only be randomized to TMS, I think they already get randomized
+    // LilycoveCity_DepartmentStore_4F_Pokemart_AttackTMs
+    // LilycoveCity_DepartmentStore_4F_Pokemart_DefenseTMs
+
+    // Key Items
+    // gGiveKeyItem_OLD_ROD::
+    // gGiveKeyItem_GO_GOGGLES_May::
+    // gGiveKeyItem_GO_GOGGLES_Brendan::
+    // gGiveKeyItem_BASEMENT_KEY::
+    // gGiveKeyItem_HM_FLASH::
+    // gGiveKeyItem_HM_ROCK_SMASH::
+    // gGiveKeyItem_COIN_CASE::
+    // gGiveKeyItem_HM_DIVE::
+    // gGiveKeyItem_EON_TICKET::
+    // gGiveKeyItem_AURORA_TICKET::
+    // gGiveKeyItem_OLD_SEA_MAP::
+    // gGiveKeyItem_MYSTIC_TICKET::
+    // gGiveKeyItem_METEORITE::
+    // gGiveKeyItem_MAGMA_EMBLEM::
+    // gGiveKeyItem_ITEM_HM03::
+    // gGiveKeyItem_WAILMER_PAIL::
+    // gGiveKeyItem_HM02_May::
+    // gGiveKeyItem_HM02_Brendan::
+    // gGiveKeyItem_SOOT_SACK::
+    // gGiveKeyItem_GOOD_ROD::
+    // gGiveKeyItem_ITEM_FINDER_May::
+    // gGiveKeyItem_ITEM_FINDER_Brendan::
+    // gGiveKeyItem_DEVON_SCOPE::
+    // gGiveKeyItem_ITEM_HM_CUT::
+    // gGiveKeyItem_LETTER_President::
+    // gGiveKeyItem_LETTER_Roxanne::
+    // gGiveKeyItem_HM04::
+    // gGiveKeyItem_DEVON_GOODS::
+    // gGiveKeyItem_POWDER_JAR::
+    // gGiveKeyItem_MH_WATERFALL::
+    // gGiveKeyItem_EON_TICKET::
+    // gGiveKeyItem_POKEBLOCK_CASE::
+    // gGiveKeyItem_AMULET_COIN::
+    // gGiveKeyItem_SS_TICKET::
+    // Probably can't do bikes as they need to switch
+
+    fprintf(stderr, "Configuring Tm text\n");
     for (int i = 0; i < len(gTMTexts); i++) {
         Elf32_Sym * sym = GetSymbolByName(gTMTexts[i].label);
         print("TMTextSpdc[]=[%d,0x%X,%s]\n", gTMTexts[i].tmno, (sym->st_value + 2) - 0x08000000, gTMTexts[i].text);
     }
+
+    fprintf(stderr, "Configuring tutor text\n");
     for (int i = 0; i < len(gMoveTutorTexts); i++) {
         Elf32_Sym * sym = GetSymbolByName(gMoveTutorTexts[i].label);
         print("MoveTutorTextSpdc[]=[%d,0x%X,%s]\n", gMoveTutorTexts[i].tmno, (sym->st_value + 2) - 0x08000000, gMoveTutorTexts[i].text);
     }
 
-    config_sym("PokedexOrder", "gSpeciesToNationalPokedexNum");
+    fprintf(stderr, "Configuring pokedex order\n");
+
+    fprintf(stderr, "Configuring randomizer check value\n");
     config_sym("CheckValueOffset", "gRandomizerCheckValue");
 
     DestroyResources();

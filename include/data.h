@@ -55,25 +55,25 @@ struct TrainerBacksprite
 // See CreateNPCTrainerPartyFromTrainer and CreateFacilityMon
 struct TrainerMon
 {
-    const u8 *nickname;
-    const u8 *ev;
-    u32 iv;
-    u16 moves[4];
-    u16 species;
-    u16 heldItem;
-    u16 ability;
-    u8 lvl;
-    u8 ball;
-    u8 friendship;
-    u8 nature:5;
-    bool8 gender:2;
-    bool8 isShiny:1;
-    u8 teraType:5;
-    bool8 gigantamaxFactor:1;
-    u8 shouldUseDynamax:1;
-    u8 padding1:1;
-    u8 dynamaxLevel:4;
-    u8 padding2:4;
+    /*0x00*/ const u8 *nickname;
+    /*0x04*/ const u8 *ev;
+    /*0x08*/ u32 iv;
+    /*0x0C*/ u16 moves[4];
+    /*0x14*/ u16 species;
+    /*0x16*/ u16 heldItem;
+    /*0x18*/ u16 ability;
+    /*0x1A*/ u8 lvl;
+    /*0x1B*/ u8 ball;
+    /*0x1C*/ u8 friendship;
+    /*0x1D*/ u8 nature:5;
+             bool8 gender:2;
+             bool8 isShiny:1;
+    /*0x1E*/ u8 teraType:5;
+             bool8 gigantamaxFactor:1;
+             u8 shouldUseDynamax:1;
+             u8 padding1:1;
+    /*0x1F*/ u8 dynamaxLevel:4;
+             u8 padding2:4;
 };
 
 #define TRAINER_PARTY(partyArray) partyArray, .partySize = ARRAY_COUNT(partyArray)

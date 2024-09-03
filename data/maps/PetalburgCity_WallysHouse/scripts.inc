@@ -23,6 +23,7 @@ PetalburgCity_WallysHouse_EventScript_GiveHM03Surf::
 	msgbox PetalburgCity_WallysHouse_Text_PleaseExcuseUs, MSGBOX_DEFAULT
 	checkspeedchoice EARLYSURF, SURF_ON
 	goto_if_eq VAR_RESULT, TRUE, Speedchoice_EarlySurf
+gGiveKeyItem_ITEM_HM03::
 	giveitem ITEM_HM03
 	setflag FLAG_RECEIVED_HM_SURF
 	goto AfterEarlySurf

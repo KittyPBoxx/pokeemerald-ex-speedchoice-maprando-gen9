@@ -29,6 +29,7 @@
 #include "task.h"
 #include "window.h"
 #include "menu_specialized.h"
+#include "upr_support.h"
 
 // Top level PC menu options
 enum {
@@ -222,12 +223,6 @@ static const struct MenuAction sItemStorage_MenuActions[] =
     [MENU_EXIT]     = { gText_Cancel,       {ItemStorage_Exit} }
 };
 
-static const u16 sNewGamePCItems[][2] =
-{
-    { ITEM_POTION, 1 },
-    { ITEM_NONE, 0 }
-};
-
 const struct MenuAction gMailboxMailOptions[] =
 {
     { gText_Read,      {Mailbox_DoMailRead} },
@@ -358,17 +353,8 @@ static const u8 sSwapArrowTextColors[] = {TEXT_COLOR_WHITE, TEXT_COLOR_LIGHT_GRA
 
 void NewGameInitPCItems(void)
 {
-    u8 i = 0;
     ClearItemSlots(gSaveBlock1Ptr->pcItems, PC_ITEMS_COUNT);
-
-    while (TRUE)
-    {
-        if (sNewGamePCItems[i][0] == ITEM_NONE || sNewGamePCItems[i][1] == 0)
-            break;
-        if (AddPCItem(sNewGamePCItems[i][0], sNewGamePCItems[i][1]) != TRUE)
-            break;
-        i++;
-    }
+    AddPCItem(gUprStaticVars[PC_START_ITEM_INDEX], 1);
 }
 
 void BedroomPC(void)
