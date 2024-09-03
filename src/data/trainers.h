@@ -42183,39 +42183,39 @@ F_TRAINER_FEMALE |
             },
         },
     },
-#line 16812
+#line 16877
     [TRAINER_ROXANNE_NERFED] =
     {
-#line 16813
+#line 16878
         .trainerName = _("ROXANNE"),
-#line 16814
+#line 16879
         .trainerClass = TRAINER_CLASS_LEADER,
-#line 16815
+#line 16880
         .trainerPic = TRAINER_PIC_LEADER_ROXANNE,
         .encounterMusic_gender = 
-#line 16816
+#line 16881
 F_TRAINER_FEMALE | 
-#line 16817
+#line 16882
             TRAINER_ENCOUNTER_MUSIC_FEMALE,
-#line 16818
+#line 16883
         .doubleBattle = FALSE,
-#line 16819
+#line 16884
         .aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY,
         .partySize = 3,
         .party = (const struct TrainerMon[])
         {
             {
-#line 16821
+#line 16886
             .species = SPECIES_GEODUDE,
             .gender = TRAINER_MON_RANDOM_GENDER,
-#line 16823
+#line 16888
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
-#line 16822
+#line 16887
             .lvl = 12,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
-#line 16824
+#line 16889
                 MOVE_TACKLE,
                 MOVE_DEFENSE_CURL,
                 MOVE_ROCK_THROW,
@@ -42223,17 +42223,17 @@ F_TRAINER_FEMALE |
             },
             },
             {
-#line 16829
+#line 16894
             .species = SPECIES_GEODUDE,
             .gender = TRAINER_MON_RANDOM_GENDER,
-#line 16831
+#line 16896
             .iv = TRAINER_PARTY_IVS(12, 12, 12, 12, 12, 12),
-#line 16830
+#line 16895
             .lvl = 12,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
-#line 16832
+#line 16897
                 MOVE_TACKLE,
                 MOVE_DEFENSE_CURL,
                 MOVE_ROCK_THROW,
@@ -42241,19 +42241,19 @@ F_TRAINER_FEMALE |
             },
             },
             {
-#line 16837
+#line 16902
             .species = SPECIES_NOSEPASS,
             .gender = TRAINER_MON_RANDOM_GENDER,
-#line 16837
+#line 16902
             .heldItem = ITEM_ORAN_BERRY,
-#line 16839
+#line 16904
             .iv = TRAINER_PARTY_IVS(24, 24, 24, 24, 24, 24),
-#line 16838
+#line 16903
             .lvl = 15,
             .nature = NATURE_HARDY,
             .dynamaxLevel = MAX_DYNAMAX_LEVEL,
             .moves = {
-#line 16840
+#line 16905
                 MOVE_BLOCK,
                 MOVE_HARDEN,
                 MOVE_TACKLE,
