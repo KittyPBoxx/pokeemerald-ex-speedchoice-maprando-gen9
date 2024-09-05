@@ -6725,6 +6725,14 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
         .iconSprite = gMonIcon_Annihilape,
         .iconPalIndex = 0,
         FOOTPRINT(Annihilape)
+        OVERWORLD(
+            sPicTable_Annihilape,
+            SIZE_32x32,
+            SHADOW_SIZE_M,
+            TRACKS_FOOT,
+            gOverworldPalette_Annihilape,
+            gShinyOverworldPalette_Annihilape
+        )
         .levelUpLearnset = sAnnihilapeLevelUpLearnset,
         .teachableLearnset = sAnnihilapeTeachableLearnset,
     },
@@ -14927,6 +14935,14 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
         .iconSprite = gMonIcon_TaurosPaldeanCombatBreed,
         .iconPalIndex = 0,
         FOOTPRINT(Tauros)
+        OVERWORLD(
+            sPicTable_TaurosPaldeanCombatBreed,
+            SIZE_32x32,
+            SHADOW_SIZE_M,
+            TRACKS_FOOT,
+            gOverworldPalette_TaurosPaldeanCombatBreed,
+            gShinyOverworldPalette_TaurosPaldeanCombatBreed
+        )
         .isPaldeanForm = TRUE,
         .levelUpLearnset = sTaurosPaldeanCombatBreedLevelUpLearnset,
         .teachableLearnset = sTaurosPaldeanCombatBreedTeachableLearnset,
@@ -14982,6 +14998,14 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
         .iconSprite = gMonIcon_TaurosPaldeanBlazeBreed,
         .iconPalIndex = 0,
         FOOTPRINT(Tauros)
+        OVERWORLD(
+            sPicTable_TaurosPaldeanBlazeBreed,
+            SIZE_32x32,
+            SHADOW_SIZE_M,
+            TRACKS_FOOT,
+            gOverworldPalette_TaurosPaldeanBlazeBreed,
+            gShinyOverworldPalette_TaurosPaldeanBlazeBreed
+        )
         .isPaldeanForm = TRUE,
         .levelUpLearnset = sTaurosPaldeanBlazeBreedLevelUpLearnset,
         .teachableLearnset = sTaurosPaldeanBlazeBreedTeachableLearnset,
@@ -15037,6 +15061,14 @@ const struct SpeciesInfo gSpeciesInfoGen1[] =
         .iconSprite = gMonIcon_TaurosPaldeanAquaBreed,
         .iconPalIndex = 0,
         FOOTPRINT(Tauros)
+        OVERWORLD(
+            sPicTable_TaurosPaldeanAquaBreed,
+            SIZE_32x32,
+            SHADOW_SIZE_M,
+            TRACKS_FOOT,
+            gOverworldPalette_TaurosPaldeanAquaBreed,
+            gShinyOverworldPalette_TaurosPaldeanAquaBreed
+        )
         .isPaldeanForm = TRUE,
         .levelUpLearnset = sTaurosPaldeanAquaBreedLevelUpLearnset,
         .teachableLearnset = sTaurosPaldeanAquaBreedTeachableLearnset,
