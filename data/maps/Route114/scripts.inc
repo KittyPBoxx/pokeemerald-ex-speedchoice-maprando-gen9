@@ -51,6 +51,7 @@ Route114_EventScript_RoarGentleman::
 	faceplayer
 	goto_if_set FLAG_RECEIVED_TM_ROAR, Route114_EventScript_ReceivedRoar
 gTMText_3::
+	buffertmitemname STR_VAR_1, ITEM_TM05
 	msgbox Route114_Text_AllMyMonDoesIsRoarTakeThis, MSGBOX_DEFAULT
 	giveitem ITEM_TM05
 	compare VAR_RESULT, FALSE
@@ -62,6 +63,7 @@ gTMText_4::
 	end
 
 Route114_EventScript_ReceivedRoar::
+	buffertmitemname STR_VAR_1, ITEM_TM05
 	msgbox Route114_Text_ExplainRoar, MSGBOX_DEFAULT
 	release
 	end
@@ -188,14 +190,14 @@ Route114_EventScript_Kai::
 	end
 
 Route114_Text_AllMyMonDoesIsRoarTakeThis:
-	.string "All my POKéMON does is ROAR…\n"
+	.string "All my POKéMON does is {STR_VAR_1}…\n"
 	.string "No one dares to come near me…\p"
 	.string "Sigh… If you would, please take\n"
 	.string "this TM away…$"
 
 Route114_Text_ExplainRoar:
-	.string "TM05 contains ROAR.\n"
-	.string "A ROAR sends POKéMON scurrying.$"
+	.string "TM05 contains {STR_VAR_1}.\n"
+	.string "A {STR_VAR_1} sends POKéMON scurrying.$"
 
 Route114_Text_Poochyena:
 	.string "Bow! Bowwow!$"

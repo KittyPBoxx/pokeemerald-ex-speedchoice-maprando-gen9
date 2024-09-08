@@ -1200,7 +1200,11 @@ static void PrintItemDescription(int itemIndex)
         str = gStringVar4;
     }
     FillWindowPixelBuffer(WIN_DESCRIPTION, PIXEL_FILL(0));
-    BagMenu_Print(WIN_DESCRIPTION, FONT_NORMAL, str, 3, 1, 0, 0, 0, COLORID_NORMAL);
+
+    if (ITEM_TM01 <= BagGetItemIdByPocketPosition(gBagPosition.pocket + 1, itemIndex) && BagGetItemIdByPocketPosition(gBagPosition.pocket + 1, itemIndex) <= ITEM_HM01)
+        BagMenu_Print(WIN_DESCRIPTION, FONT_SMALL_NARROWER, str, 3, 1, 0, 0, 0, COLORID_NORMAL);
+    else 
+        BagMenu_Print(WIN_DESCRIPTION, FONT_NORMAL, str, 3, 1, 0, 0, 0, COLORID_NORMAL);
 }
 
 static void BagMenu_PrintCursor(u8 listTaskId, u8 colorIndex)

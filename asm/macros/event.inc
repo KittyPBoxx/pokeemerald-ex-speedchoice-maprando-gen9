@@ -2356,3 +2356,10 @@
     .byte 0xe8
     .endm
 
+	@ Write a tm or hm move name into the buffer based on the item id
+	.macro buffertmitemname stringVarId:req, item:req
+	.byte 0xe9
+	stringvar \stringVarId
+	.2byte \item
+	.endm
+

@@ -10,11 +10,13 @@ SootopolisCity_House1_EventScript_BrickBreakBlackBelt::
 	goto_if_eq VAR_RESULT, FALSE, Common_EventScript_ShowBagIsFull
 	setflag FLAG_RECEIVED_TM_BRICK_BREAK
 gTMText_8::
+	buffertmitemname STR_VAR_1, ITEM_TM_BRICK_BREAK
 	msgbox SootopolisCity_House1_Text_ExplainBrickBreak, MSGBOX_DEFAULT
 	release
 	end
 
 SootopolisCity_House1_EventScript_ReceivedBrickBreak::
+	buffertmitemname STR_VAR_1, ITEM_TM_BRICK_BREAK
 	msgbox SootopolisCity_House1_Text_ExplainBrickBreak, MSGBOX_DEFAULT
 	release
 	end
@@ -36,7 +38,7 @@ SootopolisCity_House1_Text_DevelopedThisTM:
 	.string "I bequeath it to you!$"
 
 SootopolisCity_House1_Text_ExplainBrickBreak:
-	.string "TM31 contains BRICK BREAK! It's a move\n"
+	.string "TM31 contains {STR_VAR_1}! It's a move\n"
 	.string "so horrible that I can't describe it.$"
 
 SootopolisCity_House1_Text_Kecleon:

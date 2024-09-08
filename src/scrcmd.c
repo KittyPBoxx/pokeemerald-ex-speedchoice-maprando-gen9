@@ -2547,3 +2547,12 @@ bool8 ScrCmd_checkhasfossils(struct ScriptContext *ctx)
     return TRUE;
 }
 
+bool8 ScrCmd_buffertmitemname(struct ScriptContext *ctx)
+{
+    u8 stringVarIndex = ScriptReadByte(ctx);
+    u16 itemId = VarGet(ScriptReadHalfword(ctx));
+
+    StringCopy(sScriptStringVars[stringVarIndex], GetMoveName(gItemsInfo[itemId].secondaryId));
+    return FALSE;
+}
+

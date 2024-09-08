@@ -25,21 +25,6 @@
 #define len(arr) (sizeof(arr)/sizeof(*arr))
 #define UNUSED __attribute__((unused))
 
-//struct TMText {
-//    int tmno;
-//    int mapgp;
-//    int mapno;
-//    int scriptno;
-//    int offset;
-//    const char * text;
-//};
-
-struct TMText {
-    int tmno;
-    const char * label;
-    const char * text;
-};
-
 struct StaticPokemon {
     const char * label;
     int offset;
@@ -54,6 +39,10 @@ struct GivenItems {
     const char * label;
 };
 
+struct TutorMoves {
+    const char * label;
+};
+
 static csh sCapstone;
 
 static Elf32_Shdr * sh_text;
@@ -65,25 +54,23 @@ static Elf32_Shdr * sh_text;
  */
 
 static const char * gTypeNames[] = {
-    "Normal",
-    "Fighting",
-    "Flying",
-    "Poison",
-    "Ground",
-    "Rock",
-    "Grass", // "Bug",
-    "Ghost",
-    "Steel",
-    "Ghost", // "Mystery",
-    "Fire",
-    "Water",
-    "Grass",
-    "Electric",
-    "Psychic",
-    "Ice",
-    "Dragon",
-    "Dark",
-    "Fairy"
+    "Normal",                   // 0
+    "Fighting",                 // 1
+    "Flying",                   // 2
+    "Poison",                   // 3
+    "Ground",                   // 4
+    "Rock",                     // 5
+    "Grass", // "Bug",          // 6
+    "Ghost", // "Mystery"       // 7
+    "Steel",                    // 8
+    "Fire",                     // 9
+    "Water",                    // 10
+    "Electric",                 // 11
+    "Psychic",                  // 12
+    "Ice",                      // 13
+    "Dragon",                   // 14
+    "Dark",                     // 15
+    "Fairy"                     // 16
 };
 
 const struct StaticPokemon gStaticPokemon[][8] = {
@@ -123,47 +110,17 @@ const struct StaticPokemon gStaticPokemon[][8] = {
     {{"MossdeepCity_DoSpiritombEncounter", 0x1}, {"MossdeepCity_DoSpiritombEncounter", 0x10}}
 };
 
-const struct TMText gTMTexts[] = {
-    {3, "gTMText_1", "The TECHNICAL MACHINE I handed you contains [move].\\p… … … … … …"},
-    {4, "gTMText_2", "TATE: That TM04 contains... LIZA: [move]!\\pTATE: It’s a move that’s perfect... LIZA: For any POKéMON!\\p… … … … … …"},
-    {5, "gTMText_3", "All my POKéMON does is [move]... No one dares to come near me...\\pSigh... If you would, please take this TM away..."},
-    {5, "gTMText_4", "TM05 contains [move]."},
-    {8, "gTMText_5", "That TM08 contains [move].\\p… … … … … …"},
-    {9, "gTMText_6", "I like filling my mouth with seeds, then spitting them out fast!\\pI like you, so you can have this!\\pUse it on a POKéMON, and it will learn [move].\\pWhat does that have to do with firing seeds? Well, nothing!"},
-    {24, "gTMText_7", "WATTSON: Wahahahaha!\\pI knew it, \\v01\\v05! I knew I’d made the right choice asking you!\\pThis is my thanks - a TM containing [move]!\\pGo on, you’ve earned it!"},
-    {31, "gTMText_8", "TM31 contains [move]! It’s a move so horrible that I can’t describe it."},
-    {34, "gTMText_9", "That TM34 there contains [move]. You can count on it!\\p… … … … … …"},
-    {39, "gTMText_10", "That TM39 contains [move].\\pIf you use a TM, it instantly teaches the move to a POKéMON.\\pRemember, a TM can be used only once, so think before you use it."},
-    {40, "gTMText_11", "TM40 contains [move].\\p… … … … … …"},
-    {41, "gTMText_12", "That’s, like, TM41, you know? Hey, it’s [move], you hearing me?\\pHey, now, you listen here, like, I’m not laying a torment on you!"},
-    {42, "gTMText_13", "DAD: TM42 contains [move].\\pIt might be able to turn a bad situation into an advantage."},
-    {47, "gTMText_14", "STEVEN: Okay, thank you.\\pYou went through all this trouble to deliver that. I need to thank you.\\pLet me see... I’ll give you this TM.\\pIt contains my favorite move, [move]."},
-    {50, "gTMText_15", "That TM50 contains [move]."}
-};
-
-const struct TMText gMoveTutorTexts[] = {
-    {4, "gMoveTutorText_1", "Sigh…\\pSOOTOPOLIS’s GYM LEADER is really lovably admirable.\\pBut that also means I have many rivals for his attention.\\pHe’s got appeal with a [move]. I couldn’t even catch his eye.\\pPlease, let me teach your POKéMON the move [move]!"},
-    {4, "gMoveTutorText_2", "Okay, which POKéMON should I teach [move]?"},
-    {15, "gMoveTutorText_3", "I can’t do this anymore!\\pIt’s utterly hopeless!\\pI’m a FIGHTING-type TRAINER, so I can’t win at the MOSSDEEP GYM no matter how hard I try!\\pArgh! Punch! Punch! Punch! Punch! Punch! Punch!\\pWhat, don’t look at me that way! I’m only hitting the ground!\\pOr do you want me to teach your POKéMON [move]?"},
-    {15, "gMoveTutorText_4", "I want you to win at the MOSSDEEP GYM using that [move]!"},
-    {12, "gMoveTutorText_5", "I don’t intend to be going nowhere fast in the sticks like this forever.\\pYou watch me, I’ll get out to the city and become a huge hit.\\pSeriously, I’m going to cause a huge explosion of popularity!\\pIf you overheard that, I’ll happily teach [move] to your POKéMON!"},
-    {12, "gMoveTutorText_6", "Fine! [move] it is! Which POKéMON wants to learn it?"},
-    {12, "gMoveTutorText_7", "For a long time, I’ve taught POKéMON how to use [move], but I’ve yet to ignite my own explosion…\\pMaybe it’s because deep down, I would rather stay here…"},
-    {29, "gMoveTutorText_8", "There’s a move that is wickedly cool.\\pIt’s called [move].\\nWant me to teach it to a POKéMON?"},
-    {8, "gMoveTutorText_9", "I want all sorts of things! But I used up my allowance…\\pWouldn’t it be nice if there were a spell that made money appear when you waggle a finger?\\pIf you want, I can teach your POKéMON the move [move].\\pMoney won’t appear, but your POKéMON will do well in battle. Yes?"},
-    {8, "gMoveTutorText_10", "When a POKéMON uses [move], all sorts of nice things happen."},
-    {7, "gMoveTutorText_11", "Ah, young one!\\pI am also a young one, but I mimic the styles and speech of the elderly folks of this town.\\pWhat do you say, young one? Would you agree to it if I were to offer to teach the move [move]?"},
-    {7, "gMoveTutorText_12", "[move] is a move of great depth.\\pCould you execute it to perfection as well as me…?"},
-    {7, "gMoveTutorText_13", "Oh, boo! I wanted to teach [move] to your POKéMON!"},
-    {16, "gMoveTutorText_14", "Did you know that you can go from here a long way in that direction without changing direction?\\pI might even be able to roll that way.\\pDo you think your POKéMON will want to roll, too?\\pI can teach one the move [move] if you’d like."},
-    {24, "gMoveTutorText_15", "Humph! My wife relies on HIDDEN POWER to stay awake.\\pShe should just take a nap like I do.\\pI can teach your POKéMON how to [move]. Interested?"},
-    {24, "gMoveTutorText_16", "I’ve never once gotten my wife’s coin trick right.\\pI would be happy if I got it right even as I teach [move]…"},
-    {14, "gMoveTutorText_17", "When I see the wide world from up here on the roof…\\pI think about how nice it would be if there were more than just one me so I could enjoy all sorts of lives.\\pOf course it’s not possible. Giggle…\\pI know! Would you be interested in having a POKéMON learn [move]?"},
-    {14, "gMoveTutorText_18", "Giggle… Which POKéMON do you want me to teach [move]?"},
-    {14, "gMoveTutorText_19", "Oh, no?\\pA POKéMON can do well in a battle using it, you know."},
-    {25, "gMoveTutorText_20", "Heh! My POKéMON totally rules! It’s cooler than any POKéMON!\\pI was lipping off with a swagger in my step like that when the CHAIRMAN chewed me out.\\pThat took the swagger out of my step.\\pIf you’d like, I’ll teach the move [move] to a POKéMON of yours."},
-    {25, "gMoveTutorText_21", "All right, which POKéMON wants to learn how to [move]?"},
-    {25, "gMoveTutorText_22", "I’ll just praise my POKéMON from now on without the [move]."}
+const struct TutorMoves gTutorMoves[][4] = {
+    {{"gMoveTutor_explosion_1"}, {"gMoveTutor_explosion_2"}, {"gMoveTutor_explosion_3"}},
+    {{"gMoveTutor_doubleEdge_1"}, {"gMoveTutor_doubleEdge_2"}, {"gMoveTutor_doubleEdge_3"}},
+    {{"gMoveTutor_dynamicPunch_1"}, {"gMoveTutor_dynamicPunch_2"}, {"gMoveTutor_dynamicPunch_3"}},
+    {{"gMoveTutor_substitute_1"}, {"gMoveTutor_substitute_2"}, {"gMoveTutor_substitute_3"}},
+    {{"gMoveTutor_sleepTalk_1"}, {"gMoveTutor_sleepTalk_2"}, {"gMoveTutor_sleepTalk_3"}},
+    {{"gMoveTutor_metronome_1"}, {"gMoveTutor_metronome_2"}, {"gMoveTutor_metronome_3"}},
+    {{"gMoveTutor_mimic_1"}, {"gMoveTutor_mimic_2"}, {"gMoveTutor_mimic_3"}, {"gMoveTutor_mimic_4"}},
+    {{"gMoveTutor_furyCutter_1"}, {"gMoveTutor_furyCutter_2"}},
+    {{"gMoveTutor_rollout_1"}, {"gMoveTutor_rollout_2"}},
+    {{"gMoveTutor_swagger_1"}, {"gMoveTutor_swagger_2"}, {"gMoveTutor_swagger_3"}, {"gMoveTutor_swagger_4"}},
 };
 
 // Size is hard coded (rather than scanning till it finds item none) because I don't want to randomize the entire mart in all cases
@@ -242,18 +199,13 @@ const struct GivenItems gGivenItems[][2] = {
     {{"gGiveItem_49"}},
     {{"gGiveItem_50"}, {"gGiveItem_50_Spare"}},
     {{"gGiveItem_51"}, {"gGiveItem_51_Counter"}},
-    {{"gGiveItem_52_6Soda"}, {"gGiveItem_52_1Soda"}}
+    {{"gGiveItem_52_6Soda"}, {"gGiveItem_52_1Soda"}},
+    {{"gGiveItem_53"}}
 };
 
 /** These symbols have been completely changed, we need a way around that
 gLevelUpLearnsets
 gTMHMLearnsets
-gTrainerClassNames
-gMoveDescriptionPointers
-gAbilityNames
-sTMHMMoves
-gTutorMoves
-gItemIconTable
 */
 
 int main(int argc, char ** argv)
@@ -347,6 +299,8 @@ int main(int argc, char ** argv)
     print("PokemonNameLength=%d\n", POKEMON_NAME_LENGTH + 1);
 
     config_sym("SpeciesInfo", "gSpeciesInfo");
+    Elf32_Sym * Em_gSpeciesInfos = GetSymbolByName("gSpeciesInfo");
+    print("SpeciesInfoEntrySize=%d\n", Em_gSpeciesInfos->st_size / NUM_SPECIES);
     config_sym("MapBanksPtr", "gMapGroups");
     config_sym("MapLabelsPtr", "gRegionMapEntries");
 
@@ -380,20 +334,25 @@ int main(int argc, char ** argv)
     Elf32_Sym * Em_gItems = GetSymbolByName("gItemsInfo");
     print("ItemEntrySize=%d\n", Em_gItems->st_size / ITEMS_COUNT);
     print("ItemCount=%d\n", ITEMS_COUNT);
+    config_sym("ItemInfoOffset", "gItemsInfo");
 
     fprintf(stderr, "Configuring move names\n");
     print("MoveCount=%d\n", MOVES_COUNT - 1);
-    //config_sym("MoveDescriptions", "gMoveDescriptionPointers");
-    // Elf32_Sym * Em_gMoveNames = GetSymbolByName("gMoveNames");
-    // print("MoveNameLength=%d\n", Em_gMoveNames->st_size / MOVES_COUNT);
+    config_sym("MoveInfoOffset", "gMovesInfo");
+    Elf32_Sym * Em_gMoveInfos = GetSymbolByName("gMovesInfo");
+    // Not sure why we have to do a minus 5? 
+    int moveInfoSize = (Em_gMoveInfos->st_size / MOVES_COUNT) - 5;
+    if (moveInfoSize % 2 != 0) 
+        fprintf(stderr, "\nWARNING - Move info struct size was not detected as even, which could mean something is wrong\n\n");
 
-    //fprintf(stderr, "Configuring Ability names\n");
-    // Elf32_Sym * Em_gAbilityNames = GetSymbolByName("gAbilityNames");
-    // print("AbilityNameLength=%d\n", Em_gAbilityNames->st_size / ABILITIES_COUNT);
-
-    //fprintf(stderr, "Configuring tmhm moves\n");
-    //config_sym("TmMoves", "sTMHMMoves");
-    //config_sym("TmMovesDuplicate", "sUnused_StatStrings");
+    print("MoveInfoSize=%d\n", moveInfoSize);
+    
+    fprintf(stderr, "Configuring Ability names\n");
+    Elf32_Sym * Em_gAbilities = GetSymbolByName("gAbilitiesInfo");
+    print("AbilityStructSize=%d\n", Em_gAbilities->st_size / ABILITIES_COUNT);
+    print("AbilityCount=%d\n", ABILITIES_COUNT);
+    print("AbilityNameLength=%d\n", 16); // Hard coded ABILITY_NAME_LENGTH
+    config_sym("AbilitiesOffset", "gAbilitiesInfo");
 
     //fprintf(stderr, "Configuring tutor moves\n");
     //config_sym("MoveTutorData", "gTutorMoves");
@@ -401,7 +360,6 @@ int main(int argc, char ** argv)
     //print("MoveTutorMoves=%d\n", Em_gTutorMoves->st_size / 2);
     
     fprintf(stderr, "Configuring item images and palettes\n");
-    //config_sym("ItemImages", "gItemIconTable");
 
     print("TmPals=[");
     char buffer[64];
@@ -420,7 +378,6 @@ int main(int argc, char ** argv)
     config_sym("TradeTableOffset", "sIngameTrades");
     Elf32_Sym * Em_gIngameTrades = GetSymbolByName("sIngameTrades");
     print("TradeTableSize=%d\n", Em_gIngameTrades->st_size / 60); // hardcoded for now
-    print("TradesUnused=[]\n"); // so randomizer doesn't complain
 
     fprintf(stderr, "Configuring static pokemon\n");
     // These may need some fixing to support dynamic offsets.
@@ -461,16 +418,16 @@ int main(int argc, char ** argv)
             if (gGivenItems[i][j].label == NULL) break;
             if (j != 0)
                 print(",");
-            print("[0x%X]", sym_get(gGivenItems[i][j].label) - 0x08000000);
+
+            int offsetInScript = 0x3;
+            print("[0x%X]", offsetInScript + sym_get(gGivenItems[i][j].label) - 0x08000000);
         }
         print("]\n");
     }
 
     // TODO: what's happening with 
-    // Contest Prizes, Vending Machines / slateport drinks / lilycove roof / mauville prizes / lava cookie
+    // Contest Prizes, Vending Machines / slateport drinks / mauville prizes / lava cookie
     // TODO: these should only be randomized to TMS, I think they already get randomized
-    // LilycoveCity_DepartmentStore_4F_Pokemart_AttackTMs
-    // LilycoveCity_DepartmentStore_4F_Pokemart_DefenseTMs
 
     // Key Items
     // gGiveKeyItem_OLD_ROD::
@@ -509,18 +466,18 @@ int main(int argc, char ** argv)
     // gGiveKeyItem_SS_TICKET::
     // Probably can't do bikes as they need to switch
 
-    fprintf(stderr, "Configuring Tm text\n");
-    for (int i = 0; i < len(gTMTexts); i++) {
-        Elf32_Sym * sym = GetSymbolByName(gTMTexts[i].label);
-        print("TMTextSpdc[]=[%d,0x%X,%s]\n", gTMTexts[i].tmno, (sym->st_value + 2) - 0x08000000, gTMTexts[i].text);
-    }
-
     fprintf(stderr, "Configuring tutor text\n");
-    for (int i = 0; i < len(gMoveTutorTexts); i++) {
-        Elf32_Sym * sym = GetSymbolByName(gMoveTutorTexts[i].label);
-        print("MoveTutorTextSpdc[]=[%d,0x%X,%s]\n", gMoveTutorTexts[i].tmno, (sym->st_value + 2) - 0x08000000, gMoveTutorTexts[i].text);
+    for (int i = 0; i < len(gTutorMoves); i++) {
+        print("TutorMoves[]=[");
+        for (int j = 0; j < 4; j++) {
+            if (gTutorMoves[i][j].label == NULL) break;
+            if (j != 0)
+                print(",");
+            int offsetInScript = j == 0 ? 3 : 2;
+            print("[0x%X]", offsetInScript + sym_get(gTutorMoves[i][j].label) - 0x08000000);
+        }
+        print("]\n");
     }
-
     fprintf(stderr, "Configuring pokedex order\n");
 
     fprintf(stderr, "Configuring randomizer check value\n");

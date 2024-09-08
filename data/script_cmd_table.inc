@@ -233,6 +233,7 @@ gScriptCmdTable::
 	.4byte ScrCmd_callfunc                  		@ 0xe6
 	.4byte ScrCmd_checkpartylearnknowsfieldmove     @ 0xe7 qol_field_moves
 	.4byte ScrCmd_checkhasfossils                   @ 0xe8 speedchoice EX addition
+	.4byte ScrCmd_buffertmitemname                  @ 0xe9 So upr no longer has to replace tm name in text
 
 gScriptCmdTableEnd::
 	.4byte ScrCmd_nop
