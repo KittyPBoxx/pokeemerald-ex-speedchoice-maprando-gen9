@@ -3746,7 +3746,7 @@ static void DoBattleIntro(void)
             (*state)++;
         break;
     case 16: // print player sends out    
-        if (JOY_HELD(B_BUTTON) && !(gBattleTypeFlags & BATTLE_TYPE_TRAINER))
+        if (JOY_HELD(L_BUTTON) && JOY_HELD(B_BUTTON) && !(gBattleTypeFlags & BATTLE_TYPE_TRAINER))
         {
             battler = GetBattlerAtPosition(B_POSITION_PLAYER_LEFT);
             if (!IsRunningFromBattleImpossible(battler) && TryRunFromBattle(battler))

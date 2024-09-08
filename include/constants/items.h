@@ -1001,16 +1001,15 @@
 // SPEEDCHOICE ITEMS
 #define ITEM_DONE_BUTTON 828
 #define ITEM_SLEEPING_BAG 829
-
-// QOL FIELD MOVE ITEMS
 #define ITEM_FLY_TOOL 830
 #define ITEM_TELEPORT_TOOL 831
 #define ITEM_SWEETSCENT_TOOL 832
+#define ITEM_REPEL_CASE 833
 
 // HOPO BERRY
 // LEGEND PLATE
 
-#define ITEMS_COUNT 833
+#define ITEMS_COUNT 834
 #define ITEM_FIELD_ARROW ITEMS_COUNT
 
 // A special item id associated with "Cancel"/"Exit" etc. in a list of items or decorations

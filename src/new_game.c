@@ -49,6 +49,7 @@
 #include "constants/items.h"
 #include "done_button.h"
 #include "upr_support.h"
+#include "constants/heal_locations.h"
 
 extern const u8 EventScript_ResetAllMapFlags[];
 
@@ -231,8 +232,16 @@ void NewGameInitData(void)
     handleRandomizedBerryTreeSetup();
 
     // ADD SPEEDCHOICE EXTRAS
+    if (CheckSpeedchoiceOption(INVERSE_BATTLES, INV_BATTLES_ON) == TRUE)
+        FlagSet(FLAG_INVERSE_BATTLE);
+
     AddBagItem(ITEM_DONE_BUTTON, 1);
     AddBagItem(ITEM_SLEEPING_BAG, 1);
+
+    AddBagItem(ITEM_TELEPORT_TOOL, 1);
+    AddBagItem(ITEM_SWEETSCENT_TOOL, 1);
+
+    AddBagItem(ITEM_REPEL_CASE, 1);
 
     AddBagItem(ITEM_MACH_BIKE, 1);
     AddBagItem(ITEM_ACRO_BIKE, 1);
@@ -252,6 +261,9 @@ void NewGameInitData(void)
     //AddBagItem(ITEM_DYNAMAX_BAND, 1);
 
     FlagSet(FLAG_DISABLE_FOLLOWER);
+
+    // Player has access to teleport tools so we need to avoid them skipping stuff
+    SetLastHealLocationWarp(HEAL_LOCATION_LITTLEROOT_TOWN_MAYS_HOUSE_2F);
 
     gSaveBlock1Ptr->registeredItemCompat = ITEM_MACH_BIKE;
     gSaveBlock1Ptr->registeredItems[0] = ITEM_MACH_BIKE;

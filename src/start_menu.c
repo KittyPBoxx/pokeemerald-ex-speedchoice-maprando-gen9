@@ -356,6 +356,7 @@ bool8 StartMenu_EscapeCallback(void)
     }
     else
     {
+        gSpecialVar_ItemId = ITEM_ESCAPE_ROPE;
         CreateTask(ItemUseInEscape_EscapeRope, 0xFF);
     }
 

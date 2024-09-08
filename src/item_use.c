@@ -245,7 +245,11 @@ void ItemUseOutOfBattle_ExpShare(u8 taskId)
 
 void ItemUseOutOfBattle_FlyTool(u8 taskId)
 {
-    if (MenuHelpers_IsLinkActive() == TRUE)
+    if (!(FlagGet(FLAG_BADGE06_GET) || CheckSpeedchoiceOption(EARLYFLY, FLY_YES)))
+    {
+        DisplayCannotUseItemMessage(taskId, gTasks[taskId].tUsingRegisteredKeyItem, gText_CantUseUntilNewBadge);
+    }
+    else if (MenuHelpers_IsLinkActive() == TRUE)
     {
         DisplayDadsAdviceCannotUseItemMessage(taskId, gTasks[taskId].tUsingRegisteredKeyItem);
     }
@@ -331,6 +335,35 @@ void ItemUseOnFieldCB_SweetScentTool(u8 taskId)
     LockPlayerFieldControls();
     FldEff_SweetScentTool();
     DestroyTask(taskId);
+}
+void ItemUseOnFieldCB_RepelCase(u8 taskId)
+{
+    
+    if (CheckBagHasItem(ITEM_MAX_REPEL, 1))
+        gSpecialVar_ItemId = ITEM_MAX_REPEL;
+    else if (CheckBagHasItem(ITEM_SUPER_REPEL, 1))
+        gSpecialVar_ItemId = ITEM_SUPER_REPEL;
+    else if (CheckBagHasItem(ITEM_REPEL, 1))
+        gSpecialVar_ItemId = ITEM_REPEL;
+    else
+        gSpecialVar_ItemId = ITEM_REPEL_CASE;
+    
+    if (gSpecialVar_ItemId == ITEM_REPEL_CASE)
+    {
+        DisplayCannotUseItemMessage(taskId, gTasks[taskId].tUsingRegisteredKeyItem, gText_RepelCaseRunOut);
+    }
+    else if (gTasks[taskId].tUsingRegisteredKeyItem != TRUE)
+    {
+        ItemUseOutOfBattle_Repel(taskId);
+    }
+    else
+    {
+        VarSet(VAR_REPEL_STEP_COUNT, ItemId_GetHoldEffectParam(gSpecialVar_ItemId));
+        CopyItemName(gSpecialVar_ItemId, gStringVar2);
+        StringExpandPlaceholders(gStringVar4, gText_PlayerUsedVar2);
+        RemoveBagItem(gSpecialVar_ItemId, 1);
+        DisplayItemMessageOnField(taskId, gStringVar4, Task_CloseCantUseKeyItemMessage);
+    }
 }
 
 void ItemUseOutOfBattle_Bike(u8 taskId)
@@ -1001,9 +1034,16 @@ const u8 gTimeHasBeenAdvanced[] = _("Time has been advanced.\n");
 
 void ItemUseOutOfBattle_SleepingBag(u8 taskId)
 {
-    if(gTasks[taskId].tUsingRegisteredKeyItem == TRUE) {
-        DisplayDadsAdviceCannotUseItemMessage(taskId, gTasks[taskId].tUsingRegisteredKeyItem);
-    } else {
+    if(gTasks[taskId].tUsingRegisteredKeyItem == TRUE) 
+    {
+        AdvanceTimeToNextPeriod();
+        gFieldCallback = FieldCB_ReturnToFieldNoScript;
+        FadeScreen(FADE_TO_BLACK, 0);
+        DestroyTask(taskId);
+        SetMainCallback2(CB2_ReturnToFieldFadeFromBlack);
+    } 
+    else 
+    {
         AdvanceTimeToNextPeriod();
         DisplayItemMessage(taskId, 1, gTimeHasBeenAdvanced, Task_WaitUntilAPress);
     }

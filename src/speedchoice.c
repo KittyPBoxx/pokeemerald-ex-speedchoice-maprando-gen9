@@ -1471,7 +1471,14 @@ static void Task_AskToStartGame(u8 taskId)
  */
 static void Task_SpeedchoiceMenuSave(u8 taskId)
 {
-    ConvertIntToHexStringN(gStringVar1, CalculateCheckValue(taskId), STR_CONV_MODE_LEADING_ZEROS, 8);
+    u32 i;
+
+    ConvertUIntToDecimalStringN(gStringVar1, CalculateCheckValue(taskId), STR_CONV_MODE_LEADING_ZEROS, 8);
+    for (i = 0; i < 8; i++)
+    {
+        if (gStringVar1[i] == CHAR_QUESTION_MARK)
+            gStringVar1[i] = CHAR_0;
+    }
     StringExpandPlaceholders(gStringVar4, gSpeedchoiceStartGameText);
     DrawTooltip(taskId, gStringVar4, TEXT_SKIP_DRAW, TRUE); // a bit of a hack, but whatever.
     CreateYesNoMenu(&sSpeedchoiceMenuWinTemplates[SPD_WIN_YESNO], 418, 2, 0);

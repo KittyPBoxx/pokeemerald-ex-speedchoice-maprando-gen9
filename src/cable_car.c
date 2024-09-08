@@ -22,6 +22,7 @@
 #include "constants/rgb.h"
 #include "constants/songs.h"
 #include "constants/weather.h"
+#include "upr_support.h"
 
 #define GOING_DOWN gSpecialVar_0x8004
 
@@ -877,9 +878,13 @@ static void CreateCableCarSprites(void)
         gSprites[spriteId].y2 = 8;
     }
 
+    if (gUprStaticVars[BATTLE_TUTORIAL_OPPONENT_INDEX] != SPECIES_ZIGZAGOON)
+        hikerGraphicsIds[3] = ((gUprStaticVars[BATTLE_TUTORIAL_OPPONENT_INDEX] + gUprStaticVars[BIRCH_INTRO_MON_INDEX]) % MAX_CABLE_CAR_MON) + 1 + OBJ_EVENT_GFX_MON_BASE;
+
     // 1/64 chance for an NPC to appear hiking on the ground below the Cable Car
-    if ((rval % 64) == 0)
+    if ((rval % 8) == 0)
     {
+        rval = Random();
         // Unclear if this was intentional, but the - 1 in the below ARRAY_COUNT means the Zigzagoon is never used
         spriteId = CreateObjectGraphicsSprite(hikerGraphicsIds[rval % (ARRAY_COUNT(hikerGraphicsIds))], hikerCallbacks[GOING_DOWN], hikerCoords[GOING_DOWN][0], hikerCoords[GOING_DOWN][1], 106);
         if (spriteId != MAX_SPRITES)

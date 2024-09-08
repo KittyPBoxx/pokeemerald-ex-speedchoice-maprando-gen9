@@ -12,6 +12,8 @@
 #define WALLY_CATCH_TUTORIAL_OPPONENT_INDEX 4
 #define PC_START_ITEM_INDEX 5
 
+#define MAX_CABLE_CAR_MON SPECIES_ENAMORUS
+
 extern const u16 gUprStaticVars[];
 extern const u16 gUprBerryTrees[];
 

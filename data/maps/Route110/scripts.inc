@@ -478,6 +478,7 @@ Route110_EventScript_BrendanDefeated::
 
 Route110_Speedchoice_MayGiveFlyHM::
 	giveitem ITEM_HM02
+	giveitem ITEM_FLY_TOOL
 	setflag FLAG_RECEIVED_HM_FLY
 	msgbox Route119_Text_MayExplainFly, MSGBOX_DEFAULT
 	goto Route110_EventScript_RivalExit
@@ -493,6 +494,7 @@ gGiveKeyItem_ITEM_FINDER_May::
 
 Route110_Speedchoice_BrendanGiveFlyHM::
 	giveitem ITEM_HM02
+	giveitem ITEM_FLY_TOOL
 	setflag FLAG_RECEIVED_HM_FLY
 	msgbox Route119_Text_BrendanExplainFly, MSGBOX_DEFAULT
 	goto Route110_EventScript_RivalExit

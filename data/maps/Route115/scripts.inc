@@ -1,3 +1,5 @@
+.set LOCALID_HIKER, 24
+
 Route115_MapScripts::
 	map_script MAP_SCRIPT_ON_LOAD, Route115_OnLoad
 	map_script MAP_SCRIPT_ON_TRANSITION, Route115_OnTransition
@@ -129,6 +131,26 @@ Route115_EventScript_Marlene::
 	msgbox Route115_Text_MarlenePostBattle, MSGBOX_AUTOCLOSE
 	end
 
+Route115_EventScript_CheckIfPlayerCanEnterCave::
+	goto_if_set FLAG_BADGE05_GET, Route115_EventScript_DontMoveHikerToCaveDoor
+	goto_if_set FLAG_BADGE04_GET, Route115_EventScript_DontMoveHikerToCaveDoor
+	goto_if_set FLAG_BADGE03_GET, Route115_EventScript_DontMoveHikerToCaveDoor
+	setobjectxyperm LOCALID_HIKER, 27, 38
+	release
+	end	
+
+Route115_EventScript_DontMoveHikerToCaveDoor::
+	release
+	end
+
+BattleFrontier_BattlePikeRoomNormal_EventScript_HikerBlockingCave::
+	lock
+	faceplayer
+	msgbox Route115_Text_CantGoInCave, MSGBOX_DEFAULT
+	closemessage
+	release
+	end
+
 Route115_Text_NeverKnowWhenCavePokemonWillAppear:
 	.string "Exploring a cave isn't like walking\n"
 	.string "on a road.\p"
@@ -142,4 +164,9 @@ Route115_Text_RouteSignRustboro:
 Route115_Text_MeteorFallsSign:
 	.string "METEOR FALLS\n"
 	.string "FALLARBOR TOWN THROUGH HERE$"
+
+Route115_Text_CantGoInCave:
+	.string "This cave is too dangerous for\n"
+	.string "a new trainer.\p"
+	.string "Come back when you have a few badges.$"
 

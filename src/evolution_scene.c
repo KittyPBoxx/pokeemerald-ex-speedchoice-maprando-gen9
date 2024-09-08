@@ -164,6 +164,7 @@ static void CB2_BeginEvolutionScene(void)
 #define tLearnMoveNoState   data[8]
 #define tEvoWasStopped      data[9]
 #define tPartyId            data[10]
+#define tPreEvoTera         data[11]
 
 #define TASK_BIT_CAN_STOP       (1 << 0)
 #define TASK_BIT_LEARN_MOVE     (1 << 7)
@@ -213,6 +214,7 @@ void EvolutionScene(struct Pokemon *mon, u16 postEvoSpecies, bool8 canStopEvo, u
     u32 personality;
     bool32 isShiny;
     u8 id;
+    u32 currTera;
 
     TryIncrementButtonStat(DB_EVOLUTIONS_ATTEMPTED);
 
@@ -257,6 +259,8 @@ void EvolutionScene(struct Pokemon *mon, u16 postEvoSpecies, bool8 canStopEvo, u
     StringCopy_Nickname(gStringVar1, name);
     StringCopy(gStringVar2, GetSpeciesName(postEvoSpecies));
 
+    currTera = GetMonData(mon, MON_DATA_TERA_TYPE);
+
     // preEvo sprite
     currSpecies = GetMonData(mon, MON_DATA_SPECIES);
     isShiny = GetMonData(mon, MON_DATA_IS_SHINY);
@@ -299,6 +303,7 @@ void EvolutionScene(struct Pokemon *mon, u16 postEvoSpecies, bool8 canStopEvo, u
     gTasks[id].tLearnsFirstMove = TRUE;
     gTasks[id].tEvoWasStopped = FALSE;
     gTasks[id].tPartyId = partyId;
+    gTasks[id].tPreEvoTera = currTera;
 
     memcpy(&sEvoStructPtr->savedPalette, &gPlttBufferUnfaded[BG_PLTT_ID(2)], sizeof(sEvoStructPtr->savedPalette));
 
@@ -786,6 +791,7 @@ static void Task_EvolutionScene(u8 taskId)
             GetSetPokedexFlag(SpeciesToNationalPokedexNum(gTasks[taskId].tPostEvoSpecies), FLAG_SET_SEEN);
             GetSetPokedexFlag(SpeciesToNationalPokedexNum(gTasks[taskId].tPostEvoSpecies), FLAG_SET_CAUGHT);
             IncrementGameStat(GAME_STAT_EVOLVED_POKEMON);
+            SetMonData(mon, MON_DATA_TERA_TYPE, (void *)(&gTasks[taskId].tPreEvoTera));
         }
         break;
     case EVOSTATE_TRY_LEARN_MOVE:

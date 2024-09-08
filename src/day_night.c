@@ -20,23 +20,23 @@ void AdvanceTimeToNextPeriod(void)
     switch(time) 
     {
         case TIME_MORNING: // Set it to TIME_DAY.
-            gLocalTime.hours = HOUR_DAY;
+            gLocalTime.hours = 13;
             gLocalTime.minutes = 0;
             gLocalTime.seconds = 0;
             break;
         case TIME_DAY: // Set it to TIME_EVENING.
-            gLocalTime.hours = TIME_EVENING;
+            gLocalTime.hours = 19;
             gLocalTime.minutes = 0;
             gLocalTime.seconds = 0;
             break;
         case TIME_EVENING: // Set it to TIME_NIGHT.
-            gLocalTime.hours = HOUR_NIGHT;
+            gLocalTime.hours = 22;
             gLocalTime.minutes = 0;
             gLocalTime.seconds = 0;
             break;                  
         case TIME_NIGHT: // Set it to TIME_MORNING.
             gLocalTime.days += 1;
-            gLocalTime.hours = HOUR_MORNING;
+            gLocalTime.hours = 7;
             gLocalTime.minutes = 0;
             gLocalTime.seconds = 0;
             break;
@@ -67,7 +67,7 @@ static u8 DNS_GetTimeOfDay(s8 hours)
     else if (hours < HOUR_EVENING)
         return TIME_DAY;
     else if (hours < HOUR_NIGHT)
-        return HOUR_EVENING;
+        return TIME_EVENING;
     else
         return TIME_NIGHT;
 }

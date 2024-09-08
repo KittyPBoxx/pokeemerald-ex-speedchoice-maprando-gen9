@@ -14126,18 +14126,18 @@ const struct Item gItemsInfo[] =
 
     [ITEM_FLY_TOOL] =
     {
-        .name = _("Eon Flute"),
+        .name = _("Travel Pass"),
         .price = 0,
         .description = COMPOUND_STRING(
-            "Use FLY\n"
+            "Use FLY quickly\n"
             "outside battle."),
         .type = ITEM_USE_FIELD,
         .importance = 1,
         .pocket = POCKET_KEY_ITEMS,
         .fieldUseFunc = ItemUseOutOfBattle_FlyTool,
         .secondaryId = 0,
-        .iconPic = gItemIcon_PokeFlute,
-        .iconPalette = gItemIconPalette_PokeFlute,
+        .iconPic = gItemIcon_BikeVoucher,
+        .iconPalette = gItemIconPalette_BikeVoucher,
     },
 
     [ITEM_TELEPORT_TOOL] =
@@ -14170,6 +14170,23 @@ const struct Item gItemsInfo[] =
         .secondaryId = 0,
         .iconPic = gItemIcon_BerryPouch,
         .iconPalette = gItemIconPalette_BerryPouch,
+    },
+
+    [ITEM_REPEL_CASE] =
+    {
+        .name = _("Repel Case"),
+        .price = 0,
+        .description = COMPOUND_STRING(
+            "Use a Repel if\n"
+            "you have one.\n"
+            "Larger first."),
+        .type = ITEM_USE_FIELD,   
+        .importance = 1,
+        .pocket = POCKET_KEY_ITEMS,
+        .fieldUseFunc = ItemUseOnFieldCB_RepelCase,
+        .secondaryId = 0,
+        .iconPic = gItemIcon_TMCase,
+        .iconPalette = gItemIconPalette_TMCase,
     },
 
 };

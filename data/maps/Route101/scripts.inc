@@ -40,6 +40,10 @@ Route101_EventScript_StartBirchRescue::
 	waitmovement 0
 	msgbox Route101_Text_PleaseHelp, MSGBOX_DEFAULT
 	closemessage
+	setmetatile 8, 12, 482, TRUE
+	setmetatile 9, 12, 1, TRUE
+	setmetatile 10, 12, 1, TRUE
+	setmetatile 11, 12, 13, TRUE
 	setvar VAR_ROUTE101_STATE, 2
 	releaseall
 	end
@@ -129,10 +133,10 @@ Route101_Movement_ZigzagoonChase1:
 	step_end
 
 Route101_Movement_ZigzagoonFaceBirch:
-	walk_in_place_fast_left
-	walk_in_place_fast_left
-	walk_in_place_fast_left
-	walk_in_place_fast_left
+	walk_in_place_left
+	walk_in_place_left
+	walk_in_place_left
+	walk_in_place_left
 	step_end
 
 Route101_Movement_EnterScene:

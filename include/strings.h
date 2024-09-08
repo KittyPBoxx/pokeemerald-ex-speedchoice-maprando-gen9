@@ -3058,4 +3058,6 @@ extern const u8 gText_PM[];
 extern const u8 gText_PlayerScurriedToCenter[];
 extern const u8 gText_PlayerScurriedBackHome[];
 
+extern const u8 gText_RepelCaseRunOut[];
+
 #endif // GUARD_STRINGS_H

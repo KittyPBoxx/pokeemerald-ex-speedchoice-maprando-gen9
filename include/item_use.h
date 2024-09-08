@@ -68,5 +68,6 @@ void ItemUseOutOfBattle_TeleportTool(u8);
 
 void ItemUseOutOfBattle_SweetScentTool(u8);
 void ItemUseOnFieldCB_SweetScentTool(u8);
+void ItemUseOnFieldCB_RepelCase(u8);
 
 #endif // GUARD_ITEM_USE_H
