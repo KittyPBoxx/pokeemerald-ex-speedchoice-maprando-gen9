@@ -74,6 +74,7 @@
 #include "day_night.h"
 #include "constants/event_objects.h"
 #include "qol_field_moves.h"
+#include "dexnav.h"
 
 struct CableClubPlayer
 {
@@ -861,6 +862,7 @@ void LoadMapFromCameraTransition(u8 mapGroup, u8 mapNum)
     LoadObjEventTemplatesFromHeader();
     TrySetMapSaveWarpStatus();
     ClearTempFieldEventData();
+    ResetDexNavSearch();
     ResetCyclingRoadChallengeData();
     RestartWildEncounterImmunitySteps();
 #if FREE_MATCH_CALL == FALSE
@@ -924,6 +926,7 @@ static void LoadMapFromWarp(bool32 a1)
     CheckLeftFriendsSecretBase();
     TrySetMapSaveWarpStatus();
     ClearTempFieldEventData();
+    ResetDexNavSearch();
     ResetCyclingRoadChallengeData();
     RestartWildEncounterImmunitySteps();
 #if FREE_MATCH_CALL == FALSE

@@ -184,6 +184,8 @@
 #define CONNECTION_DIVE     5
 #define CONNECTION_EMERGE   6
 
+#define USE_DEXNAV_SEARCH_LEVELS      FALSE // Requires a large amount of the save block
+
 #if TESTING
 #include "config/test.h"
 #endif

@@ -1189,6 +1189,10 @@ struct SaveBlock1
     /*0x3???*/ struct WaldaPhrase waldaPhrase;
     // sizeof: 0x3???
     struct DoneButtonStats1 doneButtonStats;
+#if USE_DEXNAV_SEARCH_LEVELS == TRUE
+    u8 dexNavSearchLevels[NUM_SPECIES];
+#endif
+    u8 dexNavChain;
 };
 
 extern struct SaveBlock1* gSaveBlock1Ptr;

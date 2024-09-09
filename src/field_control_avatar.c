@@ -38,6 +38,7 @@
 #include "constants/trainer_hill.h"
 #include "done_button.h"
 #include "qol_field_moves.h"
+#include "dexnav.h"
 
 static EWRAM_DATA u8 sWildEncounterImmunitySteps = 0;
 static EWRAM_DATA u16 sPrevMetatileBehavior = 0;
@@ -86,7 +87,7 @@ void FieldClearPlayerInput(struct FieldInput *input)
     input->heldDirection2 = FALSE;
     input->tookStep = FALSE;
     input->pressedBButton = FALSE;
-    input->input_field_1_0 = FALSE;
+    input->pressedLRButton = FALSE;
     input->input_field_1_1 = FALSE;
     input->input_field_1_2 = FALSE;
     input->input_field_1_3 = FALSE;
@@ -111,6 +112,8 @@ void FieldGetPlayerInput(struct FieldInput *input, u16 newKeys, u16 heldKeys)
                 input->pressedAButton = TRUE;
             if (newKeys & B_BUTTON)
                 input->pressedBButton = TRUE;
+            if (newKeys & R_BUTTON && !FlagGet(FLAG_SYS_DEXNAV_SEARCH) && heldKeys & L_BUTTON)
+                input->pressedLRButton = TRUE;
         }
 
         if (heldKeys & (DPAD_UP | DPAD_DOWN | DPAD_LEFT | DPAD_RIGHT))
@@ -228,7 +231,14 @@ int ProcessPlayerFieldInput(struct FieldInput *input)
         ShowStartMenu();
         return TRUE;
     }
+
+    if (input->tookStep && TryFindHiddenPokemon())
+        return TRUE;
+
     if (input->pressedSelectButton && UseRegisteredKeyItemOnField() == TRUE)
+        return TRUE;
+
+    if (input->pressedLRButton && TryStartDexnavSearch())
         return TRUE;
 
 #if DEBUG_OVERWORLD_MENU == TRUE && DEBUG_OVERWORLD_IN_MENU == FALSE

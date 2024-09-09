@@ -11,6 +11,7 @@
 #include "battle_tower.h"
 #include "battle_z_move.h"
 #include "data.h"
+#include "dexnav.h"
 #include "event_data.h"
 #include "event_object_movement.h"
 #include "evolution_scene.h"
@@ -6127,7 +6128,7 @@ static inline bool32 CanFirstMonBoostHeldItemRarity(void)
 
 void SetWildMonHeldItem(void)
 {
-    if (!(gBattleTypeFlags & (BATTLE_TYPE_LEGENDARY | BATTLE_TYPE_TRAINER | BATTLE_TYPE_PYRAMID | BATTLE_TYPE_PIKE)))
+    if (!(gBattleTypeFlags & (BATTLE_TYPE_LEGENDARY | BATTLE_TYPE_TRAINER | BATTLE_TYPE_PYRAMID | BATTLE_TYPE_PIKE)) && !gDexnavBattle)
     {
         u16 rnd;
         u16 species;
@@ -6414,6 +6415,9 @@ void HandleSetPokedexFlag(u16 nationalNum, u8 caseId, u32 personality)
         if (NationalPokedexNumToSpecies(nationalNum) == SPECIES_SPINDA)
             gSaveBlock2Ptr->pokedex.spindaPersonality = personality;
     }
+
+    if (caseId == FLAG_SET_SEEN)
+        TryIncrementSpeciesSearchLevel(nationalNum);    // encountering pokemon increments its search level
 }
 
 bool8 HasTwoFramesAnimation(u16 species)

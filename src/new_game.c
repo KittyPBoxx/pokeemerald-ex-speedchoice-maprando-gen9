@@ -50,6 +50,7 @@
 #include "done_button.h"
 #include "upr_support.h"
 #include "constants/heal_locations.h"
+#include "constants/map_groups.h"
 
 extern const u8 EventScript_ResetAllMapFlags[];
 
@@ -227,6 +228,10 @@ void NewGameInitData(void)
     WipeTrainerNameRecords();
     ResetTrainerHillResults();
     ResetContestLinkResults();
+#if USE_DEXNAV_SEARCH_LEVELS == TRUE
+    memset(gSaveBlock1Ptr->dexNavSearchLevels, 0, sizeof(gSaveBlock1Ptr->dexNavSearchLevels));
+#endif
+    gSaveBlock1Ptr->dexNavChain = 0;
 
     // UPR Support Setup
     handleRandomizedBerryTreeSetup();

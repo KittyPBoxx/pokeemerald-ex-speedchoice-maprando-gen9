@@ -25,9 +25,9 @@ gFieldEffectScriptPointers::
 	.4byte gFieldEffectScript_JumpSmallSplash           @ FLDEFF_JUMP_SMALL_SPLASH
 	.4byte gFieldEffectScript_LongGrass                 @ FLDEFF_LONG_GRASS
 	.4byte gFieldEffectScript_JumpLongGrass             @ FLDEFF_JUMP_LONG_GRASS
-	.4byte gFieldEffectScript_UnusedGrass               @ FLDEFF_UNUSED_GRASS
-	.4byte gFieldEffectScript_UnusedGrass2              @ FLDEFF_UNUSED_GRASS_2
-	.4byte gFieldEffectScript_UnusedSand                @ FLDEFF_UNUSED_SAND
+	.4byte gFieldEffectScript_ShakingGrass              @ FLDEFF_SHAKING_GRASS
+	.4byte gFieldEffectScript_ShakingGrass2             @ FLDEFF_SHAKING_LONG_GRASS
+	.4byte gFieldEffectScript_SandHole                  @ FLDEFF_SAND_HOLE
 	.4byte gFieldEffectScript_WaterSurfacing            @ FLDEFF_WATER_SURFACING
 	.4byte gFieldEffectScript_BerryTreeGrowthSparkle    @ FLDEFF_BERRY_TREE_GROWTH_SPARKLE
 	.4byte gFieldEffectScript_DeepSandFootprints        @ FLDEFF_DEEP_SAND_FOOTPRINTS
@@ -85,6 +85,7 @@ gFieldEffectScriptPointers::
     .4byte gFieldEffectScript_UseWaterfallTool          @ FLDEFF_USE_WATERFALL_TOOL 
     .4byte gFieldEffectScript_UseDiveTool               @ FLDEFF_USE_DIVE_TOOL
     .4byte gFieldEffectScript_UseTeleportTool           @ FLDEFF_USE_TELEPORT_TOOL
+	.4byte gFieldEffectScript_CaveDust                  @ FLDEFF_CAVE_DUST
 
 gFieldEffectScript_Saving::
 	field_eff_loadfadedpal_callnative gSpritePalette_SavingFieldEffect, FldEff_Saving
@@ -166,16 +167,16 @@ gFieldEffectScript_JumpLongGrass::
 	field_eff_loadfadedpal_callnative gSpritePalette_GeneralFieldEffect1, FldEff_JumpLongGrass
 	field_eff_end
 
-gFieldEffectScript_UnusedGrass::
-	field_eff_loadfadedpal_callnative gSpritePalette_GeneralFieldEffect1, FldEff_UnusedGrass
+gFieldEffectScript_ShakingGrass::
+	field_eff_loadfadedpal_callnative gSpritePalette_GeneralFieldEffect1, FldEff_ShakingGrass
 	field_eff_end
 
-gFieldEffectScript_UnusedGrass2::
-	field_eff_loadfadedpal_callnative gSpritePalette_GeneralFieldEffect1, FldEff_UnusedGrass2
+gFieldEffectScript_ShakingGrass2::
+	field_eff_loadfadedpal_callnative gSpritePalette_GeneralFieldEffect1, FldEff_ShakingGrass2
 	field_eff_end
 
-gFieldEffectScript_UnusedSand::
-	field_eff_loadfadedpal_callnative gSpritePalette_GeneralFieldEffect0, FldEff_UnusedSand
+gFieldEffectScript_SandHole::
+	field_eff_loadfadedpal_callnative gSpritePalette_GeneralFieldEffect0, FldEff_SandHole
 	field_eff_end
 
 gFieldEffectScript_WaterSurfacing::
@@ -408,3 +409,7 @@ gFieldEffectScript_UseTeleportTool::
 	field_eff_end
 
 @ End qol_field_moves
+
+gFieldEffectScript_CaveDust::
+    field_eff_loadfadedpal_callnative gSpritePalette_CaveDust FldEff_CaveDust
+    field_eff_end

@@ -194,7 +194,7 @@ static void FeebasSeedRng(u16 seed)
 // SPEEDCHOICE CHANGE
 // -----------------------------------------
 // Change: New Wild Encounters used to be set here, but is default now.
-static u8 ChooseWildMonIndex_Land(void)
+u8 ChooseWildMonIndex_Land(void)
 {
     u8 rand = Random() % ENCOUNTER_CHANCE_LAND_MONS_TOTAL;
 
@@ -274,7 +274,7 @@ static u8 ChooseWildMonIndex_Land(void)
 }
 
 // ROCK_WILD_COUNT / WATER_WILD_COUNT
-static u8 ChooseWildMonIndex_WaterRock(void)
+u8 ChooseWildMonIndex_WaterRock(void)
 {
     u8 rand = Random() % ENCOUNTER_CHANCE_WATER_MONS_TOTAL;
 
@@ -482,7 +482,7 @@ static u8 ChooseWildMonLevel(const struct WildPokemon *wildPokemon, u8 wildMonIn
     }
 }
 
-static u16 GetCurrentMapWildMonHeaderId(void)
+u16 GetCurrentMapWildMonHeaderId(void)
 {
     u16 i;
 
@@ -545,7 +545,7 @@ u8 PickWildMonNature(void)
     return Random() % NUM_NATURES;
 }
 
-static void CreateWildMon(u16 species, u8 level)
+void CreateWildMon(u16 species, u8 level)
 {
     bool32 checkCuteCharm = TRUE;
 
@@ -1424,3 +1424,26 @@ void HeadbuttWildEncounter(void)
         FadeInFromWhite();
     }
 }
+
+u8 ChooseHiddenMonIndex(void)
+{
+    #ifdef ENCOUNTER_CHANCE_HIDDEN_MONS_TOTAL
+        u8 rand = Random() % ENCOUNTER_CHANCE_HIDDEN_MONS_TOTAL;
+
+        if (rand < ENCOUNTER_CHANCE_HIDDEN_MONS_SLOT_0)
+            return 0;
+        else if (rand >= ENCOUNTER_CHANCE_HIDDEN_MONS_SLOT_0 && rand < ENCOUNTER_CHANCE_HIDDEN_MONS_SLOT_1)
+            return 1;
+        else
+            return 2;
+    #else
+        return 0xFF;
+    #endif
+}
+
+bool32 MapHasNoEncounterData(void)
+{
+    return (GetCurrentMapWildMonHeaderId() == HEADER_NONE);
+}
+
+

@@ -1160,3 +1160,4 @@ EventScript_VsSeekerChargingDone::
 	.include "data/text/save.inc"
 	.include "data/text/birch_speech.inc"
 	.include "data/scripts/qol_field_move_scripts.inc"
+	.include "data/scripts/dexnav.inc"
