@@ -55,6 +55,7 @@
 #include "constants/songs.h"
 #include "speedchoice.h"
 #include "done_button.h"
+#include "upr_support.h"
 
 #define TAG_POCKET_SCROLL_ARROW 110
 #define TAG_BAG_SCROLL_ARROW    111
@@ -2805,17 +2806,32 @@ static void RestoreBagAfterWallyTutorial(void)
 
 void DoWallyTutorialBagMenu(void)
 {
+    u32 seed;
+
     PrepareBagForWallyTutorial();
-    AddBagItem(ITEM_POTION, 1);
-    AddBagItem(ITEM_POKE_BALL, 1);
+
+    if (uprAccessVar(WALLY_CATCH_TUTORIAL_MON_INDEX) != SPECIES_ZIGZAGOON)
+    {
+        seed = uprAccessVar(BATTLE_TUTORIAL_OPPONENT_INDEX);
+        AddBagItem((PRandom(&seed) % (LAST_BALL)) + 1, 1);
+        seed = uprAccessVar(WALLY_CATCH_TUTORIAL_OPPONENT_INDEX);
+        AddBagItem((PRandom(&seed) % (ITEM_MAX_HONEY)) + 1, 1);
+    }
+    else 
+    {
+        AddBagItem(ITEM_POTION, 1);
+        AddBagItem(ITEM_POKE_BALL, 1);
+    }
+
     GoToBagMenu(ITEMMENULOCATION_WALLY, MEDICINE_POCKET, CB2_SetUpReshowBattleScreenAfterMenu2);
 }
 
 #define tTimer data[8]
-#define WALLY_BAG_DELAY 102 // The number of frames between each action Wally takes in the bag
+#define WALLY_BAG_DELAY 30 // The number of frames between each action Wally takes in the bag
 
 static void Task_WallyTutorialBagMenu(u8 taskId)
 {
+    u32 seed;
     s16 *data = gTasks[taskId].data;
 
     if (!gPaletteFade.active)
@@ -2830,7 +2846,15 @@ static void Task_WallyTutorialBagMenu(u8 taskId)
         case WALLY_BAG_DELAY * 2:
             PlaySE(SE_SELECT);
             BagMenu_PrintCursor(tListTaskId, COLORID_GRAY_CURSOR);
-            gSpecialVar_ItemId = ITEM_POKE_BALL;
+            if (uprAccessVar(WALLY_CATCH_TUTORIAL_MON_INDEX) != SPECIES_ZIGZAGOON)
+            {
+                seed = uprAccessVar(BATTLE_TUTORIAL_OPPONENT_INDEX);
+                gSpecialVar_ItemId = (PRandom(&seed) % (LAST_BALL)) + 1;
+            }
+            else 
+            {
+                gSpecialVar_ItemId = ITEM_POKE_BALL;
+            }
             OpenContextMenu(taskId);
             tTimer++;
             break;

@@ -563,7 +563,7 @@ static void DoBattlePyramidTrainerHillBattle(void)
 // Initiates battle where Wally catches Ralts
 void StartWallyTutorialBattle(void)
 {
-    CreateMaleMon(&gEnemyParty[0], gUprStaticVars[WALLY_CATCH_TUTORIAL_OPPONENT_INDEX], 5);
+    CreateMaleMon(&gEnemyParty[0], uprAccessVar(WALLY_CATCH_TUTORIAL_OPPONENT_INDEX), 5);
     LockPlayerFieldControls();
     gMain.savedCallback = CB2_ReturnToFieldContinueScriptPlayMapMusic;
     gBattleTypeFlags = BATTLE_TYPE_WALLY_TUTORIAL;
@@ -995,7 +995,7 @@ static void CB2_GiveStarter(void)
 
     *GetVarPointer(VAR_STARTER_MON) = gSpecialVar_Result;
     starterMon = GetStarterPokemon(gSpecialVar_Result);
-    ScriptGiveMon(starterMon, 5, gUprStaticVars[STARTER_ITEM_INDEX]);
+    ScriptGiveMon(starterMon, 5, uprAccessVar(STARTER_ITEM_INDEX));
     ResetTasks();
     PlayBattleBGM();
     SetMainCallback2(CB2_StartFirstBattle);

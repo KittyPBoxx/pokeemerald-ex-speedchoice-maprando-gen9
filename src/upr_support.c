@@ -2,6 +2,14 @@
 #include "item.h"
 #include "event_data.h"
 #include "string_util.h"
+#include "party_menu.h"
+#include "constants/party_menu.h"
+#include "upr_support.h"
+#include "random.h"
+
+#define DEFAULT_LEARNSET_COMPATIBILITY 0
+#define FULL_LEARNSET_COMPATIBILITY 1
+#define TYPE_MATCH_COMPATIBILITY 2
 
 #define BIRCH_INTRO_MON SPECIES_LOTAD
 #define STARTER_ITEM ITEM_NONE
@@ -9,6 +17,8 @@
 #define WALLY_CATCH_TUTORIAL_MON SPECIES_ZIGZAGOON
 #define WALLY_CATCH_TUTORIAL_OPPONENT SPECIES_RALTS
 #define PC_START_ITEM ITEM_POTION
+#define TUTOR_COMPATIBILITY DEFAULT_LEARNSET_COMPATIBILITY 
+#define TMHM_COMPATIBILITY DEFAULT_LEARNSET_COMPATIBILITY 
 
 // Berries are a u8 but the last bit is used for weeds 
 // (so we need to be over last berry but under 127)
@@ -19,7 +29,9 @@ const u16 gUprStaticVars[] = { BIRCH_INTRO_MON,
                                BATTLE_TUTORIAL_OPPONENT,
                                WALLY_CATCH_TUTORIAL_MON,
                                WALLY_CATCH_TUTORIAL_OPPONENT,
-                               PC_START_ITEM };
+                               PC_START_ITEM,
+                               TUTOR_COMPATIBILITY,
+                               TMHM_COMPATIBILITY };
 
 const u16 gUprBerryTrees[] = {
     ITEM_NONE, // BERRY_TREE_ROUTE_102_PECHA    
@@ -202,6 +214,12 @@ const u16 gUprBerryTrees[] = {
     ITEM_NONE  // BERRY_TREE_ROUTE_123_RAWST    
 };
 
+// This is to ensure the compiler never tries to inline constant vars from the array
+u16 __attribute__((optimize("O0"))) uprAccessVar(u16 index)
+{
+    return gUprStaticVars[index];
+}
+
 // We need to make sure the compiler dosn't try and optimize these checks because the values will change after compilation
 void __attribute__((optimize("O0"))) handleRandomizedBerryTreeSetup()
 {
@@ -284,4 +302,64 @@ u8 handleRandomizedBerryTreeGraphics(u8 berryId, u8 treeId)
         return berryId;
 
     return (u8) (gUprBerryTrees[(treeId + 10) % BERRY_TREES_COUNT % BERRY_TREES_COUNT] % (LAST_BERRY_INDEX - FIRST_BERRY_INDEX));
+}
+
+// We need to make sure the compiler dosn't try and optimize these checks because the values will change after compilation
+u8 __attribute__((optimize("O0"))) handleRandomizedTeachableLearnsets(u16 species, u16 move) 
+{
+    u32 seed;
+    u16 i = 0;
+
+    if (species == SPECIES_EGG)
+    {
+        return CANNOT_LEARN_MOVE;
+    }
+
+    if (gPartyMenu.action == PARTY_ACTION_MOVE_TUTOR)
+    {
+        i = TUTOR_COMPATIBILITY_INDEX;
+
+        if (gUprStaticVars[i] == DEFAULT_LEARNSET_COMPATIBILITY)
+        {
+            return USE_EXISTING_LEARNSET;
+        }
+
+        if (gUprStaticVars[i] == FULL_LEARNSET_COMPATIBILITY)
+        {
+            return CAN_LEARN_MOVE;
+        }
+
+        if (gUprStaticVars[i] == TYPE_MATCH_COMPATIBILITY)
+        {
+            return gMovesInfo[move].type == gSpeciesInfo[species].types[0] || gMovesInfo[move].type == gSpeciesInfo[species].types[1];
+        }
+
+        seed = gUprStaticVars[i] + species + move;
+        return (PRandom(&seed) % 2);
+
+    }
+    else 
+    {
+        i = TMHM_COMPATIBILITY_INDEX;
+
+        if (gUprStaticVars[i] == DEFAULT_LEARNSET_COMPATIBILITY)
+        {
+            return USE_EXISTING_LEARNSET;
+        }
+
+        if (gUprStaticVars[i] == FULL_LEARNSET_COMPATIBILITY)
+        {
+            return CAN_LEARN_MOVE;
+        }
+
+        if (gUprStaticVars[i] == TYPE_MATCH_COMPATIBILITY)
+        {
+            return gMovesInfo[move].type == gSpeciesInfo[species].types[0] || gMovesInfo[move].type == gSpeciesInfo[species].types[1];
+        }
+
+        seed = gUprStaticVars[i] + species + move;
+        return (PRandom(&seed) % 2);
+        
+    }
+
 }

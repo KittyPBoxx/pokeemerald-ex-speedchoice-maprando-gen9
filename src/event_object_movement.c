@@ -2697,7 +2697,7 @@ void TrySpawnObjectEvents(s16 cameraX, s16 cameraY)
                     SpawnLightSprite(npcX, npcY, cameraX, cameraY, template->trainerRange_berryTreeId); 
                 else if (template->graphicsId == OBJ_EVENT_GFX_ZIGZAGOON_1)
                 {   // So we can randomize the sprite chasing birch
-                    template->graphicsId = gUprStaticVars[BATTLE_TUTORIAL_OPPONENT_INDEX] + OBJ_EVENT_GFX_MON_BASE;
+                    template->graphicsId = uprAccessVar(BATTLE_TUTORIAL_OPPONENT_INDEX) + OBJ_EVENT_GFX_MON_BASE;
                     TrySpawnObjectEventTemplate(template, gSaveBlock1Ptr->location.mapNum, gSaveBlock1Ptr->location.mapGroup, cameraX, cameraY);
                 }
                 else

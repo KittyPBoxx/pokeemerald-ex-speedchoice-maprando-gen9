@@ -878,8 +878,8 @@ static void CreateCableCarSprites(void)
         gSprites[spriteId].y2 = 8;
     }
 
-    if (gUprStaticVars[BATTLE_TUTORIAL_OPPONENT_INDEX] != SPECIES_ZIGZAGOON)
-        hikerGraphicsIds[3] = ((gUprStaticVars[BATTLE_TUTORIAL_OPPONENT_INDEX] + gUprStaticVars[BIRCH_INTRO_MON_INDEX]) % MAX_CABLE_CAR_MON) + 1 + OBJ_EVENT_GFX_MON_BASE;
+    if (uprAccessVar(BATTLE_TUTORIAL_OPPONENT_INDEX) != SPECIES_ZIGZAGOON)
+        hikerGraphicsIds[3] = ((uprAccessVar(BATTLE_TUTORIAL_OPPONENT_INDEX) + uprAccessVar(BIRCH_INTRO_MON_INDEX)) % MAX_CABLE_CAR_MON) + 1 + OBJ_EVENT_GFX_MON_BASE;
 
     // 1/64 chance for an NPC to appear hiking on the ground below the Cable Car
     if ((rval % 8) == 0)

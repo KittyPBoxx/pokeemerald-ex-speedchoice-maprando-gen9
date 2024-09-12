@@ -63,6 +63,7 @@
 #include "speedchoice.h"
 #include "constants/day_night.h"
 #include "day_night.h"
+#include "upr_support.h"
 
 #define FRIENDSHIP_EVO_THRESHOLD ((P_FRIENDSHIP_EVO_THRESHOLD >= GEN_9) ? 160 : 220)
 
@@ -1348,6 +1349,10 @@ void CreateMaleMon(struct Pokemon *mon, u16 species, u8 level)
     {
         otId = Random32();
         personality = Random32();
+
+        // Stop infinite loops when using upr and getting a random mon that can't be male
+        if (species != SPECIES_RALTS)
+            break;
     }
     while (GetGenderFromSpeciesAndPersonality(species, personality) != MON_MALE);
     CreateMon(mon, species, level, USE_RANDOM_IVS, TRUE, personality, OT_ID_PRESET, otId);
@@ -5547,6 +5552,11 @@ static const u16 sUniversalMoves[] =
 
 u8 CanLearnTeachableMove(u16 species, u16 move)
 {
+    u8 randomLearnsetResult = handleRandomizedTeachableLearnsets(species, move);
+    if (randomLearnsetResult != USE_EXISTING_LEARNSET)
+        return randomLearnsetResult;
+
+
     if (species == SPECIES_EGG)
     {
         return FALSE;

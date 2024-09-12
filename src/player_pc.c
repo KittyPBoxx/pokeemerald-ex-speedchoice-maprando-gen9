@@ -354,7 +354,7 @@ static const u8 sSwapArrowTextColors[] = {TEXT_COLOR_WHITE, TEXT_COLOR_LIGHT_GRA
 void NewGameInitPCItems(void)
 {
     ClearItemSlots(gSaveBlock1Ptr->pcItems, PC_ITEMS_COUNT);
-    AddPCItem(gUprStaticVars[PC_START_ITEM_INDEX], 1);
+    AddPCItem(uprAccessVar(PC_START_ITEM_INDEX), 1);
 }
 
 void BedroomPC(void)
