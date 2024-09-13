@@ -29,6 +29,7 @@
 #include "window.h"
 #include "constants/rgb.h"
 #include "constants/songs.h"
+#include "dexnav.h"
 
 enum
 {
@@ -1759,7 +1760,9 @@ static void Task_HandlePokedexStartMenuInput(u8 taskId)
             {
             case 0: //BACK TO LIST
             default:
-                gMain.newKeys |= START_BUTTON;  //Exit menu
+                //gMain.newKeys |= START_BUTTON;  //Exit menu
+                BeginNormalPaletteFade(PALETTES_ALL, 0, 0, 0x10, RGB_BLACK);
+                gTasks[taskId].func = Task_OpenDexNavFromStartMenu;
                 break;
             case 1: //LIST TOP
                 sPokedexView->selectedPokemon = 0;

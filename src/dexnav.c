@@ -60,6 +60,7 @@
 #include "gba/m4a_internal.h"
 #include "day_night.h"
 #include "rtc.h"
+#include "bike.h"
 
 #define HIDDEN_WILD_COUNT 3
 #define TIMES_OF_DAY 4
@@ -804,7 +805,7 @@ static u8 GetSearchLevel(u16 dexNum)
 #if USE_DEXNAV_SEARCH_LEVELS == TRUE
     searchLevel = gSaveBlock1Ptr->dexNavSearchLevels[dexNum];
 #else
-    searchLevel = 0;
+    searchLevel = 100;
 #endif
     return searchLevel;
 }
@@ -869,14 +870,14 @@ static void Task_InitDexNavSearch(u8 taskId)
     sDexNavSearchDataPtr->isHiddenMon = (environment == ENCOUNTER_TYPE_HIDDEN) ? TRUE : FALSE;
     sDexNavSearchDataPtr->monLevel = DexNavTryGenerateMonLevel(species, environment);
     
-    if (GetFlashLevel() > 0)
-    {
-        Free(sDexNavSearchDataPtr);
-        FreeMonIconPalettes();
-        ScriptContext_SetupScript(EventScript_TooDark);
-        DestroyTask(taskId);
-        return;
-    }
+    // if (GetFlashLevel() > 0)
+    // {
+    //     Free(sDexNavSearchDataPtr);
+    //     FreeMonIconPalettes();
+    //     ScriptContext_SetupScript(EventScript_TooDark);
+    //     DestroyTask(taskId);
+    //     return;
+    // }
     
     if (sDexNavSearchDataPtr->monLevel == MON_LEVEL_NONEXISTENT || !TryStartHiddenMonFieldEffect(sDexNavSearchDataPtr->environment, 12, 12, FALSE))
     {
@@ -886,7 +887,14 @@ static void Task_InitDexNavSearch(u8 taskId)
         DestroyTask(taskId);
         return;
     }
-    
+
+    if (FlagGet(FLAG_SYS_CYCLING_ROAD) == FALSE )
+    {
+        SetPlayerAvatarTransitionFlags(PLAYER_AVATAR_FLAG_ON_FOOT);
+        Overworld_ClearSavedMusic();
+        Overworld_PlaySpecialMapMusic();
+    } 
+
     sDexNavSearchDataPtr->hiddenSearch = FALSE;
     task->tRevealed = TRUE; //search window revealed
     task->func = Task_SetUpDexNavSearch;
@@ -1006,15 +1014,15 @@ static void EndDexNavSearchSetupScript(const u8 *script, u8 taskId)
     ScriptContext_SetupScript(script);
 }
 
-static u8 GetMovementProximityBySearchLevel(void)
-{
-    if (sDexNavSearchDataPtr->searchLevel < 20)
-        return 2;
-    else if (sDexNavSearchDataPtr->searchLevel < 50)
-        return 3;
-    else
-        return 4;
-}
+// static u8 GetMovementProximityBySearchLevel(void)
+// {
+//     if (sDexNavSearchDataPtr->searchLevel < 20)
+//         return 2;
+//     else if (sDexNavSearchDataPtr->searchLevel < 50)
+//         return 3;
+//     else
+//         return 4;
+// }
 
 static void Task_RevealHiddenMon(u8 taskId)
 {
@@ -1133,18 +1141,18 @@ static void Task_DexNavSearch(u8 taskId)
     }
 
     //Caves and water the pokemon moves around
-    if ((sDexNavSearchDataPtr->environment == ENCOUNTER_TYPE_WATER || GetCurrentMapType() == MAP_TYPE_UNDERGROUND)
-        && sDexNavSearchDataPtr->proximity < GetMovementProximityBySearchLevel() && sDexNavSearchDataPtr->movementCount < 2
-        && task->tRevealed)
-    {        
-        FieldEffectStop(&gSprites[sDexNavSearchDataPtr->fldEffSpriteId], sDexNavSearchDataPtr->fldEffId);
-        while (1) {
-            if (TryStartHiddenMonFieldEffect(sDexNavSearchDataPtr->environment, 10, 10, TRUE))
-                break;
-        }
+    // if ((sDexNavSearchDataPtr->environment == ENCOUNTER_TYPE_WATER || GetCurrentMapType() == MAP_TYPE_UNDERGROUND)
+    //     && sDexNavSearchDataPtr->proximity < GetMovementProximityBySearchLevel() && sDexNavSearchDataPtr->movementCount < 2
+    //     && task->tRevealed)
+    // {        
+    //     FieldEffectStop(&gSprites[sDexNavSearchDataPtr->fldEffSpriteId], sDexNavSearchDataPtr->fldEffId);
+    //     while (1) {
+    //         if (TryStartHiddenMonFieldEffect(sDexNavSearchDataPtr->environment, 10, 10, TRUE))
+    //             break;
+    //     }
         
-        sDexNavSearchDataPtr->movementCount++;
-    }
+    //     sDexNavSearchDataPtr->movementCount++;
+    // }
 
     DexNavProximityUpdate();
     if (task->tProximity != sDexNavSearchDataPtr->proximity)
@@ -2571,17 +2579,29 @@ bool8 TryFindHiddenPokemon(void)
         u16 species;
         u8 environment;
         u8 taskId;
-        const struct WildPokemonInfo* headbuttMonsInfo = gWildMonHeaders[headerId].headbuttMonsInfo;
+        const struct WildPokemonInfo* hiddenMonsInfo = gWildMonHeaders[headerId].headbuttMonsInfo;
         bool8 isHiddenMon = FALSE;
         
         //while you can still technically find hidden pokemon if there are not hidden-only pokemon on a map,
         // this prevents any potential lagging on maps you dont want hidden pokemon to appear on
-        if (headbuttMonsInfo == NULL)
+        if (hiddenMonsInfo == NULL)
+        {
+            hiddenMonsInfo = gWildMonHeaders[headerId].landMonsInfo;
+        }
+
+        if (hiddenMonsInfo == NULL)
+        {
+            hiddenMonsInfo = gWildMonHeaders[headerId].waterMonsInfo;
+        }
+
+        if (hiddenMonsInfo == NULL)
+        {
             return FALSE;
+        }
         
         //encounter rate signifies surfing (1) or land mons (0)!
         // again, for simplicity
-        switch (headbuttMonsInfo->encounterRate)
+        switch (hiddenMonsInfo->encounterRate)
         {
         case 0: //land
             // there are surely better ways to do this, but this allows greatest flexibility
@@ -2590,7 +2610,7 @@ bool8 TryFindHiddenPokemon(void)
                 index = ChooseHiddenMonIndex();
                 if (index == 0xFF)
                     return FALSE;//no hidden info
-                species = headbuttMonsInfo->wildPokemon[hiddenTimeOfDay][index].species;
+                species = hiddenMonsInfo->wildPokemon[hiddenTimeOfDay][index].species;
                 isHiddenMon = TRUE;
                 environment = ENCOUNTER_TYPE_HIDDEN;
             }
@@ -2608,7 +2628,7 @@ bool8 TryFindHiddenPokemon(void)
                     index = ChooseHiddenMonIndex();
                     if (index == 0xFF)
                         return FALSE;//no hidden info
-                    species = headbuttMonsInfo->wildPokemon[hiddenTimeOfDay][index].species;
+                    species = hiddenMonsInfo->wildPokemon[hiddenTimeOfDay][index].species;
                     isHiddenMon = TRUE;
                     environment = ENCOUNTER_TYPE_HIDDEN;
                 }
