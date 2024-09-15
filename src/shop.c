@@ -40,6 +40,7 @@
 #include "constants/rgb.h"
 #include "constants/songs.h"
 #include "done_button.h"
+#include "upr_support.h"
 
 #define TAG_SCROLL_ARROW   2100
 #define TAG_ITEM_ICON_BASE 2110
@@ -1189,7 +1190,7 @@ static void Task_ReturnToItemListAfterItemPurchase(u8 taskId)
          && ((I_PREMIER_BALL_BONUS <= GEN_7 && tItemId == ITEM_POKE_BALL)
           || (I_PREMIER_BALL_BONUS >= GEN_8 && (ItemId_GetPocket(tItemId) == POCKET_POKE_BALLS))))
         {
-            u32 spaceAvailable = GetFreeSpaceForItemInBag(ITEM_PREMIER_BALL);
+            u32 spaceAvailable = GetFreeSpaceForItemInBag(uprAccessVar(MART_PROMO_ITEM_INDEX));
             if (spaceAvailable < premierBallsToAdd)
                 premierBallsToAdd = spaceAvailable;
         }
@@ -1199,10 +1200,11 @@ static void Task_ReturnToItemListAfterItemPurchase(u8 taskId)
         }
 
         PlaySE(SE_SELECT);
-        AddBagItem(ITEM_PREMIER_BALL, premierBallsToAdd);
+        AddBagItem(uprAccessVar(MART_PROMO_ITEM_INDEX), premierBallsToAdd);
         if (premierBallsToAdd > 0)
         {
             ConvertIntToDecimalStringN(gStringVar1, premierBallsToAdd, STR_CONV_MODE_LEFT_ALIGN, MAX_ITEM_DIGITS);
+            CopyItemNameHandlePlural(uprAccessVar(MART_PROMO_ITEM_INDEX), gStringVar2, premierBallsToAdd);
             BuyMenuDisplayMessage(taskId, (premierBallsToAdd >= 2 ? gText_ThrowInPremierBalls : gText_ThrowInPremierBall), BuyMenuReturnToItemList);
         }
         else

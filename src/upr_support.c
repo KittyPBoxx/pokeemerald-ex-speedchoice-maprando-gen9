@@ -19,6 +19,7 @@
 #define PC_START_ITEM ITEM_POTION
 #define TUTOR_COMPATIBILITY DEFAULT_LEARNSET_COMPATIBILITY 
 #define TMHM_COMPATIBILITY DEFAULT_LEARNSET_COMPATIBILITY 
+#define MART_PROMO_ITEM ITEM_PREMIER_BALL 
 
 // Berries are a u8 but the last bit is used for weeds 
 // (so we need to be over last berry but under 127)
@@ -31,7 +32,8 @@ const u16 gUprStaticVars[] = { BIRCH_INTRO_MON,
                                WALLY_CATCH_TUTORIAL_OPPONENT,
                                PC_START_ITEM,
                                TUTOR_COMPATIBILITY,
-                               TMHM_COMPATIBILITY };
+                               TMHM_COMPATIBILITY,
+                               MART_PROMO_ITEM};
 
 const u16 gUprBerryTrees[] = {
     ITEM_NONE, // BERRY_TREE_ROUTE_102_PECHA    
