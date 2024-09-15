@@ -568,10 +568,8 @@ static u8 CheckPathBetweenTrainerAndPlayer(struct ObjectEvent *trainerObj, u8 ap
     {
         // Check for collisions on approach, ignoring the "out of range" collision for regular movement
         collision = GetCollisionFlagsAtCoords(trainerObj, x, y, direction);
-		if(CheckSpeedchoiceOption(MAXVISION, MAX_SANE) == TRUE && (collision && (collision & ~MAPGRID_COLLISION_MASK)))
-            return FALSE;
-		else if(CheckSpeedchoiceOption(MAXVISION, MAX_OFF) == TRUE && (collision && (collision & MAPGRID_COLLISION_MASK))) // normal handling
-            return FALSE;
+        if (collision != 0 && (collision & ~(1 << (COLLISION_OUTSIDE_RANGE - 1))) && CheckSpeedchoiceOption(MAXVISION, MAX_HELL) == FALSE)
+            return 0;
     }
 
     rangeX = trainerObj->rangeX;

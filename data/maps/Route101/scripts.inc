@@ -133,10 +133,15 @@ Route101_Movement_ZigzagoonChase1:
 	step_end
 
 Route101_Movement_ZigzagoonFaceBirch:
-	walk_in_place_left
-	walk_in_place_left
-	walk_in_place_left
-	walk_in_place_left
+	face_up
+	delay_8
+	face_down
+	delay_8
+	face_left
+	delay_8
+	face_right
+	delay_8
+	face_left
 	step_end
 
 Route101_Movement_EnterScene:

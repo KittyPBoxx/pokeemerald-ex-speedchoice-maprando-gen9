@@ -4,6 +4,7 @@ EverGrandeCity_MapScripts::
 
 EverGrandeCity_OnTransition:
 	call_if_set FLAG_SYS_WEATHER_CTRL, Common_EventScript_SetAbnormalWeather
+	setflag FLAG_VISITED_EVER_GRANDE_CITY
 	end
 
 EverGrandeCity_EventScript_VictoryRoadSign::

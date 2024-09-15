@@ -327,7 +327,7 @@ int main(int argc, char ** argv)
     print("TrainerClassCount=%d\n", TRAINER_CLASS_COUNT);
     print("TrainerClassNameLength=%d\n", 13); // hardcoded for now
     print("TrainerClassStructSize=%d\n", 16); // hardcoded for now (Size of trainer TrainerClass Struct)
-    print("TrainerNameLength=%d\n", 12); // hardcoded for now
+    print("TrainerNameLength=%d\n", 11); // hardcoded for now
     print("DoublesTrainerClasses=[%d, %d, %d, %d, %d]\n", TRAINER_CLASS_SR_AND_JR, TRAINER_CLASS_TWINS, TRAINER_CLASS_YOUNG_COUPLE, TRAINER_CLASS_OLD_COUPLE, TRAINER_CLASS_SIS_AND_BRO); // hardcoded for now
 
     fprintf(stderr, "Configuring items\n");
