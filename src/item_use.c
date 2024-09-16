@@ -52,6 +52,7 @@
 #include "field_control_avatar.h"
 #include "region_map.h"
 #include "fldeff.h"
+#include "graphics.h"
 
 static void SetUpItemUseCallback(u8);
 static void FieldCB_UseItemOnField(void);
@@ -276,6 +277,8 @@ static void Task_OpenRegisteredFlyTool(u8 taskId)
     if (!gPaletteFade.active)
     {
         CleanupOverworldWindowsAndTilemaps();
+        // The multi item registration wheel might have loaded an items palette into the slot, so we need to copy one for the fly map
+        LoadCompressedPalette(gPartyMenuBg_Pal, BG_PLTT_ID(15), PLTT_SIZE_4BPP);
         SetMainCallback2(CB2_OpenFlyMap);
         DestroyTask(taskId);
     }
