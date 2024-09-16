@@ -446,6 +446,7 @@ extern u32 gGlobalSpeed;
 // ----------------------
 void CB2_InitSpeedchoiceMenu(void);
 bool8 CheckSpeedchoiceOption(u8, u8);
+void ToggleSpeedchoiceDebug(void);
 
 void SetSpeed(u32);
 void ClearSpeed(u32);

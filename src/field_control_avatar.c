@@ -39,6 +39,7 @@
 #include "done_button.h"
 #include "qol_field_moves.h"
 #include "dexnav.h"
+#include "speedchoice.h"
 
 static EWRAM_DATA u8 sWildEncounterImmunitySteps = 0;
 static EWRAM_DATA u16 sPrevMetatileBehavior = 0;
@@ -141,7 +142,7 @@ void FieldGetPlayerInput(struct FieldInput *input, u16 newKeys, u16 heldKeys)
         input->dpadDirection = DIR_EAST;
 
 #if DEBUG_OVERWORLD_MENU == TRUE && DEBUG_OVERWORLD_IN_MENU == FALSE
-    if ((heldKeys & DEBUG_OVERWORLD_HELD_KEYS) && input->DEBUG_OVERWORLD_TRIGGER_EVENT)
+    if (CheckSpeedchoiceOption(DEBUG_MENUS, DEBUG_MENUS_ON) == TRUE && (heldKeys & DEBUG_OVERWORLD_HELD_KEYS) && input->DEBUG_OVERWORLD_TRIGGER_EVENT)
     {
         input->input_field_1_2 = TRUE;
         input->DEBUG_OVERWORLD_TRIGGER_EVENT = FALSE;

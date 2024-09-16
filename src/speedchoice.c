@@ -818,6 +818,14 @@ bool8 CheckSpeedchoiceOption(u8 option, u8 selection)
     }
 }
 
+void ToggleSpeedchoiceDebug() {
+    if (gSaveBlock2Ptr->speedchoiceConfig.debugMenus == DEBUG_MENUS_ON) {
+        gSaveBlock2Ptr->speedchoiceConfig.debugMenus = DEBUG_MENUS_OFF;
+    } else {
+        gSaveBlock2Ptr->speedchoiceConfig.debugMenus = DEBUG_MENUS_ON;
+    }
+}
+
 void SetSpeed(u32 level)
 {
     gGlobalSpeed |= (1<<(level));

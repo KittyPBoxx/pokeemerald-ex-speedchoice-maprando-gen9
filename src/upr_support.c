@@ -20,6 +20,7 @@
 #define TUTOR_COMPATIBILITY DEFAULT_LEARNSET_COMPATIBILITY 
 #define TMHM_COMPATIBILITY DEFAULT_LEARNSET_COMPATIBILITY 
 #define MART_PROMO_ITEM ITEM_PREMIER_BALL 
+#define TRAINER_LEVEL_BOOST_PERCENT 100
 
 // Berries are a u8 but the last bit is used for weeds 
 // (so we need to be over last berry but under 127)
@@ -33,7 +34,8 @@ const u16 gUprStaticVars[] = { BIRCH_INTRO_MON,
                                PC_START_ITEM,
                                TUTOR_COMPATIBILITY,
                                TMHM_COMPATIBILITY,
-                               MART_PROMO_ITEM};
+                               MART_PROMO_ITEM, 
+                               TRAINER_LEVEL_BOOST_PERCENT}; // Set by upr so upr's level increase will still work with level scaling
 
 const u16 gUprBerryTrees[] = {
     ITEM_NONE, // BERRY_TREE_ROUTE_102_PECHA    

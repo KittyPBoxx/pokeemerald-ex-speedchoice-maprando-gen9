@@ -653,17 +653,17 @@
 #define FLAG_HIDDEN_ITEM_ROUTE_105_BIG_PEARL                 (FLAG_HIDDEN_ITEMS_START + 0x6F)
 
 #define FLAG_TERA_ORB_CHARGED  0x264 
-#define FLAG_OW_NO_ENCOUNTER  0x265 
+#define FLAG_OW_NO_ENCOUNTER   0x265 
 #define FLAG_OW_NO_TRAINER_SEE 0x266
-#define FLAG_NO_COLLISION  0x267 
-#define FLAG_INVERSE_BATTLE 0x268
-#define FLAG_UNUSED_0x269  0x269 // Unused Flag
-#define FLAG_UNUSED_0x26A  0x26A // Unused Flag
-#define FLAG_UNUSED_0x26B  0x26B // Unused Flag
-#define FLAG_UNUSED_0x26C  0x26C // Unused Flag
-#define FLAG_UNUSED_0x26D  0x26D // Unused Flag
-#define FLAG_UNUSED_0x26E  0x26E // Unused Flag
-#define FLAG_UNUSED_0x26F  0x26F // Unused Flag
+#define FLAG_NO_COLLISION      0x267 
+#define FLAG_INVERSE_BATTLE    0x268
+#define FLAG_HEAL_AUTOSAVE     0x269 
+#define FLAG_NO_CATCHING       0x26A
+#define FLAG_NO_BATTLE_BAG     0x26B
+#define FLAG_AI_VS_AI          0x26C
+#define FLAG_LEVEL_CAP         0x26D
+#define FLAG_MAP_RANDO         0x26E
+#define FLAG_LEVEL_SCALING     0x26F
 #define FLAG_UNUSED_0x270  0x270 // Unused Flag
 #define FLAG_UNUSED_0x271  0x271 // Unused Flag
 #define FLAG_UNUSED_0x272  0x272 // Unused Flag

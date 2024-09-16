@@ -76,7 +76,7 @@ enum DebugMenu
     DEBUG_MENU_ITEM_PCBAG,
     DEBUG_MENU_ITEM_PARTY,
     DEBUG_MENU_ITEM_GIVE,
-    DEBUG_MENU_ITEM_SCRIPTS,
+    // DEBUG_MENU_ITEM_SCRIPTS,
     DEBUG_MENU_ITEM_FLAGVAR,
     //DEBUG_MENU_ITEM_BATTLE,
     DEBUG_MENU_ITEM_SOUND,
@@ -155,7 +155,7 @@ enum FlagsVarsDebugMenu
     DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_NATDEX,
     DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_POKENAV,
     DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_MATCH_CALL,
-    DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_RUN_SHOES,
+//    DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_RUN_SHOES,
     DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_LOCATIONS,
     DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_BADGES_ALL,
     DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_FRONTIER_PASS,
@@ -164,6 +164,11 @@ enum FlagsVarsDebugMenu
     DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_TRAINER_SEE,
     DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_BAG_USE,
     DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_CATCHING,
+    DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_AUTOSAVE,
+    DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_AI_VS_AI,
+    DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_LEVEL_CAPS,
+    DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_MAP_RANDO,
+    DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_LEVEL_SCALING,
 };
 
 enum BattleType
@@ -417,7 +422,12 @@ static void DebugAction_FlagsVars_EncounterOnOff(u8 taskId);
 static void DebugAction_FlagsVars_TrainerSeeOnOff(u8 taskId);
 static void DebugAction_FlagsVars_BagUseOnOff(u8 taskId);
 static void DebugAction_FlagsVars_CatchingOnOff(u8 taskId);
-static void DebugAction_FlagsVars_RunningShoes(u8 taskId);
+static void DebugAction_FlagsVars_AutosaveOnOff(u8 taskId);
+static void DebugAction_FlagsVars_AiVsAi(u8 taskId);
+static void DebugAction_FlagsVars_LevelCap(u8 taskId);
+static void DebugAction_FlagsVars_MapRando(u8 taskId);
+static void DebugAction_FlagsVars_LevelScaling(u8 taskId);
+// static void DebugAction_FlagsVars_RunningShoes(u8 taskId);
 
 static void Debug_InitializeBattle(u8 taskId);
 
@@ -571,7 +581,7 @@ static const u8 sDebugText_FlagsVars_SwitchDex[] =           _("Toggle {STR_VAR_
 static const u8 sDebugText_FlagsVars_SwitchNationalDex[] =   _("Toggle {STR_VAR_1}National Dex");
 static const u8 sDebugText_FlagsVars_SwitchPokeNav[] =       _("Toggle {STR_VAR_1}PokéNav");
 static const u8 sDebugText_FlagsVars_SwitchMatchCall[] =     _("Toggle {STR_VAR_1}Match Call");
-static const u8 sDebugText_FlagsVars_RunningShoes[] =        _("Toggle {STR_VAR_1}Running Shoes");
+//static const u8 sDebugText_FlagsVars_RunningShoes[] =        _("Toggle {STR_VAR_1}Running Shoes");
 static const u8 sDebugText_FlagsVars_ToggleFlyFlags[] =      _("Toggle {STR_VAR_1}Fly Flags");
 static const u8 sDebugText_FlagsVars_ToggleAllBadges[] =     _("Toggle {STR_VAR_1}All badges");
 static const u8 sDebugText_FlagsVars_ToggleFrontierPass[] =  _("Toggle {STR_VAR_1}Frontier Pass");
@@ -580,6 +590,11 @@ static const u8 sDebugText_FlagsVars_SwitchEncounter[] =     _("Toggle {STR_VAR_
 static const u8 sDebugText_FlagsVars_SwitchTrainerSee[] =    _("Toggle {STR_VAR_1}Trainer See OFF");
 static const u8 sDebugText_FlagsVars_SwitchBagUse[] =        _("Toggle {STR_VAR_1}Bag Use OFF");
 static const u8 sDebugText_FlagsVars_SwitchCatching[] =      _("Toggle {STR_VAR_1}Catching OFF");
+static const u8 sDebugText_FlagsVars_Autosave[] =            _("Toggle {STR_VAR_1}Autosave");
+static const u8 sDebugText_FlagsVars_AiVsAi[] =              _("Toggle {STR_VAR_1}Ai Vs Ai");
+static const u8 sDebugText_FlagsVars_LevelCap[] =            _("Toggle {STR_VAR_1}Level Cap");
+static const u8 sDebugText_FlagsVars_MapRando[] =            _("Toggle {STR_VAR_1}Map Rando");
+static const u8 sDebugText_FlagsVars_LevelScaling[] =        _("Toggle {STR_VAR_1}Level Scaling");
 // Battle
 static const u8 sDebugText_Battle_0_Wild[] =        _("Wild…{CLEAR_TO 110}{RIGHT_ARROW}");
 static const u8 sDebugText_Battle_0_WildDouble[] =  _("Wild Double…{CLEAR_TO 110}{RIGHT_ARROW}");
@@ -701,7 +716,7 @@ static const struct ListMenuItem sDebugMenu_Items_Main[] =
     [DEBUG_MENU_ITEM_PCBAG]         = {sDebugText_PCBag,        DEBUG_MENU_ITEM_PCBAG},
     [DEBUG_MENU_ITEM_PARTY]         = {sDebugText_Party,        DEBUG_MENU_ITEM_PARTY},
     [DEBUG_MENU_ITEM_GIVE]          = {sDebugText_Give,         DEBUG_MENU_ITEM_GIVE},
-    [DEBUG_MENU_ITEM_SCRIPTS]       = {sDebugText_Scripts,      DEBUG_MENU_ITEM_SCRIPTS},
+    //[DEBUG_MENU_ITEM_SCRIPTS]       = {sDebugText_Scripts,      DEBUG_MENU_ITEM_SCRIPTS},
     [DEBUG_MENU_ITEM_FLAGVAR]       = {sDebugText_FlagsVars,    DEBUG_MENU_ITEM_FLAGVAR},
     //[DEBUG_MENU_ITEM_BATTLE]        = {sDebugText_Battle,       DEBUG_MENU_ITEM_BATTLE},
     [DEBUG_MENU_ITEM_SOUND]         = {sDebugText_Sound,        DEBUG_MENU_ITEM_SOUND},
@@ -780,7 +795,7 @@ static const struct ListMenuItem sDebugMenu_Items_FlagsVars[] =
     [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_NATDEX]        = {sDebugText_FlagsVars_SwitchNationalDex,  DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_NATDEX},
     [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_POKENAV]       = {sDebugText_FlagsVars_SwitchPokeNav,      DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_POKENAV},
     [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_MATCH_CALL]    = {sDebugText_FlagsVars_SwitchMatchCall,    DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_MATCH_CALL},
-    [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_RUN_SHOES]     = {sDebugText_FlagsVars_RunningShoes,       DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_RUN_SHOES},
+//    [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_RUN_SHOES]     = {sDebugText_FlagsVars_RunningShoes,       DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_RUN_SHOES},
     [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_LOCATIONS]     = {sDebugText_FlagsVars_ToggleFlyFlags,     DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_LOCATIONS},
     [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_BADGES_ALL]    = {sDebugText_FlagsVars_ToggleAllBadges,    DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_BADGES_ALL},
     [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_FRONTIER_PASS] = {sDebugText_FlagsVars_ToggleFrontierPass, DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_FRONTIER_PASS},
@@ -789,6 +804,11 @@ static const struct ListMenuItem sDebugMenu_Items_FlagsVars[] =
     [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_TRAINER_SEE]   = {sDebugText_FlagsVars_SwitchTrainerSee,   DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_TRAINER_SEE},
     [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_BAG_USE]       = {sDebugText_FlagsVars_SwitchBagUse,       DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_BAG_USE},
     [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_CATCHING]      = {sDebugText_FlagsVars_SwitchCatching,     DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_CATCHING},
+    [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_AUTOSAVE]      = {sDebugText_FlagsVars_Autosave,           DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_AUTOSAVE},
+    [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_AI_VS_AI]      = {sDebugText_FlagsVars_AiVsAi,             DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_AI_VS_AI},
+    [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_LEVEL_CAPS]    = {sDebugText_FlagsVars_LevelCap,           DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_LEVEL_CAPS},
+    [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_MAP_RANDO]     = {sDebugText_FlagsVars_MapRando,           DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_MAP_RANDO},
+    [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_LEVEL_SCALING] = {sDebugText_FlagsVars_LevelScaling,       DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_LEVEL_SCALING},
 };
 
 static const struct ListMenuItem sDebugMenu_Items_Battle_0[] =
@@ -871,7 +891,7 @@ static void (*const sDebugMenu_Actions_Main[])(u8) =
     [DEBUG_MENU_ITEM_PCBAG]         = DebugAction_OpenPCBagMenu,
     [DEBUG_MENU_ITEM_PARTY]         = DebugAction_OpenPartyMenu,
     [DEBUG_MENU_ITEM_GIVE]          = DebugAction_OpenGiveMenu,
-    [DEBUG_MENU_ITEM_SCRIPTS]       = DebugAction_OpenScriptsMenu,
+    //[DEBUG_MENU_ITEM_SCRIPTS]       = DebugAction_OpenScriptsMenu,
     [DEBUG_MENU_ITEM_FLAGVAR]       = DebugAction_OpenFlagsVarsMenu,
     //[DEBUG_MENU_ITEM_BATTLE]        = DebugAction_OpenBattleMenu,
     [DEBUG_MENU_ITEM_SOUND]         = DebugAction_OpenSoundMenu,
@@ -950,7 +970,7 @@ static void (*const sDebugMenu_Actions_Flags[])(u8) =
     [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_NATDEX]        = DebugAction_FlagsVars_SwitchNatDex,
     [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_POKENAV]       = DebugAction_FlagsVars_SwitchPokeNav,
     [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_MATCH_CALL]    = DebugAction_FlagsVars_SwitchMatchCall,
-    [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_RUN_SHOES]     = DebugAction_FlagsVars_RunningShoes,
+ //   [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_RUN_SHOES]     = DebugAction_FlagsVars_RunningShoes,
     [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_LOCATIONS]     = DebugAction_FlagsVars_ToggleFlyFlags,
     [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_BADGES_ALL]    = DebugAction_FlagsVars_ToggleBadgeFlags,
     [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_FRONTIER_PASS] = DebugAction_FlagsVars_ToggleFrontierPass,
@@ -959,6 +979,11 @@ static void (*const sDebugMenu_Actions_Flags[])(u8) =
     [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_TRAINER_SEE]   = DebugAction_FlagsVars_TrainerSeeOnOff,
     [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_BAG_USE]       = DebugAction_FlagsVars_BagUseOnOff,
     [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_CATCHING]      = DebugAction_FlagsVars_CatchingOnOff,
+    [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_AUTOSAVE]      = DebugAction_FlagsVars_AutosaveOnOff,
+    [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_AI_VS_AI]      = DebugAction_FlagsVars_AiVsAi,
+    [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_LEVEL_CAPS]    = DebugAction_FlagsVars_LevelCap,
+    [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_MAP_RANDO]     = DebugAction_FlagsVars_MapRando,
+    [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_LEVEL_SCALING] = DebugAction_FlagsVars_LevelScaling,
 };
 static void (*const sDebugMenu_Actions_Give[])(u8) =
 {
@@ -1270,9 +1295,9 @@ static u8 Debug_CheckToggleFlags(u8 id)
         case DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_MATCH_CALL:
             result = FlagGet(FLAG_ADDED_MATCH_CALL_TO_POKENAV) && FlagGet(FLAG_HAS_MATCH_CALL);
             break;
-        case DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_RUN_SHOES:
-            result = FlagGet(FLAG_SYS_B_DASH);
-            break;
+        // case DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_RUN_SHOES:
+        //     result = FlagGet(FLAG_SYS_B_DASH);
+        //     break;
         case DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_LOCATIONS:
             result = FlagGet(FLAG_VISITED_LITTLEROOT_TOWN) &&
                 FlagGet(FLAG_VISITED_OLDALE_TOWN) &&
@@ -1331,6 +1356,21 @@ static u8 Debug_CheckToggleFlags(u8 id)
             result = FlagGet(B_FLAG_NO_CATCHING);
             break;
     #endif
+        case DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_AUTOSAVE:
+            result = FlagGet(FLAG_HEAL_AUTOSAVE);
+            break;
+        case DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_AI_VS_AI:
+            result = FlagGet(FLAG_AI_VS_AI);
+            break;
+        case DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_LEVEL_CAPS:
+            result = FlagGet(FLAG_LEVEL_CAP);
+            break;
+        case DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_MAP_RANDO:
+            result = FlagGet(FLAG_MAP_RANDO);
+            break;
+        case DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_LEVEL_SCALING:
+            result = FlagGet(FLAG_LEVEL_SCALING);
+            break;    
         default:
             result = 0xFF;
             break;
@@ -1857,7 +1897,7 @@ static void DebugAction_OpenPartyMenu(u8 taskId)
     Debug_ShowMenu(DebugTask_HandleMenuInput_Party, sDebugMenu_ListTemplate_Party);
 }
 
-static void DebugAction_OpenScriptsMenu(u8 taskId)
+static void UNUSED DebugAction_OpenScriptsMenu(u8 taskId)
 {
     Debug_DestroyMenu(taskId);
     Debug_ShowMenu(DebugTask_HandleMenuInput_Scripts, sDebugMenu_ListTemplate_Scripts);
@@ -2767,14 +2807,14 @@ static void DebugAction_FlagsVars_SwitchMatchCall(u8 taskId)
     }
 }
 
-static void DebugAction_FlagsVars_RunningShoes(u8 taskId)
-{
-    if (FlagGet(FLAG_SYS_B_DASH))
-        PlaySE(SE_PC_OFF);
-    else
-        PlaySE(SE_PC_LOGIN);
-    FlagToggle(FLAG_SYS_B_DASH);
-}
+// static void DebugAction_FlagsVars_RunningShoes(u8 taskId)
+// {
+//     if (FlagGet(FLAG_SYS_B_DASH))
+//         PlaySE(SE_PC_OFF);
+//     else
+//         PlaySE(SE_PC_LOGIN);
+//     FlagToggle(FLAG_SYS_B_DASH);
+// }
 
 static void DebugAction_FlagsVars_ToggleFlyFlags(u8 taskId)
 {
@@ -2925,6 +2965,51 @@ static void DebugAction_FlagsVars_CatchingOnOff(u8 taskId)
         PlaySE(SE_PC_LOGIN);
     FlagToggle(B_FLAG_NO_CATCHING);
 #endif
+}
+
+static void DebugAction_FlagsVars_AutosaveOnOff(u8 taskId)
+{
+    if (FlagGet(FLAG_HEAL_AUTOSAVE))
+        PlaySE(SE_PC_OFF);
+    else
+        PlaySE(SE_PC_LOGIN);
+    FlagToggle(FLAG_HEAL_AUTOSAVE);
+}
+
+static void DebugAction_FlagsVars_AiVsAi(u8 taskId)
+{
+    if (FlagGet(FLAG_AI_VS_AI))
+        PlaySE(SE_PC_OFF);
+    else
+        PlaySE(SE_PC_LOGIN);
+    FlagToggle(FLAG_AI_VS_AI);
+}
+
+static void DebugAction_FlagsVars_LevelCap(u8 taskId)
+{
+    if (FlagGet(FLAG_LEVEL_CAP))
+        PlaySE(SE_PC_OFF);
+    else
+        PlaySE(SE_PC_LOGIN);
+    FlagToggle(FLAG_LEVEL_CAP);
+}
+
+static void DebugAction_FlagsVars_MapRando(u8 taskId)
+{
+    if (FlagGet(FLAG_MAP_RANDO))
+        PlaySE(SE_PC_OFF);
+    else
+        PlaySE(SE_PC_LOGIN);
+    FlagToggle(FLAG_MAP_RANDO);
+}
+
+static void DebugAction_FlagsVars_LevelScaling(u8 taskId)
+{
+    if (FlagGet(FLAG_LEVEL_SCALING))
+        PlaySE(SE_PC_OFF);
+    else
+        PlaySE(SE_PC_LOGIN);
+    FlagToggle(FLAG_LEVEL_SCALING);
 }
 
 // *******************************

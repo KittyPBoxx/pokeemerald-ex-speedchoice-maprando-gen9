@@ -71,6 +71,7 @@
 #include "done_button.h"
 #include "speedchoice.h"
 #include "dexnav.h"
+#include "upr_support.h"
 
 extern const struct BgTemplate gBattleBgTemplates[];
 extern const struct WindowTemplate *const gBattleWindowTemplates[];
@@ -1980,12 +1981,46 @@ u8 CreateNPCTrainerPartyFromTrainer(struct Pokemon *party, const struct Trainer 
     u32 personalityValue;
     s32 i;
     u8 monsCount;
+    s32 levelModifier = 0;
     if (battleTypeFlags & BATTLE_TYPE_TRAINER && !(battleTypeFlags & (BATTLE_TYPE_FRONTIER
                                                                         | BATTLE_TYPE_EREADER_TRAINER
                                                                         | BATTLE_TYPE_TRAINER_HILL)))
     {
         if (firstTrainer == TRUE)
             ZeroEnemyPartyMons();
+
+        if (FlagGet(FLAG_LEVEL_SCALING) == TRUE)
+        {
+            u32 highestPlayerLevel = 0;
+            u32 highestCPULevel = 0;
+            u32 currentLevel = 0;
+
+            for (u32 j = 0; j < PARTY_SIZE; j++)
+            {
+                if (GetMonData(&gPlayerParty[j], MON_DATA_SPECIES) != SPECIES_NONE)
+                {
+                    currentLevel = GetMonData(&gPlayerParty[j], MON_DATA_LEVEL);
+                    if (currentLevel > highestPlayerLevel)
+                        highestPlayerLevel = currentLevel;
+                }
+            }
+
+            currentLevel = 0;
+
+            for (u32 j = 0; j < trainer->partySize; j++)
+            {
+                if (trainer->party[j].species != SPECIES_NONE)
+                {
+                    currentLevel = trainer->party[j].lvl;
+                    if (currentLevel > highestCPULevel)
+                        highestCPULevel = currentLevel;
+                }
+            }
+
+            levelModifier = highestPlayerLevel - highestCPULevel;
+
+        }
+
 
         if (battleTypeFlags & BATTLE_TYPE_TWO_OPPONENTS)
         {
@@ -2007,6 +2042,22 @@ u8 CreateNPCTrainerPartyFromTrainer(struct Pokemon *party, const struct Trainer 
             u32 otIdType = OT_ID_RANDOM_NO_SHINY;
             u32 fixedOtId = 0;
             u32 ability = 0;
+            u32 monLvl = partyData[i].lvl;
+
+            if (FlagGet(FLAG_LEVEL_SCALING) == TRUE)
+            {
+                monLvl += levelModifier;
+
+                if ((monLvl * uprAccessVar(TRAINER_LEVEL_BOOST_PERCENT_INDEX)) % 100 == 0)
+                    monLvl = (((monLvl * uprAccessVar(TRAINER_LEVEL_BOOST_PERCENT_INDEX))) / 100);
+                else
+                    monLvl = (((monLvl * uprAccessVar(TRAINER_LEVEL_BOOST_PERCENT_INDEX)) + 100) / 100);
+
+                if (monLvl > MAX_LEVEL)
+                    monLvl = MAX_LEVEL;
+                else if (monLvl < MIN_LEVEL)
+                    monLvl = MIN_LEVEL;
+            }
 
             if (trainer->doubleBattle == TRUE)
                 personalityValue = 0x80;
@@ -2028,7 +2079,7 @@ u8 CreateNPCTrainerPartyFromTrainer(struct Pokemon *party, const struct Trainer 
                 otIdType = OT_ID_PRESET;
                 fixedOtId = HIHALF(personalityValue) ^ LOHALF(personalityValue);
             }
-            CreateMon(&party[i], partyData[i].species, partyData[i].lvl, 0, TRUE, personalityValue, otIdType, fixedOtId);
+            CreateMon(&party[i], partyData[i].species, monLvl, 0, TRUE, personalityValue, otIdType, fixedOtId);
             SetMonData(&party[i], MON_DATA_HELD_ITEM, &partyData[i].heldItem);
 
             CustomTrainerPartyAssignMoves(&party[i], &partyData[i]);

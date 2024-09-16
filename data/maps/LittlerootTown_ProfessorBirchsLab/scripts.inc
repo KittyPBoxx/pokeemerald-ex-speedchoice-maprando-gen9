@@ -649,6 +649,21 @@ LittlerootTown_ProfessorBirchsLab_EventScript_BrendanTakeBreakFromFieldwork::
 	msgbox LittlerootTown_ProfessorBirchsLab_Text_BrendanTakeBreakFromFieldwork, MSGBOX_DEFAULT
 	return
 
+LittlerootTown_ProfessorBirchsLab_EventScript_ToggleDebug::
+	lock
+	msgbox LittlerootTown_ProfessorBirchsLab_Text_ToggleDebug, MSGBOX_YESNO
+	switch VAR_RESULT
+	case YES, LittlerootTown_ProfessorBirchsLab_EventScript_PerformToggleDebug
+	closemessage
+	releaseall
+	end
+
+LittlerootTown_ProfessorBirchsLab_EventScript_PerformToggleDebug::
+	special ToggleSpeedchoiceDebug
+	closemessage
+	releaseall
+	end
+
 LittlerootTown_ProfessorBirchsLab_EventScript_PC::
 	msgbox LittlerootTown_ProfessorBirchsLab_Text_PCUsedForResearch, MSGBOX_SIGN
 	end
@@ -668,6 +683,9 @@ LittlerootTown_ProfessorBirchsLab_EventScript_ScottAboardSSTidalCall::
 	clearflag FLAG_SCOTT_CALL_BATTLE_FRONTIER
 	releaseall
 	end
+
+LittlerootTown_ProfessorBirchsLab_Text_ToggleDebug:
+	.string "Toggle the debug menu?$"
 
 LittlerootTown_ProfessorBirchsLab_Text_BirchAwayOnFieldwork:
 	.string "Hunh? PROF. BIRCH?\p"

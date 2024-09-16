@@ -19,7 +19,8 @@ EventScript_PkmnCenterNurse_HealPkmn::
 	call_if_eq VAR_0x8004, 0, EventScript_PkmnCenterNurse_IllTakeYourPkmn
 	call_if_eq VAR_0x8004, 1, EventScript_PkmnCenterNurse_IllTakeYourPkmn2
 	waitmessage
-	call EventScript_PkmnCenterNurse_TakeAndHealPkmn
+	call_if_set FLAG_HEAL_AUTOSAVE EventScript_PkmnCenterNurse_TakeAndHealPkmnAutosave
+	goto_if_unset FLAG_HEAL_AUTOSAVE EventScript_PkmnCenterNurse_TakeAndHealPkmn
 	goto_if_unset FLAG_POKERUS_EXPLAINED, EventScript_PkmnCenterNurse_CheckPokerus
 	goto EventScript_PkmnCenterNurse_ReturnPkmn
 	end
@@ -40,6 +41,19 @@ EventScript_PkmnCenterNurse_TakeAndHealPkmn::
 	applymovement VAR_0x800B, Common_Movement_WalkInPlaceFasterDown
 	waitmovement 0
 	special HealPlayerParty
+	callnative UpdateFollowingPokemon
+	return
+
+EventScript_PkmnCenterNurse_TakeAndHealPkmnAutosave::
+applymovement VAR_0x800B, Movement_PkmnCenterNurse_Turn @ Changed from Common_Movement_WalkInPlaceFasterLeft to force the follower to enter their Poké Ball
+	waitmovement 0
+	special HealPlayerParty
+	fadeoutbgm 1
+	playse MUS_HEAL
+	autosave
+	fadeinbgm 1
+	applymovement VAR_0x800B, Common_Movement_WalkInPlaceFasterDown
+	waitmovement 0
 	callnative UpdateFollowingPokemon
 	return
 
