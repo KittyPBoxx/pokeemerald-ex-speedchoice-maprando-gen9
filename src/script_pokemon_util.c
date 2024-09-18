@@ -75,18 +75,20 @@ u8 ScriptGiveEgg(u16 species)
 
 void HasEnoughMonsForDoubleBattle(void)
 {
-    switch (GetMonsStateToDoubles())
-    {
-    case PLAYER_HAS_TWO_USABLE_MONS:
-        gSpecialVar_Result = PLAYER_HAS_TWO_USABLE_MONS;
-        break;
-    case PLAYER_HAS_ONE_MON:
-        gSpecialVar_Result = PLAYER_HAS_ONE_MON;
-        break;
-    case PLAYER_HAS_ONE_USABLE_MON:
-        gSpecialVar_Result = PLAYER_HAS_ONE_USABLE_MON;
-        break;
-    }
+    gSpecialVar_Result = PLAYER_HAS_TWO_USABLE_MONS;
+
+    // switch (GetMonsStateToDoubles())
+    // {
+    // case PLAYER_HAS_TWO_USABLE_MONS:
+    //     gSpecialVar_Result = PLAYER_HAS_TWO_USABLE_MONS;
+    //     break;
+    // case PLAYER_HAS_ONE_MON:
+    //     gSpecialVar_Result = PLAYER_HAS_ONE_MON;
+    //     break;
+    // case PLAYER_HAS_ONE_USABLE_MON:
+    //     gSpecialVar_Result = PLAYER_HAS_ONE_USABLE_MON;
+    //     break;
+    // }
 }
 
 static bool8 CheckPartyMonHasHeldItem(u16 item)

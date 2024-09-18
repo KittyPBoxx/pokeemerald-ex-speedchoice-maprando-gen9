@@ -67,6 +67,7 @@
 #include "constants/species.h"
 #include "constants/weather.h"
 #include "save.h"
+#include "speedchoice.h"
 
 #if DEBUG_OVERWORLD_MENU == TRUE
 // *******************************
@@ -76,7 +77,7 @@ enum DebugMenu
     DEBUG_MENU_ITEM_PCBAG,
     DEBUG_MENU_ITEM_PARTY,
     DEBUG_MENU_ITEM_GIVE,
-    // DEBUG_MENU_ITEM_SCRIPTS,
+    DEBUG_MENU_ITEM_SCRIPTS,
     DEBUG_MENU_ITEM_FLAGVAR,
     //DEBUG_MENU_ITEM_BATTLE,
     DEBUG_MENU_ITEM_SOUND,
@@ -131,6 +132,8 @@ enum PartyDebugMenu
     DEBUG_PARTY_MENU_ITEM_CHECK_EVS,
     DEBUG_PARTY_MENU_ITEM_CHECK_IVS,
     DEBUG_PARTY_MENU_ITEM_CLEAR_PARTY,
+    DEBUG_PARTY_MENU_ITEM_NICKNAME,
+    DEBUG_PARTY_MENU_ITEM_HEADBUTT_TUTOR,
 };
 
 enum ScriptDebugMenu
@@ -402,6 +405,8 @@ static void DebugAction_Party_InflictStatus1(u8 taskId);
 static void DebugAction_Party_CheckEVs(u8 taskId);
 static void DebugAction_Party_CheckIVs(u8 taskId);
 static void DebugAction_Party_ClearParty(u8 taskId);
+static void DebugAction_Party_Nickname(u8 taskId);
+static void DebugAction_Party_HeadbuttTutor(u8 taskId);
 
 static void DebugAction_FlagsVars_Flags(u8 taskId);
 static void DebugAction_FlagsVars_FlagsSelect(u8 taskId);
@@ -467,7 +472,7 @@ extern const u8 Debug_FlagsAndVarNotSetBattleConfigMessage[];
 extern const u8 Debug_EventScript_CheckEVs[];
 extern const u8 Debug_EventScript_CheckIVs[];
 extern const u8 Debug_EventScript_InflictStatus1[];
-extern const u8 Debug_EventScript_Script_1[];
+// extern const u8 Debug_EventScript_Script_1[];
 extern const u8 Debug_EventScript_Script_2[];
 extern const u8 Debug_EventScript_Script_3[];
 extern const u8 Debug_EventScript_Script_4[];
@@ -494,6 +499,10 @@ extern const u8 Debug_BerryPestsDisabled[];
 extern const u8 Debug_BerryWeedsDisabled[];
 
 extern const u8 FallarborTown_MoveRelearnersHouse_EventScript_ChooseMon[];
+extern const u8 SlateportCity_NameRatersHouse_EventScript_ChangeNickname[];
+extern const u8 PetalburgWoods_EventScript_Boy2[];
+
+extern void Task_InitSpeedchoiceMenu(u8);
 
 #include "data/map_group_count.h"
 
@@ -517,8 +526,8 @@ static const u8 sDebugText_Give[] =          _("Give X…{CLEAR_TO 110}{RIGHT_AR
 static const u8 sDebugText_Sound[] =         _("Sound…{CLEAR_TO 110}{RIGHT_ARROW}");
 static const u8 sDebugText_Cancel[] =        _("Cancel");
 // Script menu
-static const u8 sDebugText_Util_Script_1[] = _("Script 1");
-static const u8 sDebugText_Util_Script_2[] = _("Script 2");
+static const u8 sDebugText_Util_Script_1[] = _("Speedchoice Menu");
+static const u8 sDebugText_Util_Script_2[] = _("Slow Mo");
 static const u8 sDebugText_Util_Script_3[] = _("Script 3");
 static const u8 sDebugText_Util_Script_4[] = _("Script 4");
 static const u8 sDebugText_Util_Script_5[] = _("Script 5");
@@ -567,6 +576,8 @@ static const u8 sDebugText_Party_InflictStatus1[] =          _("Inflict Status1"
 static const u8 sDebugText_Party_CheckEVs[] =                _("Check EVs");
 static const u8 sDebugText_Party_CheckIVs[] =                _("Check IVs");
 static const u8 sDebugText_Party_ClearParty[] =              _("Clear Party");
+static const u8 sDebugText_Party_Nickname[] =                _("Mon Nickname");
+static const u8 sDebugText_Party_HeadbuttTutor[] =           _("Headbutt Tutor");
 // Flags/Vars Menu
 static const u8 sDebugText_FlagsVars_Flags[] =               _("Set Flag XYZ…{CLEAR_TO 110}{RIGHT_ARROW}");
 static const u8 sDebugText_FlagsVars_Flag[] =                _("Flag: {STR_VAR_1}{CLEAR_TO 90}\n{STR_VAR_2}{CLEAR_TO 90}\n{STR_VAR_3}");
@@ -716,7 +727,7 @@ static const struct ListMenuItem sDebugMenu_Items_Main[] =
     [DEBUG_MENU_ITEM_PCBAG]         = {sDebugText_PCBag,        DEBUG_MENU_ITEM_PCBAG},
     [DEBUG_MENU_ITEM_PARTY]         = {sDebugText_Party,        DEBUG_MENU_ITEM_PARTY},
     [DEBUG_MENU_ITEM_GIVE]          = {sDebugText_Give,         DEBUG_MENU_ITEM_GIVE},
-    //[DEBUG_MENU_ITEM_SCRIPTS]       = {sDebugText_Scripts,      DEBUG_MENU_ITEM_SCRIPTS},
+    [DEBUG_MENU_ITEM_SCRIPTS]       = {sDebugText_Scripts,      DEBUG_MENU_ITEM_SCRIPTS},
     [DEBUG_MENU_ITEM_FLAGVAR]       = {sDebugText_FlagsVars,    DEBUG_MENU_ITEM_FLAGVAR},
     //[DEBUG_MENU_ITEM_BATTLE]        = {sDebugText_Battle,       DEBUG_MENU_ITEM_BATTLE},
     [DEBUG_MENU_ITEM_SOUND]         = {sDebugText_Sound,        DEBUG_MENU_ITEM_SOUND},
@@ -771,6 +782,8 @@ static const struct ListMenuItem sDebugMenu_Items_Party[] =
     [DEBUG_PARTY_MENU_ITEM_CHECK_EVS]       = {sDebugText_Party_CheckEVs,       DEBUG_PARTY_MENU_ITEM_CHECK_EVS},
     [DEBUG_PARTY_MENU_ITEM_CHECK_IVS]       = {sDebugText_Party_CheckIVs,       DEBUG_PARTY_MENU_ITEM_CHECK_IVS},
     [DEBUG_PARTY_MENU_ITEM_CLEAR_PARTY]     = {sDebugText_Party_ClearParty,     DEBUG_PARTY_MENU_ITEM_CLEAR_PARTY},
+    [DEBUG_PARTY_MENU_ITEM_NICKNAME]        = {sDebugText_Party_Nickname,       DEBUG_PARTY_MENU_ITEM_NICKNAME},
+    [DEBUG_PARTY_MENU_ITEM_HEADBUTT_TUTOR]  = {sDebugText_Party_HeadbuttTutor,  DEBUG_PARTY_MENU_ITEM_HEADBUTT_TUTOR},
 };
 
 static const struct ListMenuItem sDebugMenu_Items_Scripts[] =
@@ -891,7 +904,7 @@ static void (*const sDebugMenu_Actions_Main[])(u8) =
     [DEBUG_MENU_ITEM_PCBAG]         = DebugAction_OpenPCBagMenu,
     [DEBUG_MENU_ITEM_PARTY]         = DebugAction_OpenPartyMenu,
     [DEBUG_MENU_ITEM_GIVE]          = DebugAction_OpenGiveMenu,
-    //[DEBUG_MENU_ITEM_SCRIPTS]       = DebugAction_OpenScriptsMenu,
+    [DEBUG_MENU_ITEM_SCRIPTS]       = DebugAction_OpenScriptsMenu,
     [DEBUG_MENU_ITEM_FLAGVAR]       = DebugAction_OpenFlagsVarsMenu,
     //[DEBUG_MENU_ITEM_BATTLE]        = DebugAction_OpenBattleMenu,
     [DEBUG_MENU_ITEM_SOUND]         = DebugAction_OpenSoundMenu,
@@ -946,6 +959,8 @@ static void (*const sDebugMenu_Actions_Party[])(u8) =
     [DEBUG_PARTY_MENU_ITEM_CHECK_EVS]       = DebugAction_Party_CheckEVs,
     [DEBUG_PARTY_MENU_ITEM_CHECK_IVS]       = DebugAction_Party_CheckIVs,
     [DEBUG_PARTY_MENU_ITEM_CLEAR_PARTY]     = DebugAction_Party_ClearParty,
+    [DEBUG_PARTY_MENU_ITEM_NICKNAME]        = DebugAction_Party_Nickname,
+    [DEBUG_PARTY_MENU_ITEM_HEADBUTT_TUTOR]  = DebugAction_Party_HeadbuttTutor,
 };
 
 static void (*const sDebugMenu_Actions_Scripts[])(u8) =
@@ -1897,7 +1912,7 @@ static void DebugAction_OpenPartyMenu(u8 taskId)
     Debug_ShowMenu(DebugTask_HandleMenuInput_Party, sDebugMenu_ListTemplate_Party);
 }
 
-static void UNUSED DebugAction_OpenScriptsMenu(u8 taskId)
+static void DebugAction_OpenScriptsMenu(u8 taskId)
 {
     Debug_DestroyMenu(taskId);
     Debug_ShowMenu(DebugTask_HandleMenuInput_Scripts, sDebugMenu_ListTemplate_Scripts);
@@ -2411,12 +2426,19 @@ void BufferExpansionVersion(struct ScriptContext *ctx)
 // Actions Scripts
 static void DebugAction_Util_Script_1(u8 taskId)
 {
-    Debug_DestroyMenu_Full_Script(taskId, Debug_EventScript_Script_1);
+    PlaySE(SE_SELECT);
+    gSpecialVar_Result = RETURN_TO_GAME_TASK_OPT;
+    gTasks[taskId].func = Task_InitSpeedchoiceMenu;
+    FreeAllWindowBuffers();
+    //Debug_DestroyMenu_Full_Script(taskId, Debug_EventScript_Script_1);
 }
 
 static void DebugAction_Util_Script_2(u8 taskId)
 {
-    Debug_DestroyMenu_Full_Script(taskId, Debug_EventScript_Script_2);
+    PlaySE(SE_SELECT);
+    SetSpeed(SLOW_MO_ON);
+    DebugAction_DestroyExtraWindow(taskId);
+   // Debug_DestroyMenu_Full_Script(taskId, Debug_EventScript_Script_2);
 }
 
 static void DebugAction_Util_Script_3(u8 taskId)
@@ -5512,6 +5534,16 @@ static void DebugAction_Party_ClearParty(u8 taskId)
     ZeroPlayerPartyMons();
     ScriptContext_Enable();
     Debug_DestroyMenu_Full(taskId);
+}
+
+static void DebugAction_Party_Nickname(u8 taskId)
+{
+    Debug_DestroyMenu_Full_Script(taskId, SlateportCity_NameRatersHouse_EventScript_ChangeNickname);
+}
+
+static void DebugAction_Party_HeadbuttTutor(u8 taskId)
+{
+    Debug_DestroyMenu_Full_Script(taskId, PetalburgWoods_EventScript_Boy2);
 }
 
 void CheckEWRAMCounters(struct ScriptContext *ctx)

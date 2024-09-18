@@ -347,8 +347,7 @@ bool8 StartMenu_EscapeCallback(void)
         if ((gSaveBlock1Ptr->lastHealLocation.mapGroup == gSaveBlock1Ptr->location.mapGroup && 
             gSaveBlock1Ptr->lastHealLocation.mapNum == gSaveBlock1Ptr->location.mapNum && 
             gSaveBlock1Ptr->lastHealLocation.warpId == gSaveBlock1Ptr->location.warpId) ||
-            !IsMapTypeOutdoors(GetMapTypeByWarpData(&gSaveBlock1Ptr->lastHealLocation)) || 
-            (gSaveBlock1Ptr->lastHealLocation.mapGroup == 0 && (gSaveBlock1Ptr->lastHealLocation.mapNum == 9 || gSaveBlock1Ptr->lastHealLocation.mapNum == 10)))
+            !IsMapTypeOutdoors(GetMapTypeByWarpData(&gSaveBlock1Ptr->lastHealLocation)))
         {
             SetWarpDestination(0,10,10,10,9);
         }

@@ -436,8 +436,11 @@ struct MapObjectTimerBackup
  */
 extern u32 gRandomizerCheckValue;
 
+#define RETURN_TO_GAME_TASK_OPT 5
+
 #define MAX_SPEED_ON 16
 #define MED_SPEED_ON 12
+#define SLOW_MO_ON 8
 
 extern u32 gGlobalSpeed;
 

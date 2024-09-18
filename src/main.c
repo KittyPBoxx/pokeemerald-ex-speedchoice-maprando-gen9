@@ -391,7 +391,8 @@ static void ReadKeys(void)
 
     if (JOY_HELD_RAW(R_BUTTON))
     {
-        SetSpeed(MAX_SPEED_ON);   
+        SetSpeed(MAX_SPEED_ON);
+        ClearSpeed(SLOW_MO_ON);
     }
     else 
     {
@@ -543,6 +544,12 @@ static void WaitForVBlank(void)
     {
         return;
     } 
+    else if (gGlobalSpeed & (1 << SLOW_MO_ON))
+    {
+        VBlankIntrWait();
+        VBlankIntrWait();
+        VBlankIntrWait(); 
+    }
     // else if (gGlobalSpeed & (1 << MED_SPEED_ON))
     // {
     //     if (gMain.vblankCounter1 % 3 == 0)

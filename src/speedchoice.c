@@ -19,6 +19,8 @@
 #include "naming_screen.h"
 #include "random.h"
 #include "constants/rgb.h"
+#include "overworld.h"
+#include "event_data.h"
 
 // A macro was defined here to simplify the row used in Palette calls, but I haven't
 // used this yet.
@@ -177,6 +179,7 @@ const u8 gSpeedchoiceOptionDebug[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}DEBUG M
 // CONSTANT OPTIONS
 const u8 gSpeedchoiceOptionPage[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}PAGE");
 const u8 gSpeedchoiceOptionStartGame[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}START GAME");
+const u8 gSpeedchoiceOptionReturnToGame[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}RETURN TO GAME");
 
 // ARROWS
 const u8 gSpeedchoiceOptionLeftArrow[] = _("{COLOR RED}{SHADOW LIGHT_RED}{LEFT_ARROW}");
@@ -857,7 +860,7 @@ static void DrawOptionMenuChoice(const u8 *text, u8 x, u8 y, u8 style)
     AddTextPrinterParameterized(SPD_WIN_OPTIONS, SPEEDCHOICE_FONT_ID, dst, x, y, TEXT_SKIP_DRAW, NULL);
 }
 
-void DrawPageOptions(u8);
+void DrawPageOptions(u8, u8);
 
 /*
  * This is used to handle the inputs per option, not the Speedchoice menu inputs overall.
@@ -1077,6 +1080,8 @@ void CB2_InitSpeedchoice(void)
     {
         gSpeedchoiceTaskId = CreateTask(Task_SpeedchoiceMenuFadeIn, 0);
 
+        gTasks[gSpeedchoiceTaskId].data[12] = gSpecialVar_Result;
+
         gStoredPageNum = 1;
 
         if(!gAlreadyLoaded)
@@ -1091,7 +1096,7 @@ void CB2_InitSpeedchoice(void)
             FormatInitialTempName(Random() % 20);
         }
         DrawHeaderWindow();
-        DrawPageOptions(gLocalSpeedchoiceConfig.pageNum);
+        DrawPageOptions(gLocalSpeedchoiceConfig.pageNum, gSpeedchoiceTaskId);
 
         /*TextSpeed_DrawChoices(gTasks[taskId].data[TD_TEXTSPEED]);
         BattleScene_DrawChoices(gTasks[taskId].data[TD_BATTLESCENE]);
@@ -1254,7 +1259,7 @@ static void Task_WaitForTooltip(u8 taskId)
         {
             ClearWindowTilemap(SPD_WIN_TOOLTIP);
             ClearMainMenuWindowTilemap((struct WindowTemplate *)&sSpeedchoiceMenuWinTemplates[SPD_WIN_TOOLTIP]);
-            DrawPageOptions(gLocalSpeedchoiceConfig.pageNum);
+            DrawPageOptions(gLocalSpeedchoiceConfig.pageNum, taskId);
             gTasks[taskId].func = Task_SpeedchoiceMenuProcessInput;
         }
     }
@@ -1467,7 +1472,7 @@ static void Task_AskToStartGame(u8 taskId)
         ClearWindowTilemap(3);
         ClearMainMenuWindowTilemap((struct WindowTemplate *)&sSpeedchoiceMenuWinTemplates[SPD_WIN_TOOLTIP]);
         ClearMainMenuWindowTilemap((struct WindowTemplate *)&sSpeedchoiceMenuWinTemplates[SPD_WIN_YESNO]);
-        DrawPageOptions(gLocalSpeedchoiceConfig.pageNum);
+        DrawPageOptions(gLocalSpeedchoiceConfig.pageNum, taskId);
         gTasks[taskId].func = Task_SpeedchoiceMenuProcessInput;
         break;
     }
@@ -1520,7 +1525,24 @@ static void Task_SpeedchoiceMenuProcessInput(u8 taskId)
     else if (gMain.newKeys & A_BUTTON)
     {
         if (gLocalSpeedchoiceConfig.trueIndex == START_GAME)
-            gTasks[taskId].func = Task_SpeedchoiceMenuSave;
+        {
+            if (gTasks[taskId].data[12] == RETURN_TO_GAME_TASK_OPT)
+            {
+                FreeAllWindowBuffers();
+                SaveSpeedchoiceOptions(taskId);
+                SetShuffledMusicSEArrays();
+                BeginNormalPaletteFade(-1, 0, 0, 0x10, 0);
+                gTasks[taskId].func = Task_SpeedchoiceMenuFadeOut;
+                if(CheckSpeedchoiceOption(SHUFFLE_MUSIC, SHUFFLE_MUSIC_OFF) == FALSE)
+                    gShuffleMusic = TRUE;
+                SetMainCallback2(CB2_LoadMap);
+                DestroyTask(taskId);
+            }
+            else
+            {
+                gTasks[taskId].func = Task_SpeedchoiceMenuSave;
+            }
+        }
         else if (gLocalSpeedchoiceConfig.trueIndex == PRESET) {
             SetOptionChoicesAndConfigFromPreset(GetPresetPtr(gLocalSpeedchoiceConfig.optionConfig[PRESET]));
             PlaySE(SE_SELECT); // page scrolling.
@@ -1578,7 +1600,7 @@ static void Task_SpeedchoiceMenuProcessInput(u8 taskId)
                     gLocalSpeedchoiceConfig.optionConfig[trueIndex] = ProcessGeneralInput((struct SpeedchoiceOption *)&SpeedchoiceOptions[trueIndex], selection, FALSE);
                     DrawGeneralChoices((struct SpeedchoiceOption *)&SpeedchoiceOptions[trueIndex], gLocalSpeedchoiceConfig.optionConfig[trueIndex], gLocalSpeedchoiceConfig.pageIndex, FALSE);
                     if(oldSelection != gLocalSpeedchoiceConfig.optionConfig[trueIndex] || gForceUpdate) {
-                        DrawPageOptions(gLocalSpeedchoiceConfig.pageNum); // HACK!!! The page has to redraw. But only redraw it if the selection changed, otherwise it lags.
+                        DrawPageOptions(gLocalSpeedchoiceConfig.pageNum, taskId); // HACK!!! The page has to redraw. But only redraw it if the selection changed, otherwise it lags.
                         gForceUpdate = FALSE;
                     }
                 }
@@ -1588,7 +1610,7 @@ static void Task_SpeedchoiceMenuProcessInput(u8 taskId)
                 //DrawPageChoice(gLocalSpeedchoiceConfig.pageNum); Deprecated.
                 if(gLocalSpeedchoiceConfig.pageNum != gStoredPageNum) // only redraw if the page updates!
                 {
-                    DrawPageOptions(gLocalSpeedchoiceConfig.pageNum);
+                    DrawPageOptions(gLocalSpeedchoiceConfig.pageNum, taskId);
                     gStoredPageNum = gLocalSpeedchoiceConfig.pageNum; // update the page.
                 }
                 break;
@@ -1630,7 +1652,7 @@ u8 GetPageDrawCount(u8 page)
 /*
  * Given a page number, renders the page options.
  */
-void DrawPageOptions(u8 page) // Page is 1-indexed
+void DrawPageOptions(u8 page, u8 taskId) // Page is 1-indexed
 {
     u8 i;
     u8 drawCount = GetPageDrawCount(page);
@@ -1649,7 +1671,15 @@ void DrawPageOptions(u8 page) // Page is 1-indexed
     }
 
     AddTextPrinterParameterized(SPD_WIN_OPTIONS, SPEEDCHOICE_FONT_ID, gSpeedchoiceOptionPage, 4, NEWMENUOPTIONCOORDS(5), TEXT_SKIP_DRAW, NULL);
-    AddTextPrinterParameterized(SPD_WIN_OPTIONS, SPEEDCHOICE_FONT_ID, gSpeedchoiceOptionStartGame, 4, NEWMENUOPTIONCOORDS(6), TEXT_SKIP_DRAW, NULL);
+
+    if (gTasks[taskId].data[12] == RETURN_TO_GAME_TASK_OPT)
+    {
+        AddTextPrinterParameterized(SPD_WIN_OPTIONS, SPEEDCHOICE_FONT_ID, gSpeedchoiceOptionReturnToGame, 4, NEWMENUOPTIONCOORDS(6), TEXT_SKIP_DRAW, NULL);
+    }
+    else 
+    {
+        AddTextPrinterParameterized(SPD_WIN_OPTIONS, SPEEDCHOICE_FONT_ID, gSpeedchoiceOptionStartGame, 4, NEWMENUOPTIONCOORDS(6), TEXT_SKIP_DRAW, NULL);
+    }
     DrawPageChoice(gLocalSpeedchoiceConfig.pageNum);
     CopyWindowToVram(SPD_WIN_OPTIONS, 3);
 }
