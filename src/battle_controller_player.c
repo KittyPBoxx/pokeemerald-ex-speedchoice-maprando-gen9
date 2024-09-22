@@ -46,6 +46,8 @@
 #include "menu.h"
 #include "pokemon_summary_screen.h"
 #include "speedchoice.h"
+#include "graphics.h"
+#include "battle_ai_util.h"
 
 static void PlayerBufferExecCompleted(u32 battler);
 static void PlayerHandleLoadMonSprite(u32 battler);
@@ -100,6 +102,7 @@ static void Task_SetControllerToWaitForString(u8);
 static void Task_GiveExpWithExpBar(u8);
 static void Task_UpdateLvlInHealthbox(u8);
 static void PrintLinkStandbyMsg(void);
+static void MoveSelectionDisplaySplitIcon(u32 battler);
 
 static void ReloadMoveNames(u32 battler);
 
@@ -885,7 +888,7 @@ static void HandleInputChooseMove(u32 battler)
             MoveSelectionDisplayMoveType(battler);
         }
     }
-    else if (JOY_NEW(B_MOVE_DESCRIPTION_BUTTON) && B_MOVE_DESCRIPTION_BUTTON != B_LAST_USED_BALL_BUTTON)
+    else if (JOY_NEW(B_MOVE_DESCRIPTION_BUTTON))
     {
         gBattleStruct->descriptionSubmenu = TRUE;
         MoveSelectionDisplayMoveDescription(battler);
@@ -1717,9 +1720,9 @@ static void MoveSelectionDisplayMoveType(u32 battler)
     u8 *txtPtr, *end;
     u8 type;
     u32 speciesId;
+    s32 effectiveness;
     struct ChooseMoveStruct *moveInfo = (struct ChooseMoveStruct *)(&gBattleResources->bufferA[battler][4]);
 
-    txtPtr = StringCopy(gDisplayedStringBattle, gText_MoveInterfaceType);
 
     type = gMovesInfo[moveInfo->moves[gMoveSelectionCursor[battler]]].type;
 
@@ -1750,9 +1753,31 @@ static void MoveSelectionDisplayMoveType(u32 battler)
             type = TYPE_STELLAR;
     }
 
-    end = StringCopy(txtPtr, gTypesInfo[type].name);
+    txtPtr = StringCopy(gDisplayedStringBattle, gTypesInfo[type].name);
+
+    effectiveness = AI_GetTypeEffectiveness(moveInfo->moves[gMoveSelectionCursor[battler]], battler, GetBattlerAtPosition(BATTLE_OPPOSITE(GetBattlerPosition(battler))));
+
+    if (effectiveness == UQ_4_12(0)) 
+    {
+        end = StringCopy(txtPtr, gText_MoveInterfaceType_No);
+    } 
+    else if (effectiveness <= UQ_4_12(0.5)) 
+    {
+        end = StringCopy(txtPtr, gText_MoveInterfaceType_Bad);
+    } 
+    else if (effectiveness >= UQ_4_12(2.0)) 
+    {
+        end = StringCopy(txtPtr, gText_MoveInterfaceType_Good);
+    } 
+    else 
+    {
+        end = StringCopy(txtPtr, gText_MoveInterfaceType_Normal);   
+    }
+
     PrependFontIdToFit(txtPtr, end, FONT_NORMAL, WindowWidthPx(B_WIN_MOVE_TYPE) - 25);
     BattlePutTextOnWindow(gDisplayedStringBattle, B_WIN_MOVE_TYPE);
+
+    MoveSelectionDisplaySplitIcon(battler);
 }
 
 static void MoveSelectionDisplayMoveDescription(u32 battler)
@@ -2351,4 +2376,20 @@ static void PlayerHandleBattleDebug(u32 battler)
     BeginNormalPaletteFade(-1, 0, 0, 0x10, 0);
     SetMainCallback2(CB2_BattleDebugMenu);
     gBattlerControllerFuncs[battler] = Controller_WaitForDebug;
+}
+
+static void MoveSelectionDisplaySplitIcon(u32 battler){
+
+    static const u8 sSplitIcons_Gfx[] = INCBIN_U8("graphics/interface/category_icons.4bpp");
+	struct ChooseMoveStruct *moveInfo;
+	u32 cat;
+
+	moveInfo = (struct ChooseMoveStruct*)(&gBattleResources->bufferA[battler][4]);
+	cat = GetBattleMoveCategory(moveInfo->moves[gMoveSelectionCursor[battler]]);
+
+	LoadPalette(gCategoryIcons_Pal, 10 * 0x10, 0x20);
+    FillWindowPixelRect(B_WIN_DUMMY, PIXEL_FILL(7), 0, 0, 16, 16);
+	BlitBitmapToWindow(B_WIN_DUMMY, sSplitIcons_Gfx + (0x80 * cat), 0, 0, 16, 16);
+	PutWindowTilemap(B_WIN_DUMMY);
+	CopyWindowToVram(B_WIN_DUMMY, 3);
 }

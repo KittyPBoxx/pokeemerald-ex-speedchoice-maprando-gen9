@@ -7,7 +7,7 @@
 
 // The current total number of selectable options. Be sure to count preset too and
 // player name.
-#define CURRENT_OPTIONS_NUM 17
+#define CURRENT_OPTIONS_NUM 18
 
 // Maximum number of possible selectable options per option.
 #define MAX_CHOICES 6
@@ -102,6 +102,7 @@ enum
     INVERSE_BATTLES,
     SHUFFLE_MUSIC,
     DEBUG_MENUS,
+    BATTLE_SPEED,
 
     // ----------------------
     // STATIC OPTIONS
@@ -345,6 +346,17 @@ enum
 {
     DEBUG_MENUS_ON,
     DEBUG_MENUS_OFF
+};
+
+// ----------------------
+// BATTLE_SPEED
+// ----------------------
+enum
+{
+    BATTLE_SPEED_SLOW,
+    BATTLE_SPEED_MID,
+    BATTLE_SPEED_FAST,
+    BATTLE_SPEED_INST
 };
 
 // Enumeration for optionType in the Speedchoice struct below.

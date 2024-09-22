@@ -136,6 +136,11 @@ const u8 gSpeedchoiceTextHM05[]   = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}HM05");
 
 const u8 gSpeedchoiceTextExp[]   = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}EXP");
 
+const u8 gSpeedchoiceTextSlow[]   = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}SLOW");
+const u8 gSpeedchoiceTextMid[]   = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}MID");
+const u8 gSpeedchoiceTextFast[]   = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}FAST");
+const u8 gSpeedchoiceTextInst[]   = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}INST");
+
 /* ----------------------------------------------- */
 /* SPEEDCHOICE MENU TEXT (Option Names)            */
 /* ----------------------------------------------- */
@@ -175,6 +180,8 @@ const u8 gSpeedchoiceOptionEvoEveryLv[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}EV
 const u8 gSpeedchoiceOptionInverseBattles[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}INVERSE BATTLES");
 const u8 gSpeedchoiceOptionShuffleMusic[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}SHUFFLE MUSIC");
 const u8 gSpeedchoiceOptionDebug[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}DEBUG MENUS");
+
+const u8 gSpeedchoiceOptionBattleSpeed[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}BATTLE SPEED");
 
 // CONSTANT OPTIONS
 const u8 gSpeedchoiceOptionPage[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}PAGE");
@@ -219,6 +226,7 @@ const u8 gSpeedchoiceTooltipEvoEveryLv[] = _("{PKMN} evolve into a random\nbut s
 const u8 gSpeedchoiceTooltipInverseBattles[] = _("Inverse battles mechanic is\nenabled.\pSwitches type effectiveness.");
 const u8 gSpeedchoiceTooltipShuffleMusic[] = _("ON: Randomly shuffles music and \nfanfares between others.\pEXP: In addition, Gen 4 music is shuffled\ninto the pool.");
 const u8 gSpeedchoiceTooltipDebug[] = _("Enables the debug menus for\ntroubleshooting.\pR+Start in the field for the\nField Debug menu.\pSelect in battle for the Battle\nDebug Menu.");
+const u8 gSpeedchoiceTooltipBattleSpeed[] = _("Slow is original\n Inst is barely readable.");
 
 // START GAME
 const u8 gSpeedchoiceStartGameText[] = _("CV: {STR_VAR_1}\nStart the game?");
@@ -274,7 +282,8 @@ static const u8 gPresetVanilla[CURRENT_OPTIONS_NUM] = {
     EVO_EV_OFF,             // EVO_EVERY_LEVEL
     INV_BATTLES_OFF,        // INVERSE_BATTLES
     SHUFFLE_MUSIC_OFF,      // SHUFFLE_MUSIC
-    DEBUG_MENUS_OFF         // DEBUG_MENUS
+    DEBUG_MENUS_OFF,        // DEBUG_MENUS
+    BATTLE_SPEED_MID        // BATTLE SPEED
 };
 
 static const u8 gPresetBingo[CURRENT_OPTIONS_NUM] = {
@@ -294,7 +303,8 @@ static const u8 gPresetBingo[CURRENT_OPTIONS_NUM] = {
     EVO_EV_OFF,             // EVO_EVERY_LEVEL
     INV_BATTLES_OFF,        // INVERSE_BATTLES
     SHUFFLE_MUSIC_OFF,      // SHUFFLE_MUSIC
-    DEBUG_MENUS_OFF         // DEBUG_MENUS
+    DEBUG_MENUS_OFF,        // DEBUG_MENUS
+    BATTLE_SPEED_FAST       // BATTLE SPEED
 };
 
 static const u8 gPresetCEA[CURRENT_OPTIONS_NUM] = {
@@ -314,7 +324,8 @@ static const u8 gPresetCEA[CURRENT_OPTIONS_NUM] = {
     EVO_EV_OFF,             // EVO_EVERY_LEVEL
     INV_BATTLES_OFF,        // INVERSE_BATTLES
     SHUFFLE_MUSIC_OFF,      // SHUFFLE_MUSIC
-    DEBUG_MENUS_OFF         // DEBUG_MENUS
+    DEBUG_MENUS_OFF,        // DEBUG_MENUS
+    BATTLE_SPEED_FAST       // BATTLE SPEED
 };
 
 static const u8 gPresetRace[CURRENT_OPTIONS_NUM] = {
@@ -334,7 +345,8 @@ static const u8 gPresetRace[CURRENT_OPTIONS_NUM] = {
     EVO_EV_OFF,             // EVO_EVERY_LEVEL
     INV_BATTLES_OFF,        // INVERSE_BATTLES
     SHUFFLE_MUSIC_OFF,      // SHUFFLE_MUSIC
-    DEBUG_MENUS_OFF         // DEBUG_MENUS
+    DEBUG_MENUS_OFF,        // DEBUG_MENUS
+    BATTLE_SPEED_INST       // BATTLE SPEED
 };
 
 static const u8 gPresetMeme[CURRENT_OPTIONS_NUM] = {
@@ -354,7 +366,8 @@ static const u8 gPresetMeme[CURRENT_OPTIONS_NUM] = {
     EVO_EV_ON,              // EVO_EVERY_LEVEL
     INV_BATTLES_ON,         // INVERSE_BATTLES
     SHUFFLE_MUSIC_EXP,      // SHUFFLE_MUSIC
-    DEBUG_MENUS_ON          // DEBUG_MENUS
+    DEBUG_MENUS_ON,         // DEBUG_MENUS
+    BATTLE_SPEED_FAST       // BATTLE SPEED
 };
 
 /*
@@ -468,6 +481,17 @@ const struct OptionChoiceConfig OptionChoiceConfigOffOnExp[MAX_CHOICES] =
     { -1, NULL },
     { -1, NULL }
 };
+
+const struct OptionChoiceConfig OptionChoiceConfigBattleSpeed[MAX_CHOICES] = 
+{
+    { 85, (u8 *)&gSpeedchoiceTextSlow },
+    { 120, (u8 *)&gSpeedchoiceTextMid },
+    { 150, (u8 *)&gSpeedchoiceTextFast },
+    { 180, (u8 *)&gSpeedchoiceTextInst },
+    { -1, NULL },
+    { -1, NULL }
+};
+
 
 /*
  * In order to use ProcessGeneralInput, a struct is needed for page, so, I opt to have a
@@ -699,6 +723,17 @@ const struct SpeedchoiceOption SpeedchoiceOptions[CURRENT_OPTIONS_NUM + 1] = // 
         /* Option Usable  */ TRUE
     },
     // ----------------------------------
+    // BATTEL_SPEED OPTION
+    // ----------------------------------
+    { 
+        /* Option Count   */ 4,
+        /* Option Type    */ NORMAL,
+        /* Option Preset  */ gSpeedchoiceOptionBattleSpeed,
+        /* Option Text    */ OptionChoiceConfigBattleSpeed,
+        /* Option Tooltip */ gSpeedchoiceTooltipDebug,
+        /* Option Usable  */ TRUE
+    },
+    // ----------------------------------
     // PAGE STATIC OPTION
     // ----------------------------------
     { 
@@ -774,6 +809,7 @@ void SetOptionChoicesAndConfigFromPreset(const u8 *preset)
     gSaveBlock2Ptr->speedchoiceConfig.inverseBattles = preset[INVERSE_BATTLES];
     gSaveBlock2Ptr->speedchoiceConfig.shuffleMusic = preset[SHUFFLE_MUSIC];
     gSaveBlock2Ptr->speedchoiceConfig.debugMenus = preset[DEBUG_MENUS];
+    gSaveBlock2Ptr->speedchoiceConfig.battleSpeed = preset[BATTLE_SPEED];
 }
 
 /*
@@ -816,6 +852,8 @@ bool8 CheckSpeedchoiceOption(u8 option, u8 selection)
             return gSaveBlock2Ptr->speedchoiceConfig.shuffleMusic == selection;
         case DEBUG_MENUS:
             return gSaveBlock2Ptr->speedchoiceConfig.debugMenus == selection;
+        case BATTLE_SPEED:
+            return gSaveBlock2Ptr->speedchoiceConfig.battleSpeed == selection;
         default:
             return FALSE;
     }
@@ -1364,6 +1402,7 @@ static void SaveSpeedchoiceOptions(u8 taskId)
     gSaveBlock2Ptr->speedchoiceConfig.inverseBattles = gLocalSpeedchoiceConfig.optionConfig[INVERSE_BATTLES];
     gSaveBlock2Ptr->speedchoiceConfig.shuffleMusic = gLocalSpeedchoiceConfig.optionConfig[SHUFFLE_MUSIC];
     gSaveBlock2Ptr->speedchoiceConfig.debugMenus = gLocalSpeedchoiceConfig.optionConfig[DEBUG_MENUS];
+    gSaveBlock2Ptr->speedchoiceConfig.battleSpeed = gLocalSpeedchoiceConfig.optionConfig[BATTLE_SPEED];
 
     // write the playername.
     for (i = 0; i < PLAYER_NAME_LENGTH; i++) {
@@ -1543,11 +1582,6 @@ static void Task_SpeedchoiceMenuProcessInput(u8 taskId)
                 gTasks[taskId].func = Task_SpeedchoiceMenuSave;
             }
         }
-        else if (gLocalSpeedchoiceConfig.trueIndex == PRESET) {
-            SetOptionChoicesAndConfigFromPreset(GetPresetPtr(gLocalSpeedchoiceConfig.optionConfig[PRESET]));
-            PlaySE(SE_SELECT); // page scrolling.
-            gForceUpdate = TRUE;
-        }
         else if (gLocalSpeedchoiceConfig.trueIndex == PLAYER_NAME_SET) {
             BeginNormalPaletteFade(-1, 0, 0, 0x10, 0);
             gTasks[taskId].func = Task_SpeedchoiceMenuFadeOutToNamingScreen;
@@ -1600,6 +1634,14 @@ static void Task_SpeedchoiceMenuProcessInput(u8 taskId)
                     gLocalSpeedchoiceConfig.optionConfig[trueIndex] = ProcessGeneralInput((struct SpeedchoiceOption *)&SpeedchoiceOptions[trueIndex], selection, FALSE);
                     DrawGeneralChoices((struct SpeedchoiceOption *)&SpeedchoiceOptions[trueIndex], gLocalSpeedchoiceConfig.optionConfig[trueIndex], gLocalSpeedchoiceConfig.pageIndex, FALSE);
                     if(oldSelection != gLocalSpeedchoiceConfig.optionConfig[trueIndex] || gForceUpdate) {
+
+                        if (gLocalSpeedchoiceConfig.trueIndex == PRESET) {
+                            SetOptionChoicesAndConfigFromPreset(GetPresetPtr(gLocalSpeedchoiceConfig.optionConfig[PRESET]));
+                            PlaySE(SE_SELECT); // page scrolling.
+                            gForceUpdate = TRUE;
+                        }
+
+
                         DrawPageOptions(gLocalSpeedchoiceConfig.pageNum, taskId); // HACK!!! The page has to redraw. But only redraw it if the selection changed, otherwise it lags.
                         gForceUpdate = FALSE;
                     }

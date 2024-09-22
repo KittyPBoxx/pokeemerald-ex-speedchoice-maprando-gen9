@@ -19323,10 +19323,13 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_DYNAMAX] =
     [MOVE_ORDER_UP] =
     {
         .name = COMPOUND_STRING("Order Up"),
+        // .description = COMPOUND_STRING(
+        //     "Boosts a user's stats.\n"
+        //     "depending on Tatsugiri."),
         .description = COMPOUND_STRING(
-            "Boosts a user's stats\n"
-            "depending on Tatsugiri."),
-        .effect = EFFECT_PLACEHOLDER, // EFFECT_ORDER_UP
+            "Normal effect does not\n"
+            "work. Just deals damage"),
+        .effect = EFFECT_HIT, // EFFECT_ORDER_UP
         .power = 80,
         .type = TYPE_DRAGON,
         .accuracy = 100,

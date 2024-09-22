@@ -27,6 +27,7 @@
 #include "constants/abilities.h"
 #include "constants/songs.h"
 #include "upr_support.h"
+#include "speedchoice.h"
 
 static EWRAM_DATA u8 sLinkSendTaskId = 0;
 static EWRAM_DATA u8 sLinkReceiveTaskId = 0;
@@ -2685,7 +2686,28 @@ void BtlController_HandleMoveAnimation(u32 battler, bool32 updateTvData)
 
 u32 Rogue_GetBattleSpeedScale(bool32 forHealthbar)
 {
-    u8 battleSceneOption = OPTIONS_BATTLE_SCENE_4X;// VarGet(B_BATTLE_SPEED); // Originally GetBattleSceneOption() with a saveblock stored value;
+    u8 battleSceneOption; 
+    
+    if (CheckSpeedchoiceOption(BATTLE_SPEED, BATTLE_SPEED_INST) == TRUE) 
+    {
+        DebugPrintfLevel(MGBA_LOG_WARN, "Inst");
+        battleSceneOption = OPTIONS_BATTLE_SCENE_4X;
+    }
+    else if (CheckSpeedchoiceOption(BATTLE_SPEED, BATTLE_SPEED_FAST) == TRUE)
+    {
+        DebugPrintfLevel(MGBA_LOG_WARN, "Fast");
+        battleSceneOption = OPTIONS_BATTLE_SCENE_3X;
+    }
+    else if (CheckSpeedchoiceOption(BATTLE_SPEED, BATTLE_SPEED_MID) == TRUE)
+    {
+        DebugPrintfLevel(MGBA_LOG_WARN, "Mid");
+        battleSceneOption = OPTIONS_BATTLE_SCENE_2X;
+    }
+    else 
+    {
+        DebugPrintfLevel(MGBA_LOG_WARN, "Slow");
+        battleSceneOption = OPTIONS_BATTLE_SCENE_1X;
+    }
 
     // We want to speed up all anims until input selection starts
     if(InBattleChoosingMoves())
