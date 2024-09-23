@@ -2549,7 +2549,8 @@ void UpdateLightSprite(struct Sprite *sprite)
         return;
     }
 
-    if (GetCurrentTimeOfDay() == TIME_DAY) 
+    // Make sure, even if it is day, the lights go off at a reasonable time
+    if (GetCurrentTimeOfDay() == TIME_DAY || gLocalTime.hours == 10 || gLocalTime.hours == 9 || gLocalTime.hours == 8) 
     {
         sprite->invisible = TRUE;
         return;

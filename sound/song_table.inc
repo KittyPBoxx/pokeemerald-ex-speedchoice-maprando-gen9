@@ -478,9 +478,6 @@ gSongTable::
 	song mus_rg_silph, 0, 0
 	song mus_rg_fuchsia, 0, 0
 	song mus_rg_celadon, 0, 0
-	song mus_victory_trainer, 0, 0
-	song mus_victory_wild, 0, 0
-	song mus_victory_gym_leader, 0, 0
 	song mus_rg_vermillion, 0, 0
 	song mus_rg_pewter, 0, 0
 	song mus_rg_encounter_rival, 0, 0
@@ -499,11 +496,7 @@ gSongTable::
 	song mus_rg_net_center, 0, 0
 	song mus_rg_mystery_gift, 0, 0
 	song mus_rg_berry_pick, 0, 0
-	song mus_rg_mt_moon, 0, 0
-	song mus_rg_follow_me, 0, 0
 	song mus_rg_sevii_route, 0, 0
-	song mus_rg_viridian_forest, 0, 0
-	song mus_rg_pewter, 0, 0
 	song mus_rg_sevii_45, 0, 0
 	song mus_rg_sevii_67, 0, 0
 	song mus_rg_poke_flute, 2, 2
@@ -529,7 +522,6 @@ gSongTable::
 	song mus_b_dome, 0, 0
 	song mus_b_pike, 0, 0
 	song mus_b_factory, 0, 0
-	song mus_vs_kyogre_groudon, 0, 0
 	song mus_vs_frontier_brain, 0, 0
 	song mus_vs_mew, 0, 0
 	song mus_b_dome_lobby, 0, 0
@@ -900,6 +892,7 @@ gSongTable::
 	song mus_hg_obtain_castle_points, 2, 2
 	song mus_hg_obtain_b_points, 2, 2
 	song mus_hg_win_minigame, 2, 2
+	song mus_xy_boutique, 0, 0
     song mus_vs_wild_night, 0, 0
 
 	.align 2

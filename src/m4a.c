@@ -5,6 +5,7 @@
 #include "random.h"
 #include "speedchoice.h"
 #include "sound.h"
+#include "event_data.h"
 
 extern const u8 gCgb3Vol[];
 
@@ -137,19 +138,33 @@ static inline u16 GetShuffledSongNumber(u16 n) {
 
 void m4aSongNumStart(u16 n)
 {
-    // do the rando thing.
-    if(gShuffleMusic == TRUE && ((n >= SONGS_START && n <= SONGS_END) || n == MUS_VS_WILD_NIGHT) && CheckSpeedchoiceOption(SHUFFLE_MUSIC, SHUFFLE_MUSIC_OFF) == FALSE) {
+    if(gShuffleMusic == TRUE && ((n >= SONGS_START && n <= SONGS_END) || n == MUS_VS_WILD_NIGHT) && CheckSpeedchoiceOption(SHUFFLE_MUSIC, SHUFFLE_MUSIC_OFF) == FALSE) 
+    {
+        // do the rando thing.
         n = GetShuffledSongNumber(n);
     }
-    {
-        // blah, doing it like this.
-        const struct MusicPlayer *mplayTable = gMPlayTable;
-        const struct Song *songTable = gSongTable;
-        const struct Song *song = &songTable[n];
-        const struct MusicPlayer *mplay = &mplayTable[song->ms];
 
-        MPlayStart(mplay->info, song->header);
+    if (FlagGet(FLAG_YT_SAFE_BGM))
+    {
+        if (n == MUS_VS_CHAMPION || n == MUS_RG_VS_CHAMPION || n == MUS_DP_VS_CHAMPION || n == MUS_HG_VS_CHAMPION) 
+        {
+            n = MUS_VS_MEW;
+        }
     }
+
+    if (FlagGet(FLAG_NO_BGM) && n > SOUND_EFFECTS_END)
+    {
+        n = MUS_NONE;
+    }
+
+    // blah, doing it like this.
+    const struct MusicPlayer *mplayTable = gMPlayTable;
+    const struct Song *songTable = gSongTable;
+    const struct Song *song = &songTable[n];
+    const struct MusicPlayer *mplay = &mplayTable[song->ms];
+
+    MPlayStart(mplay->info, song->header);
+
 }
 
 void m4aSongNumStartOrChange(u16 n)

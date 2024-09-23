@@ -521,6 +521,7 @@ struct SpeedchoiceSaveOptions
     u8 shuffleMusic:2;
     u8 debugMenus:1;
     u8 battleSpeed:2;
+    u8 speedup:2;
 };
 
 // The struct has to be split in two because neither chunk of block 1 and 2 has enough room left for the full struct.

@@ -74,6 +74,7 @@
 enum DebugMenu
 {
     DEBUG_MENU_ITEM_FLAGVAR,
+    DEBUG_MENU_ITEM_SETTINGS,
     DEBUG_MENU_ITEM_SCRIPTS,
     DEBUG_MENU_ITEM_PCBAG,
     DEBUG_MENU_ITEM_GIVE,
@@ -151,13 +152,6 @@ enum ScriptDebugMenu
 enum FlagsVarsDebugMenu
 {
     //    DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_RUN_SHOES,
-    DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_AUTOSAVE,
-    DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_LEVEL_SCALING,
-    DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_LEVEL_CAPS,
-    DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_MAP_RANDO,
-    DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_BAG_USE,
-    DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_CATCHING,
-    DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_AI_VS_AI,
     DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_LOCATIONS,
     DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_POKEDEX,
     DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_NATDEX,
@@ -165,13 +159,25 @@ enum FlagsVarsDebugMenu
     DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_POKENAV,
     DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_MATCH_CALL,
     DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_FRONTIER_PASS,
-    DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_ENCOUNTER,
-    DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_TRAINER_SEE,
-    DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_COLISSION,
     DEBUG_FLAGVAR_MENU_ITEM_DEXFLAGS_ALL,
     DEBUG_FLAGVAR_MENU_ITEM_DEXFLAGS_RESET,
     DEBUG_FLAGVAR_MENU_ITEM_FLAGS,
     DEBUG_FLAGVAR_MENU_ITEM_VARS,
+};
+
+enum SettingsDebugMenu
+{
+    DEBUG_SETTINGS_MENU_ITEM_TOGGLE_AUTOSAVE,
+    DEBUG_SETTINGS_MENU_ITEM_TOGGLE_LEVEL_SCALING,
+    DEBUG_SETTINGS_MENU_ITEM_TOGGLE_LEVEL_CAPS,
+    DEBUG_SETTINGS_MENU_ITEM_TOGGLE_MAP_RANDO,
+    DEBUG_SETTINGS_MENU_ITEM_TOGGLE_BAG_USE,
+    DEBUG_SETTINGS_MENU_ITEM_TOGGLE_CATCHING,
+    DEBUG_SETTINGS_MENU_ITEM_TOGGLE_AI_VS_AI,
+    DEBUG_SETTINGS_MENU_ITEM_TOGGLE_ENCOUNTER,
+    DEBUG_SETTINGS_MENU_ITEM_TOGGLE_TRAINER_SEE,
+    DEBUG_SETTINGS_MENU_ITEM_TOGGLE_COLISSION,
+    DEBUG_SETTINGS_MENU_ITEM_TOGGLE_CATCH_EXP,
 };
 
 enum BattleType
@@ -233,6 +239,8 @@ enum GiveDebugMenu
 
 enum SoundDebugMenu
 {
+    DEBUG_SOUND_MENU_ITEM_BGM_TOGGLE,
+    DEBUG_SOUND_MENU_ITEM_YT_SAFE_TOGGLE,
     DEBUG_SOUND_MENU_ITEM_SE,
     DEBUG_SOUND_MENU_ITEM_MUS,
 };
@@ -304,9 +312,9 @@ struct DebugMonData
 
 struct DebugMenuListData
 {
+    u8 listId;
     struct ListMenuItem listItems[20 + 1];
     u8 itemNames[DEBUG_MAX_MENU_ITEMS + 1][26];
-    u8 listId;
 };
 
 struct DebugBattleData
@@ -328,6 +336,7 @@ EWRAM_DATA u32 gDebugAIFlags = 0;
 // Define functions
 static void Debug_ReShowMainMenu(void);
 static void Debug_ShowMenu(void (*HandleInput)(u8), struct ListMenuTemplate LMtemplate);
+static void Debug_ShowMenuWithType(void (*HandleInput)(u8), struct ListMenuTemplate LMtemplate, u8 multiUseType);
 static void Debug_DestroyMenu(u8 taskId);
 static void Debug_DestroyMenu_Full(u8 taskId);
 static void DebugAction_Cancel(u8 taskId);
@@ -352,6 +361,7 @@ static void DebugAction_OpenScriptsMenu(u8 taskId);
 static void DebugAction_OpenFlagsVarsMenu(u8 taskId);
 static void DebugAction_OpenGiveMenu(u8 taskId);
 static void DebugAction_OpenSoundMenu(u8 taskId);
+static void DebugAction_OpenSettingsMenu(u8 taskId);
 
 static void DebugTask_HandleMenuInput_Main(u8 taskId);
 static void DebugTask_HandleMenuInput_Utilities(u8 taskId);
@@ -360,6 +370,7 @@ static void DebugTask_HandleMenuInput_PCBag_Fill(u8 taskId);
 static void DebugTask_HandleMenuInput_Party(u8 taskId);
 static void DebugTask_HandleMenuInput_Scripts(u8 taskId);
 static void DebugTask_HandleMenuInput_FlagsVars(u8 taskId);
+static void DebugTask_HandleMenuInput_Settings(u8 taskId);
 static void DebugTask_HandleMenuInput_Battle(u8 taskId);
 static void DebugTask_HandleMenuInput_Give(u8 taskId);
 static void DebugTask_HandleMenuInput_Sound(u8 taskId);
@@ -422,16 +433,17 @@ static void DebugAction_FlagsVars_SwitchMatchCall(u8 taskId);
 static void DebugAction_FlagsVars_ToggleFlyFlags(u8 taskId);
 static void DebugAction_FlagsVars_ToggleBadgeFlags(u8 taskId);
 static void DebugAction_FlagsVars_ToggleFrontierPass(u8 taskId);
-static void DebugAction_FlagsVars_CollisionOnOff(u8 taskId);
-static void DebugAction_FlagsVars_EncounterOnOff(u8 taskId);
-static void DebugAction_FlagsVars_TrainerSeeOnOff(u8 taskId);
-static void DebugAction_FlagsVars_BagUseOnOff(u8 taskId);
-static void DebugAction_FlagsVars_CatchingOnOff(u8 taskId);
-static void DebugAction_FlagsVars_AutosaveOnOff(u8 taskId);
-static void DebugAction_FlagsVars_AiVsAi(u8 taskId);
-static void DebugAction_FlagsVars_LevelCap(u8 taskId);
-static void DebugAction_FlagsVars_MapRando(u8 taskId);
-static void DebugAction_FlagsVars_LevelScaling(u8 taskId);
+static void DebugAction_Settings_CollisionOnOff(u8 taskId);
+static void DebugAction_Settings_EncounterOnOff(u8 taskId);
+static void DebugAction_Settings_TrainerSeeOnOff(u8 taskId);
+static void DebugAction_Settings_BagUseOnOff(u8 taskId);
+static void DebugAction_Settings_CatchingOnOff(u8 taskId);
+static void DebugAction_Settings_AutosaveOnOff(u8 taskId);
+static void DebugAction_Settings_AiVsAi(u8 taskId);
+static void DebugAction_Settings_LevelCap(u8 taskId);
+static void DebugAction_Settings_MapRando(u8 taskId);
+static void DebugAction_Settings_LevelScaling(u8 taskId);
+static void DebugAction_Settings_CatchExp(u8 taskId);
 // static void DebugAction_FlagsVars_RunningShoes(u8 taskId);
 
 static void Debug_InitializeBattle(u8 taskId);
@@ -455,6 +467,8 @@ static void DebugAction_Give_MaxCoins(u8 taskId);
 static void DebugAction_Give_MaxBattlePoints(u8 taskId);
 static void DebugAction_Give_DayCareEgg(u8 taskId);
 
+static void DebugAction_Sound_BGMToggle(u8 taskId);
+static void DebugAction_Sound_YTSafeToggle(u8 taskId);
 static void DebugAction_Sound_SE(u8 taskId);
 static void DebugAction_Sound_SE_SelectId(u8 taskId);
 static void DebugAction_Sound_MUS(u8 taskId);
@@ -520,7 +534,8 @@ static const u8 sDebugText_Utilities[] =     _("Utilities…{CLEAR_TO 110}{RIGHT
 static const u8 sDebugText_PCBag[] =         _("PC/Bag…{CLEAR_TO 110}{RIGHT_ARROW}");
 static const u8 sDebugText_Party[] =         _("Party…{CLEAR_TO 110}{RIGHT_ARROW}");
 static const u8 sDebugText_Scripts[] =       _("Scripts…{CLEAR_TO 110}{RIGHT_ARROW}");
-static const u8 sDebugText_FlagsVars[] =     _("Config…{CLEAR_TO 110}{RIGHT_ARROW}");
+static const u8 sDebugText_Settings[] =      _("Settings…{CLEAR_TO 110}{RIGHT_ARROW}");
+static const u8 sDebugText_FlagsVars[] =     _("Flags…{CLEAR_TO 110}{RIGHT_ARROW}");
 static const u8 sDebugText_Battle[] =        _("Battle Test{CLEAR_TO 110}{RIGHT_ARROW}");
 static const u8 sDebugText_Give[] =          _("Give X…{CLEAR_TO 110}{RIGHT_ARROW}");
 static const u8 sDebugText_Sound[] =         _("Sound…{CLEAR_TO 110}{RIGHT_ARROW}");
@@ -579,6 +594,7 @@ static const u8 sDebugText_Party_ClearParty[] =              _("Clear Party");
 static const u8 sDebugText_Party_Nickname[] =                _("Mon Nickname");
 static const u8 sDebugText_Party_HeadbuttTutor[] =           _("Headbutt Tutor");
 // Flags/Vars Menu
+//static const u8 sDebugText_FlagsVars_RunningShoes[] =        _("Toggle {STR_VAR_1}Running Shoes");
 static const u8 sDebugText_FlagsVars_Flags[] =               _("Set Flag XYZ…{CLEAR_TO 110}{RIGHT_ARROW}");
 static const u8 sDebugText_FlagsVars_Flag[] =                _("Flag: {STR_VAR_1}{CLEAR_TO 90}\n{STR_VAR_2}{CLEAR_TO 90}\n{STR_VAR_3}");
 static const u8 sDebugText_FlagsVars_FlagHex[] =             _("{STR_VAR_1}{CLEAR_TO 90}\n0x{STR_VAR_2}{CLEAR_TO 90}");
@@ -592,20 +608,23 @@ static const u8 sDebugText_FlagsVars_SwitchDex[] =           _("Toggle {STR_VAR_
 static const u8 sDebugText_FlagsVars_SwitchNationalDex[] =   _("Toggle {STR_VAR_1}National Dex");
 static const u8 sDebugText_FlagsVars_SwitchPokeNav[] =       _("Toggle {STR_VAR_1}PokéNav");
 static const u8 sDebugText_FlagsVars_SwitchMatchCall[] =     _("Toggle {STR_VAR_1}Match Call");
-//static const u8 sDebugText_FlagsVars_RunningShoes[] =        _("Toggle {STR_VAR_1}Running Shoes");
 static const u8 sDebugText_FlagsVars_ToggleFlyFlags[] =      _("Toggle {STR_VAR_1}Fly Flags");
 static const u8 sDebugText_FlagsVars_ToggleAllBadges[] =     _("Toggle {STR_VAR_1}All badges");
 static const u8 sDebugText_FlagsVars_ToggleFrontierPass[] =  _("Toggle {STR_VAR_1}Frontier Pass");
-static const u8 sDebugText_FlagsVars_SwitchCollision[] =     _("Toggle {STR_VAR_1}Collision OFF");
-static const u8 sDebugText_FlagsVars_SwitchEncounter[] =     _("Toggle {STR_VAR_1}Encounter OFF");
-static const u8 sDebugText_FlagsVars_SwitchTrainerSee[] =    _("Toggle {STR_VAR_1}Trainer See OFF");
-static const u8 sDebugText_FlagsVars_SwitchBagUse[] =        _("Toggle {STR_VAR_1}Bag Use OFF");
-static const u8 sDebugText_FlagsVars_SwitchCatching[] =      _("Toggle {STR_VAR_1}Catching OFF");
-static const u8 sDebugText_FlagsVars_Autosave[] =            _("Toggle {STR_VAR_1}Autosave");
-static const u8 sDebugText_FlagsVars_AiVsAi[] =              _("Toggle {STR_VAR_1}Ai Vs Ai");
-static const u8 sDebugText_FlagsVars_LevelCap[] =            _("Toggle {STR_VAR_1}Level Cap");
-static const u8 sDebugText_FlagsVars_MapRando[] =            _("Toggle {STR_VAR_1}Map Rando");
-static const u8 sDebugText_FlagsVars_LevelScaling[] =        _("Toggle {STR_VAR_1}Level Scaling");
+
+// Settings
+static const u8 sDebugText_Settings_SwitchCollision[] =     _("Toggle {STR_VAR_1}Collision OFF");
+static const u8 sDebugText_Settings_SwitchEncounter[] =     _("Toggle {STR_VAR_1}Encounter OFF");
+static const u8 sDebugText_Settings_SwitchTrainerSee[] =    _("Toggle {STR_VAR_1}Trainer See OFF");
+static const u8 sDebugText_Settings_SwitchBagUse[] =        _("Toggle {STR_VAR_1}Bag Use OFF");
+static const u8 sDebugText_Settings_SwitchCatching[] =      _("Toggle {STR_VAR_1}Catching OFF");
+static const u8 sDebugText_Settings_Autosave[] =            _("Toggle {STR_VAR_1}Autosave");
+static const u8 sDebugText_Settings_AiVsAi[] =              _("Toggle {STR_VAR_1}Ai Vs Ai");
+static const u8 sDebugText_Settings_LevelCap[] =            _("Toggle {STR_VAR_1}Level Cap");
+static const u8 sDebugText_Settings_MapRando[] =            _("Toggle {STR_VAR_1}Map Rando");
+static const u8 sDebugText_Settings_LevelScaling[] =        _("Toggle {STR_VAR_1}Level Scaling");
+static const u8 sDebugText_Settings_CatchExp[] =            _("Toggle {STR_VAR_1}Catch Exp OFF");
+
 // Battle
 static const u8 sDebugText_Battle_0_Wild[] =        _("Wild…{CLEAR_TO 110}{RIGHT_ARROW}");
 static const u8 sDebugText_Battle_0_WildDouble[] =  _("Wild Double…{CLEAR_TO 110}{RIGHT_ARROW}");
@@ -674,6 +693,8 @@ static const u8 sDebugText_Give_MaxCoins[] =            _("Max Coins");
 static const u8 sDebugText_Give_BattlePoints[] =        _("Max Battle Points");
 static const u8 sDebugText_Give_DaycareEgg[] =          _("Daycare Egg");
 // Sound Menu
+static const u8 sDebugText_Sound_BGM_Toggle[] =         _("Toggle {STR_VAR_1}BGM OFF");
+static const u8 sDebugText_Sound_YT_Safe_Toggle[] =     _("Toggle {STR_VAR_1}TY Safe OFF");
 static const u8 sDebugText_Sound_SFX[] =                _("SFX…{CLEAR_TO 110}{RIGHT_ARROW}");
 static const u8 sDebugText_Sound_SFX_ID[] =   	        _("SFX ID: {STR_VAR_3}   {START_BUTTON} Stop\n{STR_VAR_1}    \n{STR_VAR_2}");
 static const u8 sDebugText_Sound_Music[] =              _("Music…{CLEAR_TO 110}{RIGHT_ARROW}");
@@ -729,6 +750,7 @@ static const struct ListMenuItem sDebugMenu_Items_Main[] =
     [DEBUG_MENU_ITEM_GIVE]          = {sDebugText_Give,         DEBUG_MENU_ITEM_GIVE},
     [DEBUG_MENU_ITEM_SCRIPTS]       = {sDebugText_Scripts,      DEBUG_MENU_ITEM_SCRIPTS},
     [DEBUG_MENU_ITEM_FLAGVAR]       = {sDebugText_FlagsVars,    DEBUG_MENU_ITEM_FLAGVAR},
+    [DEBUG_MENU_ITEM_SETTINGS]      = {sDebugText_Settings,     DEBUG_MENU_ITEM_SETTINGS},
     //[DEBUG_MENU_ITEM_BATTLE]        = {sDebugText_Battle,       DEBUG_MENU_ITEM_BATTLE},
     [DEBUG_MENU_ITEM_SOUND]         = {sDebugText_Sound,        DEBUG_MENU_ITEM_SOUND},
     [DEBUG_MENU_ITEM_CANCEL]        = {sDebugText_Cancel,       DEBUG_MENU_ITEM_CANCEL},
@@ -812,16 +834,21 @@ static const struct ListMenuItem sDebugMenu_Items_FlagsVars[] =
     [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_LOCATIONS]     = {sDebugText_FlagsVars_ToggleFlyFlags,     DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_LOCATIONS},
     [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_BADGES_ALL]    = {sDebugText_FlagsVars_ToggleAllBadges,    DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_BADGES_ALL},
     [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_FRONTIER_PASS] = {sDebugText_FlagsVars_ToggleFrontierPass, DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_FRONTIER_PASS},
-    [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_COLISSION]     = {sDebugText_FlagsVars_SwitchCollision,    DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_COLISSION},
-    [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_ENCOUNTER]     = {sDebugText_FlagsVars_SwitchEncounter,    DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_ENCOUNTER},
-    [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_TRAINER_SEE]   = {sDebugText_FlagsVars_SwitchTrainerSee,   DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_TRAINER_SEE},
-    [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_BAG_USE]       = {sDebugText_FlagsVars_SwitchBagUse,       DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_BAG_USE},
-    [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_CATCHING]      = {sDebugText_FlagsVars_SwitchCatching,     DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_CATCHING},
-    [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_AUTOSAVE]      = {sDebugText_FlagsVars_Autosave,           DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_AUTOSAVE},
-    [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_AI_VS_AI]      = {sDebugText_FlagsVars_AiVsAi,             DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_AI_VS_AI},
-    [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_LEVEL_CAPS]    = {sDebugText_FlagsVars_LevelCap,           DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_LEVEL_CAPS},
-    [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_MAP_RANDO]     = {sDebugText_FlagsVars_MapRando,           DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_MAP_RANDO},
-    [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_LEVEL_SCALING] = {sDebugText_FlagsVars_LevelScaling,       DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_LEVEL_SCALING},
+};
+
+static const struct ListMenuItem sDebugMenu_Items_Settings[] =
+{
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_COLISSION]     = {sDebugText_Settings_SwitchCollision,    DEBUG_SETTINGS_MENU_ITEM_TOGGLE_COLISSION},
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_ENCOUNTER]     = {sDebugText_Settings_SwitchEncounter,    DEBUG_SETTINGS_MENU_ITEM_TOGGLE_ENCOUNTER},
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_TRAINER_SEE]   = {sDebugText_Settings_SwitchTrainerSee,   DEBUG_SETTINGS_MENU_ITEM_TOGGLE_TRAINER_SEE},
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_BAG_USE]       = {sDebugText_Settings_SwitchBagUse,       DEBUG_SETTINGS_MENU_ITEM_TOGGLE_BAG_USE},
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_CATCHING]      = {sDebugText_Settings_SwitchCatching,     DEBUG_SETTINGS_MENU_ITEM_TOGGLE_CATCHING},
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_AUTOSAVE]      = {sDebugText_Settings_Autosave,           DEBUG_SETTINGS_MENU_ITEM_TOGGLE_AUTOSAVE},
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_AI_VS_AI]      = {sDebugText_Settings_AiVsAi,             DEBUG_SETTINGS_MENU_ITEM_TOGGLE_AI_VS_AI},
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_LEVEL_CAPS]    = {sDebugText_Settings_LevelCap,           DEBUG_SETTINGS_MENU_ITEM_TOGGLE_LEVEL_CAPS},
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_MAP_RANDO]     = {sDebugText_Settings_MapRando,           DEBUG_SETTINGS_MENU_ITEM_TOGGLE_MAP_RANDO},
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_LEVEL_SCALING] = {sDebugText_Settings_LevelScaling,       DEBUG_SETTINGS_MENU_ITEM_TOGGLE_LEVEL_SCALING},
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_CATCH_EXP]     = {sDebugText_Settings_CatchExp,           DEBUG_SETTINGS_MENU_ITEM_TOGGLE_CATCH_EXP},
 };
 
 static const struct ListMenuItem sDebugMenu_Items_Battle_0[] =
@@ -883,8 +910,10 @@ static const struct ListMenuItem sDebugMenu_Items_Give[] =
 
 static const struct ListMenuItem sDebugMenu_Items_Sound[] =
 {
-    [DEBUG_SOUND_MENU_ITEM_SE]  = {sDebugText_Sound_SFX,  DEBUG_SOUND_MENU_ITEM_SE},
-    [DEBUG_SOUND_MENU_ITEM_MUS] = {sDebugText_Sound_Music, DEBUG_SOUND_MENU_ITEM_MUS},
+    [DEBUG_SOUND_MENU_ITEM_BGM_TOGGLE]     = {sDebugText_Sound_BGM_Toggle,  DEBUG_SOUND_MENU_ITEM_BGM_TOGGLE},
+    [DEBUG_SOUND_MENU_ITEM_YT_SAFE_TOGGLE] = {sDebugText_Sound_YT_Safe_Toggle, DEBUG_SOUND_MENU_ITEM_YT_SAFE_TOGGLE},
+    [DEBUG_SOUND_MENU_ITEM_SE]             = {sDebugText_Sound_SFX,  DEBUG_SOUND_MENU_ITEM_SE},
+    [DEBUG_SOUND_MENU_ITEM_MUS]            = {sDebugText_Sound_Music, DEBUG_SOUND_MENU_ITEM_MUS},
 };
 
 static const struct ListMenuItem sDebugMenu_Items_BerryFunctions[] =
@@ -906,6 +935,7 @@ static void (*const sDebugMenu_Actions_Main[])(u8) =
     [DEBUG_MENU_ITEM_GIVE]          = DebugAction_OpenGiveMenu,
     [DEBUG_MENU_ITEM_SCRIPTS]       = DebugAction_OpenScriptsMenu,
     [DEBUG_MENU_ITEM_FLAGVAR]       = DebugAction_OpenFlagsVarsMenu,
+    [DEBUG_MENU_ITEM_SETTINGS]      = DebugAction_OpenSettingsMenu,
     //[DEBUG_MENU_ITEM_BATTLE]        = DebugAction_OpenBattleMenu,
     [DEBUG_MENU_ITEM_SOUND]         = DebugAction_OpenSoundMenu,
     [DEBUG_MENU_ITEM_CANCEL]        = DebugAction_Cancel
@@ -978,13 +1008,6 @@ static void (*const sDebugMenu_Actions_Scripts[])(u8) =
 static void (*const sDebugMenu_Actions_Flags[])(u8) =
 {
  //   [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_RUN_SHOES]     = DebugAction_FlagsVars_RunningShoes,
-    [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_AUTOSAVE]      = DebugAction_FlagsVars_AutosaveOnOff,
-    [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_LEVEL_SCALING] = DebugAction_FlagsVars_LevelScaling,
-    [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_LEVEL_CAPS]    = DebugAction_FlagsVars_LevelCap,
-    [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_MAP_RANDO]     = DebugAction_FlagsVars_MapRando,
-    [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_BAG_USE]       = DebugAction_FlagsVars_BagUseOnOff,
-    [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_CATCHING]      = DebugAction_FlagsVars_CatchingOnOff,
-    [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_AI_VS_AI]      = DebugAction_FlagsVars_AiVsAi,
     [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_LOCATIONS]     = DebugAction_FlagsVars_ToggleFlyFlags,
     [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_POKEDEX]       = DebugAction_FlagsVars_SwitchDex,
     [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_NATDEX]        = DebugAction_FlagsVars_SwitchNatDex,
@@ -992,13 +1015,24 @@ static void (*const sDebugMenu_Actions_Flags[])(u8) =
     [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_POKENAV]       = DebugAction_FlagsVars_SwitchPokeNav,
     [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_MATCH_CALL]    = DebugAction_FlagsVars_SwitchMatchCall,
     [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_FRONTIER_PASS] = DebugAction_FlagsVars_ToggleFrontierPass,
-    [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_ENCOUNTER]     = DebugAction_FlagsVars_EncounterOnOff,
-    [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_TRAINER_SEE]   = DebugAction_FlagsVars_TrainerSeeOnOff,
-    [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_COLISSION]     = DebugAction_FlagsVars_CollisionOnOff,
     [DEBUG_FLAGVAR_MENU_ITEM_DEXFLAGS_ALL]         = DebugAction_FlagsVars_PokedexFlags_All,
     [DEBUG_FLAGVAR_MENU_ITEM_DEXFLAGS_RESET]       = DebugAction_FlagsVars_PokedexFlags_Reset,
     [DEBUG_FLAGVAR_MENU_ITEM_FLAGS]                = DebugAction_FlagsVars_Flags,
     [DEBUG_FLAGVAR_MENU_ITEM_VARS]                 = DebugAction_FlagsVars_Vars,
+};
+static void (*const sDebugMenu_Actions_Settings[])(u8) =
+{
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_AUTOSAVE]      = DebugAction_Settings_AutosaveOnOff,
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_LEVEL_SCALING] = DebugAction_Settings_LevelScaling,
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_LEVEL_CAPS]    = DebugAction_Settings_LevelCap,
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_MAP_RANDO]     = DebugAction_Settings_MapRando,
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_BAG_USE]       = DebugAction_Settings_BagUseOnOff,
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_CATCHING]      = DebugAction_Settings_CatchingOnOff,
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_AI_VS_AI]      = DebugAction_Settings_AiVsAi,
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_ENCOUNTER]     = DebugAction_Settings_EncounterOnOff,
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_TRAINER_SEE]   = DebugAction_Settings_TrainerSeeOnOff,
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_COLISSION]     = DebugAction_Settings_CollisionOnOff,
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_CATCH_EXP]     = DebugAction_Settings_CatchExp,
 };
 static void (*const sDebugMenu_Actions_Give[])(u8) =
 {
@@ -1013,8 +1047,10 @@ static void (*const sDebugMenu_Actions_Give[])(u8) =
 
 static void (*const sDebugMenu_Actions_Sound[])(u8) =
 {
-    [DEBUG_SOUND_MENU_ITEM_SE]  = DebugAction_Sound_SE,
-    [DEBUG_SOUND_MENU_ITEM_MUS] = DebugAction_Sound_MUS,
+    [DEBUG_SOUND_MENU_ITEM_BGM_TOGGLE]     = DebugAction_Sound_BGMToggle,
+    [DEBUG_SOUND_MENU_ITEM_YT_SAFE_TOGGLE] = DebugAction_Sound_YTSafeToggle,
+    [DEBUG_SOUND_MENU_ITEM_SE]             = DebugAction_Sound_SE,
+    [DEBUG_SOUND_MENU_ITEM_MUS]            = DebugAction_Sound_MUS,
 };
 
 static void (*const sDebugMenu_Actions_BerryFunctions[])(u8) =
@@ -1083,6 +1119,18 @@ static const struct WindowTemplate sDebugMenuWindowTemplateFlagsVars =
     .baseBlock = 1 + DEBUG_MENU_WIDTH_MAIN * DEBUG_MENU_HEIGHT_MAIN * 2,
 };
 
+static const struct WindowTemplate sDebugMenuWindowTemplateSettings =
+{
+    .bg = 0,
+    .tilemapLeft = 30 - DEBUG_MENU_WIDTH_FLAGVAR - 1,
+    .tilemapTop = 1,
+    .width = DEBUG_MENU_WIDTH_FLAGVAR,
+    .height = DEBUG_MENU_HEIGHT_FLAGVAR,
+    .paletteNum = 15,
+    .baseBlock = 1 + DEBUG_MENU_WIDTH_MAIN * DEBUG_MENU_HEIGHT_MAIN * 2,
+};
+
+
 // *******************************
 // List Menu Templates
 static const struct ListMenuTemplate sDebugMenu_ListTemplate_Main =
@@ -1132,6 +1180,13 @@ static const struct ListMenuTemplate sDebugMenu_ListTemplate_FlagsVars =
     .items = sDebugMenu_Items_FlagsVars,
     .moveCursorFunc = ListMenuDefaultCursorMoveFunc,
     .totalItems = ARRAY_COUNT(sDebugMenu_Items_FlagsVars),
+};
+
+static const struct ListMenuTemplate sDebugMenu_ListTemplate_Settings =
+{
+    .items = sDebugMenu_Items_Settings,
+    .moveCursorFunc = ListMenuDefaultCursorMoveFunc,
+    .totalItems = ARRAY_COUNT(sDebugMenu_Items_Settings),
 };
 
 static const struct ListMenuTemplate sDebugMenu_ListTemplate_Battle_0 =
@@ -1197,8 +1252,14 @@ static void Debug_ReShowMainMenu(void)
 #define tSubWindowId  data[2]
 #define tInput        data[3]
 #define tDigit        data[4]
+#define tMultiUseType data[5]
 
 static void Debug_ShowMenu(void (*HandleInput)(u8), struct ListMenuTemplate LMtemplate)
+{
+    Debug_ShowMenuWithType(HandleInput, LMtemplate, 0);
+}
+
+static void Debug_ShowMenuWithType(void (*HandleInput)(u8), struct ListMenuTemplate LMtemplate, u8 multiUseType)
 {
     struct ListMenuTemplate menuTemplate;
     u8 windowId;
@@ -1234,6 +1295,7 @@ static void Debug_ShowMenu(void (*HandleInput)(u8), struct ListMenuTemplate LMte
     gTasks[inputTaskId].tMenuTaskId = menuTaskId;
     gTasks[inputTaskId].tWindowId = windowId;
     gTasks[inputTaskId].tSubWindowId = 0;
+    gTasks[inputTaskId].tMultiUseType = multiUseType;
 
     Debug_RefreshListMenu(inputTaskId);
 
@@ -1346,46 +1408,6 @@ static u8 Debug_CheckToggleFlags(u8 id)
         case DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_FRONTIER_PASS:
             result = FlagGet(FLAG_SYS_FRONTIER_PASS);
             break;
-    #if OW_FLAG_NO_COLLISION != 0
-        case DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_COLISSION:
-            result = FlagGet(OW_FLAG_NO_COLLISION);
-            break;
-    #endif
-    #if OW_FLAG_NO_ENCOUNTER != 0
-        case DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_ENCOUNTER:
-            result = FlagGet(OW_FLAG_NO_ENCOUNTER);
-            break;
-    #endif
-    #if OW_FLAG_NO_TRAINER_SEE != 0
-        case DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_TRAINER_SEE:
-            result = FlagGet(OW_FLAG_NO_TRAINER_SEE);
-            break;
-    #endif
-    #if B_FLAG_NO_BAG_USE != 0
-        case DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_BAG_USE:
-            result = FlagGet(B_FLAG_NO_BAG_USE);
-            break;
-    #endif
-    #if B_FLAG_NO_CATCHING != 0
-        case DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_CATCHING:
-            result = FlagGet(B_FLAG_NO_CATCHING);
-            break;
-    #endif
-        case DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_AUTOSAVE:
-            result = FlagGet(FLAG_HEAL_AUTOSAVE);
-            break;
-        case DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_AI_VS_AI:
-            result = FlagGet(FLAG_AI_VS_AI);
-            break;
-        case DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_LEVEL_CAPS:
-            result = FlagGet(FLAG_LEVEL_CAP);
-            break;
-        case DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_MAP_RANDO:
-            result = FlagGet(FLAG_MAP_RANDO);
-            break;
-        case DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_LEVEL_SCALING:
-            result = FlagGet(FLAG_LEVEL_SCALING);
-            break;    
         default:
             result = 0xFF;
             break;
@@ -1393,6 +1415,84 @@ static u8 Debug_CheckToggleFlags(u8 id)
 
     return result;
 }
+
+static u8 Debug_CheckToggleSound(u8 id)
+{
+    u8 result = FALSE;
+
+    switch (id)
+    {
+        case DEBUG_SOUND_MENU_ITEM_BGM_TOGGLE:
+            result = FlagGet(FLAG_NO_BGM);
+            break;
+        case DEBUG_SOUND_MENU_ITEM_YT_SAFE_TOGGLE:
+            result = FlagGet(FLAG_YT_SAFE_BGM);
+            break;               
+        default:
+            result = 0xFF;
+            break;
+    }
+
+    return result;
+}
+
+static u8 Debug_CheckToggleSettings(u8 id)
+{
+    u8 result = FALSE;
+
+    switch (id)
+    {
+        #if OW_FLAG_NO_COLLISION != 0
+            case DEBUG_SETTINGS_MENU_ITEM_TOGGLE_COLISSION:
+                result = FlagGet(OW_FLAG_NO_COLLISION);
+                break;
+        #endif
+        #if OW_FLAG_NO_ENCOUNTER != 0
+            case DEBUG_SETTINGS_MENU_ITEM_TOGGLE_ENCOUNTER:
+                result = FlagGet(OW_FLAG_NO_ENCOUNTER);
+                break;
+        #endif
+        #if OW_FLAG_NO_TRAINER_SEE != 0
+            case DEBUG_SETTINGS_MENU_ITEM_TOGGLE_TRAINER_SEE:
+                result = FlagGet(OW_FLAG_NO_TRAINER_SEE);
+                break;
+        #endif
+        #if B_FLAG_NO_BAG_USE != 0
+            case DEBUG_SETTINGS_MENU_ITEM_TOGGLE_BAG_USE:
+                result = FlagGet(B_FLAG_NO_BAG_USE);
+                break;
+        #endif
+        #if B_FLAG_NO_CATCHING != 0
+            case DEBUG_SETTINGS_MENU_ITEM_TOGGLE_CATCHING:
+                result = FlagGet(B_FLAG_NO_CATCHING);
+                break;
+        #endif
+            case DEBUG_SETTINGS_MENU_ITEM_TOGGLE_AUTOSAVE:
+                result = FlagGet(FLAG_HEAL_AUTOSAVE);
+                break;
+            case DEBUG_SETTINGS_MENU_ITEM_TOGGLE_AI_VS_AI:
+                result = FlagGet(FLAG_AI_VS_AI);
+                break;
+            case DEBUG_SETTINGS_MENU_ITEM_TOGGLE_LEVEL_CAPS:
+                result = FlagGet(FLAG_LEVEL_CAP);
+                break;
+            case DEBUG_SETTINGS_MENU_ITEM_TOGGLE_MAP_RANDO:
+                result = FlagGet(FLAG_MAP_RANDO);
+                break;
+            case DEBUG_SETTINGS_MENU_ITEM_TOGGLE_LEVEL_SCALING:
+                result = FlagGet(FLAG_LEVEL_SCALING);
+                break;
+            case DEBUG_SETTINGS_MENU_ITEM_TOGGLE_CATCH_EXP:
+                result = FlagGet(FLAG_DISABLE_CATCH_EXP);
+                break;   
+            default:
+                result = 0xFF;
+                break;
+    }
+
+    return result;
+}
+
 
 static void Debug_InitDebugBattleData(void)
 {
@@ -1405,12 +1505,19 @@ static void Debug_InitDebugBattleData(void)
         sDebugBattleData->aiFlags[i] = FALSE;
 }
 
-static void Debug_GenerateListMenuNames(u32 totalItems)
+static void Debug_GenerateListMenuNames(u32 totalItems, u8 taskId)
 {
     const u8 sColor_Red[] = _("{COLOR RED}");
     const u8 sColor_Green[] = _("{COLOR GREEN}");
     u32 i, flagResult = 0;
     u8 const *name = NULL;
+
+    for (i = 0; i < (20 + 1); i++)
+    {
+        sDebugMenuListData->itemNames[i][0] = 0xFF;
+        sDebugMenuListData->listItems[i].id = LIST_HEADER;
+    }
+
 
     // Copy item names for all entries but the last (which is Cancel)
     for (i = 0; i < totalItems; i++)
@@ -1436,7 +1543,7 @@ static void Debug_GenerateListMenuNames(u32 totalItems)
         }
         else
         {
-            if (sDebugMenuListData->listId == 0)
+            if (gTasks[taskId].tMultiUseType == 0)
             {
                 flagResult = Debug_CheckToggleFlags(i);
                 name = sDebugMenu_Items_FlagsVars[i].name;
@@ -1448,6 +1555,17 @@ static void Debug_GenerateListMenuNames(u32 totalItems)
                     flagResult = 0xFF;
                 name = sDebugMenu_Items_Battle_1[i].name;
             }
+            else if (gTasks[taskId].tMultiUseType == 2) 
+            {
+                flagResult = Debug_CheckToggleSound(i);
+                name = sDebugMenu_Items_Sound[i].name;
+            }
+            else if (gTasks[taskId].tMultiUseType == 1) 
+            {
+                flagResult = Debug_CheckToggleSettings(i);
+                name = sDebugMenu_Items_Settings[i].name;
+            }
+
 
             if (flagResult == 0xFF)
             {
@@ -1470,13 +1588,25 @@ static void Debug_GenerateListMenuNames(u32 totalItems)
         sDebugMenuListData->listItems[i].name = &sDebugMenuListData->itemNames[i][0];
         sDebugMenuListData->listItems[i].id = i;
     }
+
+    RedrawListMenu(gTasks[taskId].tMenuTaskId);
 }
 
 static void Debug_RefreshListMenu(u8 taskId)
 {
     u8 totalItems = 0;
 
-    if (sDebugMenuListData->listId == 0)
+    if (gTasks[taskId].tMultiUseType == 2)
+    {
+        gMultiuseListMenuTemplate = sDebugMenu_ListTemplate_Sound;
+        totalItems = 4;
+    }
+    if (gTasks[taskId].tMultiUseType == 1)
+    {
+        gMultiuseListMenuTemplate = sDebugMenu_ListTemplate_Settings;
+        totalItems = 11;
+    }
+    else if (sDebugMenuListData->listId == 0 && gTasks[taskId].tMultiUseType == 0)
     {
         gMultiuseListMenuTemplate = sDebugMenu_ListTemplate_FlagsVars;
         totalItems = gMultiuseListMenuTemplate.totalItems;
@@ -1494,7 +1624,7 @@ static void Debug_RefreshListMenu(u8 taskId)
 
     // Failsafe to prevent memory corruption
     totalItems = min(totalItems, DEBUG_MAX_MENU_ITEMS);
-    Debug_GenerateListMenuNames(totalItems);
+    Debug_GenerateListMenuNames(totalItems, taskId);
 
     // Set list menu data
     gMultiuseListMenuTemplate.items = sDebugMenuListData->listItems;
@@ -1646,6 +1776,7 @@ static void DebugTask_HandleMenuInput_Scripts(u8 taskId)
 static void DebugTask_HandleMenuInput_FlagsVars(u8 taskId)
 {
     void (*func)(u8);
+    
     u32 input = ListMenu_ProcessInput(gTasks[taskId].tMenuTaskId);
 
     if (JOY_NEW(A_BUTTON))
@@ -1661,7 +1792,7 @@ static void DebugTask_HandleMenuInput_FlagsVars(u8 taskId)
             else
             {
                 func(taskId);
-                Debug_GenerateListMenuNames(gMultiuseListMenuTemplate.totalItems);
+                Debug_GenerateListMenuNames(gMultiuseListMenuTemplate.totalItems, taskId);
                 RedrawListMenu(gTasks[taskId].tMenuTaskId);
             }
 
@@ -1681,6 +1812,41 @@ static void DebugTask_HandleMenuInput_FlagsVars(u8 taskId)
         Debug_ReShowMainMenu();
     }
 }
+
+static void DebugTask_HandleMenuInput_Settings(u8 taskId)
+{
+    void (*func)(u8);
+    
+    gTasks[taskId].tMultiUseType = 1;
+    u32 input = ListMenu_ProcessInput(gTasks[taskId].tMenuTaskId);
+
+    if (JOY_NEW(A_BUTTON))
+    {
+        PlaySE(SE_SELECT);
+        if ((func = sDebugMenu_Actions_Settings[input]) != NULL)
+        {
+            func(taskId);
+            Debug_GenerateListMenuNames(gMultiuseListMenuTemplate.totalItems, taskId);
+            RedrawListMenu(gTasks[taskId].tMenuTaskId);
+            gTasks[taskId].tMultiUseType = 1;
+
+            // Remove TRUE/FALSE window for functions that haven't been assigned flags
+            if (gTasks[taskId].tInput == 0xFF)
+            {
+                ClearStdWindowAndFrame(gTasks[taskId].tSubWindowId, TRUE);
+                RemoveWindow(gTasks[taskId].tSubWindowId);
+                Free(sDebugMenuListData);
+            }
+        }
+    }
+    else if (JOY_NEW(B_BUTTON))
+    {
+        PlaySE(SE_SELECT);
+        Debug_DestroyMenu(taskId);
+        Debug_ReShowMainMenu();
+    }
+}
+
 
 static void DebugTask_HandleBattleMenuReDraw(u8 taskId)
 {
@@ -1856,14 +2022,50 @@ static void DebugTask_HandleMenuInput_Give(u8 taskId)
 
 static void DebugTask_HandleMenuInput_Sound(u8 taskId)
 {
+    struct ListMenu *list = (void *) gTasks[gTasks[taskId].tMenuTaskId].data;
     void (*func)(u8);
+    gTasks[taskId].tMultiUseType = 2;
+
+    // This is a hack but I'm to tired to fix it right now, basically the multiuseListMenu isn't multi use.
+    // listId is always 0 because the task it's set on is not the same task we'd be reading it from.
+    // Additionally It generates items for list '0' when the initial menu opens
+    // but dosn't redraw the list when another menu is selected, until the first value change.
+    // However, it also determines the size of the list (which if you try and expand later will cause memory issues), so list 0 needs to be the biggest one
+    // The list also dosn't get cleared out (only overwritten) so if your new list is smaller (and it can't be larger) the will show up at the bottom 
+    // As a hack I'm forcing the redraw on menu load, setting all item names to an empty string, and manually preventing the user scrolling onto empty items
+    // This needs a well thought out solution, preferably with the thinking done by someone else
+    if (list->template.items[list->scrollOffset + list->selectedRow].id == (gMultiuseListMenuTemplate.totalItems - 1) && JOY_NEW(DPAD_DOWN))
+    {
+        return;    
+    }
+
     u32 input = ListMenu_ProcessInput(gTasks[taskId].tMenuTaskId);
 
     if (JOY_NEW(A_BUTTON))
     {
         PlaySE(SE_SELECT);
         if ((func = sDebugMenu_Actions_Sound[input]) != NULL)
-            func(taskId);
+        {
+            if (input == DEBUG_SOUND_MENU_ITEM_SE || input == DEBUG_SOUND_MENU_ITEM_MUS)
+            {
+                Debug_RedrawListMenu(taskId);
+                gTasks[taskId].tMultiUseType = 2;
+                func(taskId);
+            }
+            else
+            {
+                func(taskId);
+                Debug_GenerateListMenuNames(gMultiuseListMenuTemplate.totalItems, taskId);
+                RedrawListMenu(gTasks[taskId].tMenuTaskId);
+            }
+
+            if (gTasks[taskId].tInput == 0xFF)
+            {
+                ClearStdWindowAndFrame(gTasks[taskId].tSubWindowId, TRUE);
+                RemoveWindow(gTasks[taskId].tSubWindowId);
+                Free(sDebugMenuListData);
+            }
+        }
     }
     else if (JOY_NEW(B_BUTTON))
     {
@@ -1871,6 +2073,7 @@ static void DebugTask_HandleMenuInput_Sound(u8 taskId)
         Debug_DestroyMenu(taskId);
         Debug_ReShowMainMenu();
     }
+
 }
 
 static void DebugTask_HandleMenuInput_BerryFunctions(u8 taskId)
@@ -1925,6 +2128,12 @@ static void DebugAction_OpenFlagsVarsMenu(u8 taskId)
     Debug_ShowMenu(DebugTask_HandleMenuInput_FlagsVars, gMultiuseListMenuTemplate);
 }
 
+static void DebugAction_OpenSettingsMenu(u8 taskId)
+{
+    Debug_DestroyMenu(taskId);
+    Debug_ShowMenuWithType(DebugTask_HandleMenuInput_Settings, gMultiuseListMenuTemplate, 1);
+}
+
 static void DebugAction_OpenGiveMenu(u8 taskId)
 {
     Debug_DestroyMenu(taskId);
@@ -1934,7 +2143,7 @@ static void DebugAction_OpenGiveMenu(u8 taskId)
 static void DebugAction_OpenSoundMenu(u8 taskId)
 {
     Debug_DestroyMenu(taskId);
-    Debug_ShowMenu(DebugTask_HandleMenuInput_Sound, sDebugMenu_ListTemplate_Sound);
+    Debug_ShowMenuWithType(DebugTask_HandleMenuInput_Sound, gMultiuseListMenuTemplate, 2);
 }
 
 static void DebugAction_Util_BerryFunctions(u8 taskId)
@@ -2924,7 +3133,7 @@ static void DebugAction_FlagsVars_ToggleFrontierPass(u8 taskId)
     FlagToggle(FLAG_SYS_FRONTIER_PASS);
 }
 
-static void DebugAction_FlagsVars_CollisionOnOff(u8 taskId)
+static void DebugAction_Settings_CollisionOnOff(u8 taskId)
 {
 #if OW_FLAG_NO_COLLISION == 0
     Debug_DestroyMenu_Full_Script(taskId, Debug_FlagsNotSetOverworldConfigMessage);
@@ -2937,7 +3146,7 @@ static void DebugAction_FlagsVars_CollisionOnOff(u8 taskId)
 #endif
 }
 
-static void DebugAction_FlagsVars_EncounterOnOff(u8 taskId)
+static void DebugAction_Settings_EncounterOnOff(u8 taskId)
 {
 #if OW_FLAG_NO_ENCOUNTER == 0
     Debug_DestroyMenu_Full_Script(taskId, Debug_FlagsNotSetOverworldConfigMessage);
@@ -2950,7 +3159,7 @@ static void DebugAction_FlagsVars_EncounterOnOff(u8 taskId)
 #endif
 }
 
-static void DebugAction_FlagsVars_TrainerSeeOnOff(u8 taskId)
+static void DebugAction_Settings_TrainerSeeOnOff(u8 taskId)
 {
 #if OW_FLAG_NO_TRAINER_SEE == 0
     Debug_DestroyMenu_Full_Script(taskId, Debug_FlagsNotSetOverworldConfigMessage);
@@ -2963,7 +3172,7 @@ static void DebugAction_FlagsVars_TrainerSeeOnOff(u8 taskId)
 #endif
 }
 
-static void DebugAction_FlagsVars_BagUseOnOff(u8 taskId)
+static void DebugAction_Settings_BagUseOnOff(u8 taskId)
 {
 #if B_FLAG_NO_BAG_USE == 0
     Debug_DestroyMenu_Full_Script(taskId, Debug_FlagsNotSetBattleConfigMessage);
@@ -2976,7 +3185,7 @@ static void DebugAction_FlagsVars_BagUseOnOff(u8 taskId)
 #endif
 }
 
-static void DebugAction_FlagsVars_CatchingOnOff(u8 taskId)
+static void DebugAction_Settings_CatchingOnOff(u8 taskId)
 {
 #if B_FLAG_NO_CATCHING == 0
     Debug_DestroyMenu_Full_Script(taskId, Debug_FlagsNotSetBattleConfigMessage);
@@ -2989,7 +3198,7 @@ static void DebugAction_FlagsVars_CatchingOnOff(u8 taskId)
 #endif
 }
 
-static void DebugAction_FlagsVars_AutosaveOnOff(u8 taskId)
+static void DebugAction_Settings_AutosaveOnOff(u8 taskId)
 {
     if (FlagGet(FLAG_HEAL_AUTOSAVE))
         PlaySE(SE_PC_OFF);
@@ -2998,7 +3207,7 @@ static void DebugAction_FlagsVars_AutosaveOnOff(u8 taskId)
     FlagToggle(FLAG_HEAL_AUTOSAVE);
 }
 
-static void DebugAction_FlagsVars_AiVsAi(u8 taskId)
+static void DebugAction_Settings_AiVsAi(u8 taskId)
 {
     if (FlagGet(FLAG_AI_VS_AI))
         PlaySE(SE_PC_OFF);
@@ -3007,7 +3216,7 @@ static void DebugAction_FlagsVars_AiVsAi(u8 taskId)
     FlagToggle(FLAG_AI_VS_AI);
 }
 
-static void DebugAction_FlagsVars_LevelCap(u8 taskId)
+static void DebugAction_Settings_LevelCap(u8 taskId)
 {
     if (FlagGet(FLAG_LEVEL_CAP))
         PlaySE(SE_PC_OFF);
@@ -3016,7 +3225,7 @@ static void DebugAction_FlagsVars_LevelCap(u8 taskId)
     FlagToggle(FLAG_LEVEL_CAP);
 }
 
-static void DebugAction_FlagsVars_MapRando(u8 taskId)
+static void DebugAction_Settings_MapRando(u8 taskId)
 {
     if (FlagGet(FLAG_MAP_RANDO))
         PlaySE(SE_PC_OFF);
@@ -3025,13 +3234,22 @@ static void DebugAction_FlagsVars_MapRando(u8 taskId)
     FlagToggle(FLAG_MAP_RANDO);
 }
 
-static void DebugAction_FlagsVars_LevelScaling(u8 taskId)
+static void DebugAction_Settings_LevelScaling(u8 taskId)
 {
     if (FlagGet(FLAG_LEVEL_SCALING))
         PlaySE(SE_PC_OFF);
     else
         PlaySE(SE_PC_LOGIN);
     FlagToggle(FLAG_LEVEL_SCALING);
+}
+
+static void DebugAction_Settings_CatchExp(u8 taskId)
+{
+    if (FlagGet(FLAG_DISABLE_CATCH_EXP))
+        PlaySE(SE_PC_OFF);
+    else
+        PlaySE(SE_PC_LOGIN);
+    FlagToggle(FLAG_DISABLE_CATCH_EXP);
 }
 
 // *******************************
@@ -4349,6 +4567,28 @@ static const u8 *const sSENames[];
 
 #define tCurrentSong  data[5]
 
+static void DebugAction_Sound_BGMToggle(u8 taskId)
+{
+    if (FlagGet(FLAG_NO_BGM))
+        PlaySE(SE_PC_ON);
+    else
+    {
+        FadeOutBGM(4);
+        PlaySE(SE_PC_OFF);
+    }
+    FlagToggle(FLAG_NO_BGM);
+}
+
+static void DebugAction_Sound_YTSafeToggle(u8 taskId)
+{
+    if (FlagGet(FLAG_YT_SAFE_BGM))
+        PlaySE(SE_PC_OFF);
+    else
+        PlaySE(SE_PC_ON);
+
+    FlagToggle(FLAG_YT_SAFE_BGM);
+}
+
 static void DebugAction_Sound_SE(u8 taskId)
 {
     u8 windowId;
@@ -5091,6 +5331,7 @@ static void DebugAction_Sound_MUS_SelectId(u8 taskId)
     X(MUS_HG_OBTAIN_CASTLE_POINTS) \
     X(MUS_HG_OBTAIN_B_POINTS) \
     X(MUS_HG_WIN_MINIGAME) \
+    X(MUS_XY_BOUTIQUE) \
     X(MUS_VS_WILD_NIGHT) \
 
 #define SOUND_LIST_SE \

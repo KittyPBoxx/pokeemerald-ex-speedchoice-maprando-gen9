@@ -767,7 +767,8 @@ static const u16 gExpansionMusicTracks[] =
     MUS_HG_OBTAIN_ARCADE_POINTS       ,
     MUS_HG_OBTAIN_CASTLE_POINTS       ,
     MUS_HG_OBTAIN_B_POINTS            ,
-    MUS_HG_WIN_MINIGAME
+    MUS_HG_WIN_MINIGAME               ,
+    MUS_XY_BOUTIQUE
 };
 
 static const u16 gExpansionFanfareTracks[] = 

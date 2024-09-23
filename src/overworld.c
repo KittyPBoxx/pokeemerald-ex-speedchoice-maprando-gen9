@@ -1918,6 +1918,7 @@ void CB2_WhiteOut(void)
 void CB2_LoadMap(void)
 {
     FieldClearVBlankHBlankCallbacks();
+    UpdateSpeedupControls();
     ScriptContext_Init();
     UnlockPlayerFieldControls();
     SetMainCallback1(NULL);
@@ -2502,6 +2503,7 @@ static void ResumeMap(bool32 a1)
     ResetCameraUpdateInfo();
     InstallCameraPanAheadCallback();
     FreeAllSpritePalettes();
+    UpdateSpeedupControls();
 
     FieldEffectActiveListClear();
     StartWeather();

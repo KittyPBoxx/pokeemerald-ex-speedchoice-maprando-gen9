@@ -82,6 +82,7 @@ u8 gLinkVSyncDisabled;
 u32 IntrMain_Buffer[0x200];
 s8 gPcmDmaCounter;
 void *gAgbMainLoop_sp;
+u32 cachedSpeedupControlSetting;
 
 static EWRAM_DATA u16 sTrainerId = 0;
 
@@ -111,6 +112,8 @@ void AgbMain()
 {
     if (SiiRtcProbe() != 0x11) // 0x11 = RTC in protected mode
         gSoftResetFlag = 1;
+
+    cachedSpeedupControlSetting = 1;
 
     *(vu16 *)BG_PLTT = RGB_WHITE; // Set the backdrop to white on startup
     InitGpuRegManager();
@@ -391,12 +394,19 @@ static void ReadKeys(void)
 
     if (JOY_HELD_RAW(R_BUTTON))
     {
-        SetSpeed(MAX_SPEED_ON);
+        if (cachedSpeedupControlSetting == 1)
+            SetSpeed(MAX_SPEED_ON);
+        else if (cachedSpeedupControlSetting == 2)
+            ClearSpeed(MAX_SPEED_ON);    
+
         ClearSpeed(SLOW_MO_ON);
     }
     else 
     {
-        ClearSpeed(MAX_SPEED_ON);   
+        if (cachedSpeedupControlSetting == 1)
+            ClearSpeed(MAX_SPEED_ON);  
+        else if (cachedSpeedupControlSetting == 2)
+            SetSpeed(MAX_SPEED_ON);    
     }
 
     if(JOY_HELD_RAW(L_BUTTON) && JOY_NEW(B_BUTTON))
@@ -607,6 +617,16 @@ void DoSoftReset(void)
 void ClearPokemonCrySongs(void)
 {
     CpuFill16(0, gPokemonCrySongs, MAX_POKEMON_CRIES * sizeof(struct PokemonCrySong));
+}
+
+void UpdateSpeedupControls(void) 
+{
+    if (CheckSpeedchoiceOption(SPEEDUP, SPEEDUP_R) == TRUE)
+        cachedSpeedupControlSetting = 1;
+    else if (CheckSpeedchoiceOption(SPEEDUP, SPEEDUP_ON) == TRUE)
+        cachedSpeedupControlSetting = 2;
+    else 
+        cachedSpeedupControlSetting = 0;
 }
 
 static void CB2_PostSoftResetInit(void)

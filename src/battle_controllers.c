@@ -2687,25 +2687,21 @@ void BtlController_HandleMoveAnimation(u32 battler, bool32 updateTvData)
 u32 Rogue_GetBattleSpeedScale(bool32 forHealthbar)
 {
     u8 battleSceneOption; 
-    
-    if (CheckSpeedchoiceOption(BATTLE_SPEED, BATTLE_SPEED_INST) == TRUE) 
+
+    if (gGlobalSpeed & (1 << MAX_SPEED_ON) || CheckSpeedchoiceOption(BATTLE_SPEED, BATTLE_SPEED_INST) == TRUE) 
     {
-        DebugPrintfLevel(MGBA_LOG_WARN, "Inst");
         battleSceneOption = OPTIONS_BATTLE_SCENE_4X;
     }
     else if (CheckSpeedchoiceOption(BATTLE_SPEED, BATTLE_SPEED_FAST) == TRUE)
     {
-        DebugPrintfLevel(MGBA_LOG_WARN, "Fast");
         battleSceneOption = OPTIONS_BATTLE_SCENE_3X;
     }
     else if (CheckSpeedchoiceOption(BATTLE_SPEED, BATTLE_SPEED_MID) == TRUE)
     {
-        DebugPrintfLevel(MGBA_LOG_WARN, "Mid");
         battleSceneOption = OPTIONS_BATTLE_SCENE_2X;
     }
     else 
     {
-        DebugPrintfLevel(MGBA_LOG_WARN, "Slow");
         battleSceneOption = OPTIONS_BATTLE_SCENE_1X;
     }
 

@@ -1018,6 +1018,10 @@ bool8 FldEff_PokecenterHeal(void)
     struct Task *task;
 
     nPokemon = (OW_IGNORE_EGGS_ON_HEAL <= GEN_3) ? CalculatePlayerPartyCount() : CountPartyNonEggMons();
+
+    if (nPokemon < 1)
+        nPokemon = 1;
+
     task = &gTasks[CreateTask(Task_PokecenterHeal, 0xff)];
     task->tNumMons = nPokemon;
     task->tFirstBallX = 93;
@@ -1074,6 +1078,10 @@ bool8 FldEff_HallOfFameRecord(void)
     struct Task *task;
 
     nPokemon = CalculatePlayerPartyCount();
+
+    if (nPokemon < 1)
+        nPokemon = 1;
+    
     task = &gTasks[CreateTask(Task_HallOfFameRecord, 0xff)];
     task->tNumMons = nPokemon;
     task->tFirstBallX = 117;

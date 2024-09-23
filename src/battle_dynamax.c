@@ -84,8 +84,8 @@ bool32 CanDynamax(u32 battler)
     if (!TESTING && (GetBattlerPosition(battler) == B_POSITION_PLAYER_LEFT
         || (!(gBattleTypeFlags & BATTLE_TYPE_MULTI) && GetBattlerPosition(battler) == B_POSITION_PLAYER_RIGHT)))
     {
-        if (!CheckBagHasItem(ITEM_DYNAMAX_BAND, 1))
-            return FALSE;
+        // if (!CheckBagHasItem(ITEM_DYNAMAX_BAND, 1))
+        //     return FALSE;
         if (B_FLAG_DYNAMAX_BATTLE == 0 || (B_FLAG_DYNAMAX_BATTLE != 0 && !FlagGet(B_FLAG_DYNAMAX_BATTLE)))
             return FALSE;
     }
@@ -406,7 +406,6 @@ static u8 GetMaxPowerTier(u32 move)
         case EFFECT_NATURAL_GIFT:
         case EFFECT_MIRROR_COAT:
         case EFFECT_FINAL_GAMBIT:
-        //case EFFECT_DRAGON_DARTS:
             return MAX_POWER_TIER_2;
         case EFFECT_OHKO:
         case EFFECT_RETURN:
