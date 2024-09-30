@@ -1962,7 +1962,8 @@ static void Task_HandleSearchResultsStartMenuInput(u8 taskId)
             {
             case 0: //BACK TO LIST
             default:
-                gMain.newKeys |= START_BUTTON;
+                BeginNormalPaletteFade(PALETTES_ALL, 0, 0, 0x10, RGB_BLACK);
+                gTasks[taskId].func = Task_OpenDexNavFromStartMenu;
                 break;
             case 1: //LIST TOP
                 sPokedexView->selectedPokemon = 0;

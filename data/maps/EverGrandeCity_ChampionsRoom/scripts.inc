@@ -32,8 +32,9 @@ EverGrandeCity_ChampionsRoom_EventScript_EnterRoom::
 	applymovement OBJ_EVENT_ID_PLAYER, EverGrandeCity_ChampionsRoom_Movement_PlayerApproachWallace
 	waitmovement 0
 	setvar VAR_TEMP_1, 1
-	goto EverGrandeCity_ChampionsRoom_EventScript_Wallace
+	turnobject OBJ_EVENT_ID_PLAYER, DIR_NORTH
 	releaseall
+	setmetatile 6, 12, METATILE_EliteFour_OpenDoorChampion_Opening, 0
 	end
 
 EverGrandeCity_ChampionsRoom_Movement_PlayerApproachWallace:

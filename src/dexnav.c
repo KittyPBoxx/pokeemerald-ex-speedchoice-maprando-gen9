@@ -70,6 +70,7 @@ enum WindowIds
 {
     WINDOW_INFO,
     WINDOW_REGISTERED,
+    WINDOW_HELP,
     WINDOW_COUNT,
 };
 
@@ -183,6 +184,7 @@ static const u32 sHiddenMonIconGfx[] = INCBIN_U32("graphics/dexnav/hidden.4bpp.l
 static const u8 sText_DexNav_NoInfo[] = _("--------");
 static const u8 sText_DexNav_CaptureToSee[] = _("Capture first!");
 static const u8 sText_DexNav_PressRToRegister[] = _("R TO REGISTER!");
+static const u8 sText_DexNav_PressLRToSearch[] = _("HOLD L TAP R TO\nSEARCH IN FIELD");
 static const u8 sText_DexNav_SearchForRegisteredSpecies[] = _("Search {STR_VAR_1}");
 static const u8 sText_DexNav_NotFoundHere[] = _("This Pokémon cannot be found here!");
 static const u8 sText_ThreeQmarks[] = _("???");
@@ -220,6 +222,16 @@ static const struct WindowTemplate sDexNavGuiWindowTemplates[] =
         .height = 2,
         .paletteNum = 15,
         .baseBlock = 200,
+    },
+    [WINDOW_HELP] =
+    {
+        .bg = 0,
+        .tilemapLeft = 5,
+        .tilemapTop = 48,
+        .width = 9,
+        .height = 3,
+        .paletteNum = 15,
+        .baseBlock = 400,
     },
     DUMMY_WIN_TEMPLATE
 };
@@ -888,7 +900,7 @@ static void Task_InitDexNavSearch(u8 taskId)
         return;
     }
 
-    if (FlagGet(FLAG_SYS_CYCLING_ROAD) == FALSE )
+    if (FlagGet(FLAG_SYS_CYCLING_ROAD) == FALSE && gPlayerAvatar.flags & (PLAYER_AVATAR_FLAG_MACH_BIKE | PLAYER_AVATAR_FLAG_ACRO_BIKE))
     {
         SetPlayerAvatarTransitionFlags(PLAYER_AVATAR_FLAG_ON_FOOT);
         Overworld_ClearSavedMusic();
@@ -1729,11 +1741,11 @@ static void UpdateCursorPosition(void)
         y = ROW_LAND_BOT_ICON_Y;
         sDexNavUiDataPtr->environment = ENCOUNTER_TYPE_LAND;
         break;
-    case ROW_HIDDEN:
-        x = ROW_HIDDEN_ICON_X + (24 * sDexNavUiDataPtr->cursorCol);
-        y = ROW_HIDDEN_ICON_Y;
-        sDexNavUiDataPtr->environment = ENCOUNTER_TYPE_HIDDEN;
-        break;
+    // case ROW_HIDDEN:
+    //     x = ROW_HIDDEN_ICON_X + (24 * sDexNavUiDataPtr->cursorCol);
+    //     y = ROW_HIDDEN_ICON_Y;
+    //     sDexNavUiDataPtr->environment = ENCOUNTER_TYPE_HIDDEN;
+    //     break;
     default:
         return;
     }
@@ -2075,18 +2087,18 @@ static void DrawSpeciesIcons(void)
         TryDrawIconInSlot(species, x, y);
     }
     
-    for (i = 0; i < HIDDEN_WILD_COUNT; i++)
-    {
-        species = sDexNavUiDataPtr->hiddenSpecies[i];
-        x = ROW_HIDDEN_ICON_X + 24 * i;
-        y = ROW_HIDDEN_ICON_Y;
-        if (FlagGet(FLAG_SYS_DETECTOR_MODE))
-            TryDrawIconInSlot(species, x, y);
-       else if (species == SPECIES_NONE || species > NUM_SPECIES)
-            CreateNoDataIcon(x, y);
-        else
-            CreateMonIcon(SPECIES_NONE, SpriteCB_MonIcon, x, y, 0, 0); //question mark if detector mode inactive
-    }
+    // for (i = 0; i < HIDDEN_WILD_COUNT; i++)
+    // {
+    //     species = sDexNavUiDataPtr->hiddenSpecies[i];
+    //     x = ROW_HIDDEN_ICON_X + 24 * i;
+    //     y = ROW_HIDDEN_ICON_Y;
+    //     if (FlagGet(FLAG_SYS_DETECTOR_MODE))
+    //         TryDrawIconInSlot(species, x, y);
+    //    else if (species == SPECIES_NONE || species > NUM_SPECIES)
+    //         CreateNoDataIcon(x, y);
+    //     else
+    //         CreateMonIcon(SPECIES_NONE, SpriteCB_MonIcon, x, y, 0, 0); //question mark if detector mode inactive
+    // }
 }
 
 static u16 DexNavGetSpecies(void)
@@ -2105,11 +2117,11 @@ static u16 DexNavGetSpecies(void)
         species = sDexNavUiDataPtr->landSpecies[sDexNavUiDataPtr->cursorCol + COL_LAND_COUNT];
         break;
     case ROW_HIDDEN:
-        if (!FlagGet(FLAG_SYS_DETECTOR_MODE))
+        //if (!FlagGet(FLAG_SYS_DETECTOR_MODE))
             species = SPECIES_NONE;
-        else
-            species = sDexNavUiDataPtr->hiddenSpecies[sDexNavUiDataPtr->cursorCol];
-        break;
+        // else
+        //     species = sDexNavUiDataPtr->hiddenSpecies[sDexNavUiDataPtr->cursorCol];
+        // break;
     default:
         return SPECIES_NONE;
     }
@@ -2232,7 +2244,7 @@ static void PrintCurrentSpeciesInfo(void)
     {
         AddTextPrinterParameterized3(WINDOW_INFO, 0, 0, HA_INFO_Y, sFontColor_Black, 0, sText_DexNav_CaptureToSee);
     }
-    
+
     //current chain
     ConvertIntToDecimalStringN(gStringVar1, gSaveBlock1Ptr->dexNavChain, STR_CONV_MODE_LEFT_ALIGN, 3);
     AddTextPrinterParameterized3(WINDOW_INFO, 0, 0, CHAIN_BONUS_Y, sFontColor_Black, 0, gStringVar1);
@@ -2246,7 +2258,12 @@ static void PrintMapName(void)
     GetMapName(gStringVar3, GetCurrentRegionMapSectionId(), 0);
     AddTextPrinterParameterized3(WINDOW_REGISTERED, 1, 108 +
       GetStringRightAlignXOffset(1, gStringVar3, MAP_NAME_LENGTH * GetFontAttribute(1, FONTATTR_MAX_LETTER_WIDTH)), 0, sFontColor_White, 0, gStringVar3);
-    CopyWindowToVram(WINDOW_REGISTERED, 3);
+    CopyWindowToVram(WINDOW_REGISTERED, 2);
+    
+    FillWindowPixelBuffer(WINDOW_HELP, PIXEL_FILL(TEXT_COLOR_TRANSPARENT));
+    PutWindowTilemap(WINDOW_HELP);
+    AddTextPrinterParameterized3(WINDOW_HELP, FONT_SMALL_NARROWER, 0, 0, sFontColor_Black, TEXT_SKIP_DRAW, sText_DexNav_PressLRToSearch);    
+    CopyWindowToVram(WINDOW_HELP, 3);
 }
 
 static void PrintSearchableSpecies(u16 species)
@@ -2423,9 +2440,9 @@ static void Task_DexNavMain(u8 taskId)
     {
         if (sDexNavUiDataPtr->cursorRow == ROW_WATER)
         {
-            sDexNavUiDataPtr->cursorRow = ROW_HIDDEN;
-            if (sDexNavUiDataPtr->cursorCol >= COL_HIDDEN_COUNT)
-                sDexNavUiDataPtr->cursorCol = COL_HIDDEN_MAX;
+            sDexNavUiDataPtr->cursorRow = ROW_LAND_BOT;
+            if (sDexNavUiDataPtr->cursorCol >= COL_LAND_COUNT)
+                sDexNavUiDataPtr->cursorCol = COL_LAND_MAX;
         }
         else
         {
@@ -2440,9 +2457,11 @@ static void Task_DexNavMain(u8 taskId)
     }
     else if (JOY_NEW(DPAD_DOWN))
     {
-        if (sDexNavUiDataPtr->cursorRow == ROW_HIDDEN)
+        if (sDexNavUiDataPtr->cursorRow == ROW_LAND_BOT)
         {
             sDexNavUiDataPtr->cursorRow = ROW_WATER;
+            if (sDexNavUiDataPtr->cursorCol >= COL_WATER_COUNT)
+                sDexNavUiDataPtr->cursorCol = COL_WATER_MAX;
         }
         else if (sDexNavUiDataPtr->cursorRow == ROW_LAND_BOT)
         {

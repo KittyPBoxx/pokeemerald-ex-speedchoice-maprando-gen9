@@ -146,6 +146,8 @@ void HandleAction_UseMove(void)
     gBattleScripting.savedMoveEffect = 0;
     gCurrMovePos = gChosenMovePos = *(gBattleStruct->chosenMovePositions + gBattlerAttacker);
 
+    gBattleStruct->obedienceResult = GetAttackerObedienceForAction();
+
     // choose move
     if (gProtectStructs[gBattlerAttacker].noValidMoves)
     {
@@ -1164,21 +1166,6 @@ void PrepareStringBattle(u16 stringId, u32 battler)
 
     BtlController_EmitPrintString(battler, BUFFER_A, stringId);
     MarkBattlerForControllerExec(battler);
-
-    if(stringId == STRINGID_ATTACKMISSED)
-    {
-        switch(GetBattlerSide(gBattlerAttacker))
-        {
-            case B_SIDE_PLAYER:
-                TryIncrementButtonStat(DB_OWN_MOVES_MISSED);
-                break;
-            case B_SIDE_OPPONENT:
-                TryIncrementButtonStat(DB_ENEMY_MOVES_MISSED);
-                break;
-        }
-    }
-    if(stringId == STRINGID_CANTESCAPE2 || stringId == STRINGID_CANTESCAPE)
-        TryIncrementButtonStat(DB_FAILED_RUNS);
 }
 
 void ResetSentPokesToOpponentValue(void)
@@ -2318,8 +2305,8 @@ enum
     ENDTURN_HEALBLOCK,
     ENDTURN_EMBARGO,
     ENDTURN_LOCK_ON,
-    ENDTURN_CHARGE,
     ENDTURN_LASER_FOCUS,
+    ENDTURN_CHARGE,
     ENDTURN_TAUNT,
     ENDTURN_YAWN,
     ENDTURN_ITEMS2,
@@ -2469,11 +2456,6 @@ u8 DoBattlerEndTurnEffects(void)
                 effect++;
             gBattleStruct->turnEffectsTracker++;
             break;
-        case ENDTURN_ORBS:
-            if (IsBattlerAlive(battler) && ItemBattleEffects(ITEMEFFECT_ORBS, battler, FALSE))
-                effect++;
-            gBattleStruct->turnEffectsTracker++;
-            break;
         case ENDTURN_ITEMS3:  // berry effects
             if (gItemsInfo[gBattleMons[battler].item].pocket == POCKET_BERRIES
              || GetBattlerHoldEffect(battler, TRUE) == HOLD_EFFECT_RESTORE_HP)  // Edge case for Berry Juice
@@ -2482,7 +2464,12 @@ u8 DoBattlerEndTurnEffects(void)
                     effect++;
             }
             gBattleStruct->turnEffectsTracker++;
-            break;    
+            break;
+        case ENDTURN_ORBS:
+            if (IsBattlerAlive(battler) && ItemBattleEffects(ITEMEFFECT_ORBS, battler, FALSE))
+                effect++;
+            gBattleStruct->turnEffectsTracker++;
+            break;
         case ENDTURN_LEECH_SEED:  // leech seed
             if ((gStatuses3[battler] & STATUS3_LEECHSEED)
              && IsBattlerAlive(gStatuses3[battler] & STATUS3_LEECHSEED_BATTLER)
@@ -2792,7 +2779,7 @@ u8 DoBattlerEndTurnEffects(void)
             gBattleStruct->turnEffectsTracker++;
             break;
         case ENDTURN_CHARGE:  // charge
-            if (gDisableStructs[battler].chargeTimer && --gDisableStructs[battler].chargeTimer == 0)
+            if (gDisableStructs[battler].chargeTimer > 0 && --gDisableStructs[battler].chargeTimer == 0)
                 gStatuses3[battler] &= ~STATUS3_CHARGED_UP;
             gBattleStruct->turnEffectsTracker++;
             break;
@@ -2981,7 +2968,7 @@ u8 DoBattlerEndTurnEffects(void)
                 && --gBattleStruct->dynamax.dynamaxTurns[battler] == 0)
             {
                 gBattleScripting.battler = battler;
-	            UndoDynamax(battler);
+                UndoDynamax(battler);
                 BattleScriptExecute(BattleScript_DynamaxEnds);
                 effect++;
             }
@@ -3584,6 +3571,7 @@ u8 AtkCanceller_UnableToUseMove(u32 moveType)
                         gBattleMoveDamage = GetNonDynamaxMaxHP(gBattlerAttacker) / 4;
 
                     if (GetActiveGimmick(gBattlerAttacker) != GIMMICK_Z_MOVE
+                     || gBattleStruct->obedienceResult != OBEYS
                      || HasTrainerUsedGimmick(gBattlerAttacker, GIMMICK_Z_MOVE))
                         gBattlescriptCurrInstr = BattleScript_MoveUsedPowder;
                     gHitMarker |= HITMARKER_UNABLE_TO_USE_MOVE;
@@ -3604,7 +3592,8 @@ u8 AtkCanceller_UnableToUseMove(u32 moveType)
             gBattleStruct->atkCancellerTracker++;
             break;
         case CANCELLER_Z_MOVES:
-            if (GetActiveGimmick(gBattlerAttacker) == GIMMICK_Z_MOVE)
+            if (GetActiveGimmick(gBattlerAttacker) == GIMMICK_Z_MOVE
+             && gBattleStruct->obedienceResult == OBEYS)
             {
                 // For Z-Mirror Move, so it doesn't play the animation twice.
                 bool32 alreadyUsed = HasTrainerUsedGimmick(gBattlerAttacker, GIMMICK_Z_MOVE);
@@ -4809,7 +4798,7 @@ u32 AbilityBattleEffects(u32 caseID, u32 battler, u32 ability, u32 special, u32 
             }
             break;
         case ABILITY_WIND_RIDER:
-            if (!gSpecialStatuses[battler].switchInAbilityDone 
+            if (!gSpecialStatuses[battler].switchInAbilityDone
              && CompareStat(battler, STAT_ATK, MAX_STAT_STAGE, CMP_LESS_THAN)
              && gSideStatuses[GetBattlerSide(battler)] & SIDE_STATUS_TAILWIND)
             {
@@ -6834,7 +6823,6 @@ static u8 TrySetMicleBerry(u32 battler, u32 itemId, bool32 end2)
     if (HasEnoughHpToEatBerry(battler, 4, itemId))
     {
         gBattleStruct->usedMicleBerry |= 1u << battler;
-
         if (end2)
         {
             BattleScriptExecute(BattleScript_MicleBerryActivateEnd2);
@@ -8377,12 +8365,7 @@ u32 GetMoveTarget(u16 move, u8 setTarget)
     return targetBattler;
 }
 
-// static bool32 IsBattlerModernFatefulEncounter(u32 battler)
-// {
-//     return TRUE;
-// }
-
-u8 IsMonDisobedient(void)
+u8 GetAttackerObedienceForAction()
 {
     s32 rnd;
     s32 calc;
@@ -8390,44 +8373,37 @@ u8 IsMonDisobedient(void)
     u8 levelReferenced;
 
     if (gBattleTypeFlags & (BATTLE_TYPE_LINK | BATTLE_TYPE_RECORDED_LINK))
-        return 0;
+        return OBEYS;
     if (BattlerHasAi(gBattlerAttacker))
-        return 0;
+        return OBEYS;
 
-    // ----------------------------------
-    // SPEEDCHOICE CHANGE
-    // ----------------------------------
-    // Do not do Obedience crap for Mew or Deoxys.
-    // if (IsBattlerModernFatefulEncounter(gBattlerAttacker)) // only false if illegal Mew or Deoxys
-    // {
-        if (gBattleTypeFlags & BATTLE_TYPE_INGAME_PARTNER && GetBattlerPosition(gBattlerAttacker) == B_POSITION_PLAYER_RIGHT)
-            return 0;
-        if (gBattleTypeFlags & BATTLE_TYPE_FRONTIER)
-            return 0;
-        if (gBattleTypeFlags & BATTLE_TYPE_RECORDED)
-            return 0;
-        if (B_OBEDIENCE_MECHANICS < GEN_8 && !IsOtherTrainer(gBattleMons[gBattlerAttacker].otId, gBattleMons[gBattlerAttacker].otName))
-            return 0;
-        if (FlagGet(FLAG_BADGE08_GET)) // Rain Badge, ignore obedience altogether
-            return 0;
+    if (gBattleTypeFlags & BATTLE_TYPE_INGAME_PARTNER && GetBattlerPosition(gBattlerAttacker) == B_POSITION_PLAYER_RIGHT)
+        return OBEYS;
+    if (gBattleTypeFlags & BATTLE_TYPE_FRONTIER)
+        return OBEYS;
+    if (gBattleTypeFlags & BATTLE_TYPE_RECORDED)
+        return OBEYS;
+    if (B_OBEDIENCE_MECHANICS < GEN_8 && !IsOtherTrainer(gBattleMons[gBattlerAttacker].otId, gBattleMons[gBattlerAttacker].otName))
+        return OBEYS;
+    if (FlagGet(FLAG_BADGE08_GET)) // Rain Badge, ignore obedience altogether
+        return OBEYS;
 
-        obedienceLevel = 10;
+    obedienceLevel = 10;
 
-        if (FlagGet(FLAG_BADGE01_GET)) // Stone Badge
-            obedienceLevel = 20;
-        if (FlagGet(FLAG_BADGE02_GET)) // Knuckle Badge
-            obedienceLevel = 30;
-        if (FlagGet(FLAG_BADGE03_GET)) // Dynamo Badge
-            obedienceLevel = 40;
-        if (FlagGet(FLAG_BADGE04_GET)) // Heat Badge
-            obedienceLevel = 50;
-        if (FlagGet(FLAG_BADGE05_GET)) // Balance Badge
-            obedienceLevel = 60;
-        if (FlagGet(FLAG_BADGE06_GET)) // Feather Badge
-            obedienceLevel = 70;
-        if (FlagGet(FLAG_BADGE07_GET)) // Mind Badge
-            obedienceLevel = 80;
-    // }
+    if (FlagGet(FLAG_BADGE01_GET)) // Stone Badge
+        obedienceLevel = 20;
+    if (FlagGet(FLAG_BADGE02_GET)) // Knuckle Badge
+        obedienceLevel = 30;
+    if (FlagGet(FLAG_BADGE03_GET)) // Dynamo Badge
+        obedienceLevel = 40;
+    if (FlagGet(FLAG_BADGE04_GET)) // Heat Badge
+        obedienceLevel = 50;
+    if (FlagGet(FLAG_BADGE05_GET)) // Balance Badge
+        obedienceLevel = 60;
+    if (FlagGet(FLAG_BADGE06_GET)) // Feather Badge
+        obedienceLevel = 70;
+    if (FlagGet(FLAG_BADGE07_GET)) // Mind Badge
+        obedienceLevel = 80;
 
     if (B_OBEDIENCE_MECHANICS >= GEN_8
      && !IsOtherTrainer(gBattleMons[gBattlerAttacker].otId, gBattleMons[gBattlerAttacker].otName))
@@ -8436,86 +8412,58 @@ u8 IsMonDisobedient(void)
         levelReferenced = gBattleMons[gBattlerAttacker].level;
 
     if (levelReferenced <= obedienceLevel)
-        return 0;
-    rnd = (Random() & 255);
-    calc = (levelReferenced + obedienceLevel) * rnd >> 8;
+        return OBEYS;
+
+    rnd = Random();
+    calc = (levelReferenced + obedienceLevel) * (rnd & 255) >> 8;
     if (calc < obedienceLevel)
-        return 0;
+        return OBEYS;
+
+    //  Clear the Z-Move flags if the battler is disobedient as to not waste the Z-Move
+    if (GetActiveGimmick(gBattlerAttacker) == GIMMICK_Z_MOVE)
+    {
+        gBattleStruct->gimmick.activated[gBattlerAttacker][GIMMICK_Z_MOVE] = FALSE;
+        gBattleStruct->gimmick.activeGimmick[GetBattlerSide(gBattlerAttacker)][gBattlerPartyIndexes[gBattlerAttacker]] = GIMMICK_NONE;
+    }
 
     // is not obedient
     if (gCurrentMove == MOVE_RAGE)
         gBattleMons[gBattlerAttacker].status2 &= ~STATUS2_RAGE;
     if (gBattleMons[gBattlerAttacker].status1 & STATUS1_SLEEP && (gCurrentMove == MOVE_SNORE || gCurrentMove == MOVE_SLEEP_TALK))
-    {
-        gBattlescriptCurrInstr = BattleScript_IgnoresWhileAsleep;
-        return 1;
-    }
+        return DISOBEYS_WHILE_ASLEEP;
 
-    rnd = (Random() & 255);
-    calc = (levelReferenced + obedienceLevel) * rnd >> 8;
+    calc = (levelReferenced + obedienceLevel) * ((rnd >> 8) & 255) >> 8;
     if (calc < obedienceLevel)
     {
         calc = CheckMoveLimitations(gBattlerAttacker, gBitTable[gCurrMovePos], MOVE_LIMITATIONS_ALL);
         if (calc == ALL_MOVES_MASK) // all moves cannot be used
-        {
-            // Randomly select, then print a disobedient string
-            // B_MSG_LOAFING, B_MSG_WONT_OBEY, B_MSG_TURNED_AWAY, or B_MSG_PRETEND_NOT_NOTICE
-            gBattleCommunication[MULTISTRING_CHOOSER] = MOD(Random(), NUM_LOAF_STRINGS);
-            gBattlescriptCurrInstr = BattleScript_MoveUsedLoafingAround;
-            return 1;
-        }
+            return DISOBEYS_LOAFS;
         else // use a random move
-        {
             do
-            {
                 gCurrMovePos = gChosenMovePos = MOD(Random(), MAX_MON_MOVES);
-            } while (gBitTable[gCurrMovePos] & calc);
-
-            gCalledMove = gBattleMons[gBattlerAttacker].moves[gCurrMovePos];
-            SetAtkCancellerForCalledMove();
-            gBattlescriptCurrInstr = BattleScript_IgnoresAndUsesRandomMove;
-            gBattlerTarget = GetMoveTarget(gCalledMove, NO_TARGET_OVERRIDE);
-            gHitMarker |= HITMARKER_DISOBEDIENT_MOVE;
-            return 2;
-        }
+            while (gBitTable[gCurrMovePos] & calc);
+        return DISOBEYS_RANDOM_MOVE;
     }
     else
     {
         obedienceLevel = levelReferenced - obedienceLevel;
 
-        calc = (Random() & 255);
+        calc = ((rnd >> 16) & 255);
         if (calc < obedienceLevel && CanBeSlept(gBattlerAttacker, GetBattlerAbility(gBattlerAttacker)))
         {
             // try putting asleep
             int i;
             for (i = 0; i < gBattlersCount; i++)
-            {
                 if (gBattleMons[i].status2 & STATUS2_UPROAR)
                     break;
-            }
             if (i == gBattlersCount)
-            {
-                gBattlescriptCurrInstr = BattleScript_IgnoresAndFallsAsleep;
-                return 1;
-            }
+                return DISOBEYS_FALL_ASLEEP;
         }
         calc -= obedienceLevel;
         if (calc < obedienceLevel)
-        {
-            gBattleMoveDamage = CalculateMoveDamage(MOVE_NONE, gBattlerAttacker, gBattlerAttacker, TYPE_MYSTERY, 40, FALSE, FALSE, TRUE);
-            gBattlerTarget = gBattlerAttacker;
-            gBattlescriptCurrInstr = BattleScript_IgnoresAndHitsItself;
-            gHitMarker |= HITMARKER_UNABLE_TO_USE_MOVE;
-            return 2;
-        }
+            return DISOBEYS_HITS_SELF;
         else
-        {
-            // Randomly select, then print a disobedient string
-            // B_MSG_LOAFING, B_MSG_WONT_OBEY, B_MSG_TURNED_AWAY, or B_MSG_PRETEND_NOT_NOTICE
-            gBattleCommunication[MULTISTRING_CHOOSER] = MOD(Random(), NUM_LOAF_STRINGS);
-            gBattlescriptCurrInstr = BattleScript_MoveUsedLoafingAround;
-            return 1;
-        }
+            return DISOBEYS_LOAFS;
     }
 }
 
@@ -8611,16 +8559,20 @@ bool32 IsBattlerProtected(u32 battlerAtk, u32 battlerDef, u32 move)
     // Protective Pads doesn't stop Unseen Fist from bypassing Protect effects, so IsMoveMakingContact() isn't used here.
     // This means extra logic is needed to handle Shell Side Arm.
     if (GetBattlerAbility(gBattlerAttacker) == ABILITY_UNSEEN_FIST
-     && (gMovesInfo[move].makesContact
-     || (gMovesInfo[move].effect == EFFECT_SHELL_SIDE_ARM && gBattleStruct->shellSideArmCategory[battlerAtk][battlerDef] == DAMAGE_CATEGORY_PHYSICAL))
-     && !gProtectStructs[battlerDef].maxGuarded) // Max Guard cannot be bypassed by Unseen Fist
+        && (gMovesInfo[move].makesContact
+            || (gMovesInfo[move].effect == EFFECT_SHELL_SIDE_ARM
+                && gBattleStruct->shellSideArmCategory[battlerAtk][battlerDef] == DAMAGE_CATEGORY_PHYSICAL))
+        && !gProtectStructs[battlerDef].maxGuarded) // Max Guard cannot be bypassed by Unseen Fist
         return FALSE;
+    else if (gSideStatuses[GetBattlerSide(battlerDef)] & SIDE_STATUS_CRAFTY_SHIELD
+             && IS_MOVE_STATUS(move))
+        return TRUE;
     else if (gMovesInfo[move].ignoresProtect)
         return FALSE;
     else if (gProtectStructs[battlerDef].protected)
         return TRUE;
     else if (gSideStatuses[GetBattlerSide(battlerDef)] & SIDE_STATUS_WIDE_GUARD
-          && GetBattlerMoveTargetType(gBattlerAttacker, move) & (MOVE_TARGET_BOTH | MOVE_TARGET_FOES_AND_ALLY))
+             && GetBattlerMoveTargetType(gBattlerAttacker, move) & (MOVE_TARGET_BOTH | MOVE_TARGET_FOES_AND_ALLY))
         return TRUE;
     else if (gProtectStructs[battlerDef].banefulBunkered)
         return TRUE;
@@ -8637,11 +8589,8 @@ bool32 IsBattlerProtected(u32 battlerAtk, u32 battlerDef, u32 move)
     else if (gSideStatuses[GetBattlerSide(battlerDef)] & SIDE_STATUS_QUICK_GUARD
              && GetChosenMovePriority(gBattlerAttacker) > 0)
         return TRUE;
-    else if (gSideStatuses[GetBattlerSide(battlerDef)] & SIDE_STATUS_CRAFTY_SHIELD
-      && IS_MOVE_STATUS(move))
-        return TRUE;
     else if (gSideStatuses[GetBattlerSide(battlerDef)] & SIDE_STATUS_MAT_BLOCK
-      && !IS_MOVE_STATUS(move))
+             && !IS_MOVE_STATUS(move))
         return TRUE;
     else
         return FALSE;
@@ -8899,6 +8848,9 @@ static inline u32 CalcMoveBasePower(u32 move, u32 battlerAtk, u32 battlerDef, u3
 
     if (GetActiveGimmick(battlerAtk) == GIMMICK_Z_MOVE)
         return GetZMovePower(gBattleStruct->zmove.baseMoves[battlerAtk]);
+
+    if (GetActiveGimmick(battlerAtk) == GIMMICK_DYNAMAX)
+        return GetMaxMovePower(move);
 
     switch (gMovesInfo[move].effect)
     {
@@ -9498,6 +9450,10 @@ static inline u32 CalcMoveBasePowerAfterModifiers(u32 move, u32 battlerAtk, u32 
     case HOLD_EFFECT_PUNCHING_GLOVE:
         if (gMovesInfo[move].punchingMove)
            modifier = uq4_12_multiply(modifier, UQ_4_12(1.1));
+        break;
+    case HOLD_EFFECT_OGERPON_MASK:
+        if (GET_BASE_SPECIES_ID(gBattleMons[battlerAtk].species) == SPECIES_OGERPON)
+           modifier = uq4_12_multiply(modifier, UQ_4_12(1.2));
         break;
     }
 

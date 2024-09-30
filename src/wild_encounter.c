@@ -27,6 +27,7 @@
 #include "day_night.h"
 #include "rtc.h"
 #include "field_screen_effect.h"
+#include "item_menu.h"
 
 extern const u8 EventScript_SprayWoreOff[];
 
@@ -694,6 +695,15 @@ static u16 GenerateFishingWildMon(const struct WildPokemonInfo *wildMonInfo, u8 
 
     wildMonIndex = ChooseWildMonIndex_Fishing(rod);
     level = ChooseWildMonLevel(&wildMonInfo->wildPokemon[timeOfDay][wildMonIndex], wildMonIndex, WILD_AREA_FISHING);
+
+    if (level > 15 && gSpecialVar_ItemId == ITEM_OLD_ROD)
+    {
+        level = 15 - (Random() % 5);
+    }
+    else if (level > 35 && gSpecialVar_ItemId == ITEM_GOOD_ROD)
+    {
+        level = 35 - (Random() % 5);
+    }
 
     CreateWildMon(wildMonInfo->wildPokemon[timeOfDay][wildMonIndex].species, level);
     return wildMonInfo->wildPokemon[timeOfDay][wildMonIndex].species;

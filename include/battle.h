@@ -803,7 +803,8 @@ struct BattleStruct
     u8 categoryOverride; // for Z-Moves and Max Moves
     u32 stellarBoostFlags[NUM_BATTLE_SIDES]; // stored as a bitfield of flags for all types for each side
     u8 fickleBeamBoosted:1;
-    u8 usedMicleBerry; 
+    u8 obedienceResult:3;
+    u8 usedMicleBerry;
 };
 
 // The palaceFlags member of struct BattleStruct contains 1 flag per move to indicate which moves the AI should consider,

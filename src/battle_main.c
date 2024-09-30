@@ -3803,6 +3803,10 @@ static void DoBattleIntro(void)
             battler = GetBattlerAtPosition(B_POSITION_PLAYER_LEFT);
             if (!IsRunningFromBattleImpossible(battler) && TryRunFromBattle(battler))
             {
+                for (battler = 0; battler < gBattlersCount; battler++)
+                {
+                    HandleSetPokedexFlag(SpeciesToNationalPokedexNum(gBattleMons[battler].species), FLAG_SET_SEEN, gBattleMons[battler].personality);
+                }
                 gBattleMainFunc = HandleEndTurn_RanFromBattle;
                 return;
             }
