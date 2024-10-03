@@ -19323,13 +19323,10 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_DYNAMAX] =
     [MOVE_ORDER_UP] =
     {
         .name = COMPOUND_STRING("Order Up"),
-        // .description = COMPOUND_STRING(
-        //     "Boosts a user's stats.\n"
-        //     "depending on Tatsugiri."),
         .description = COMPOUND_STRING(
-            "Normal effect does not\n"
-            "work. Just deals damage"),
-        .effect = EFFECT_HIT, // EFFECT_ORDER_UP
+            "Boosts a user's stats\n"
+            "depending on Tatsugiri."),
+        .effect = EFFECT_ORDER_UP,
         .power = 80,
         .type = TYPE_DRAGON,
         .accuracy = 100,
@@ -19339,7 +19336,12 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_DYNAMAX] =
         .category = DAMAGE_CATEGORY_PHYSICAL,
         .mirrorMoveBanned = TRUE,
         .metronomeBanned = TRUE,
-        .battleAnimScript = Move_ORDER_UP,
+        .additionalEffects = ADDITIONAL_EFFECTS({
+            .moveEffect = MOVE_EFFECT_ORDER_UP,
+            .self = TRUE,
+            .chance = 100,
+        }),
+        .battleAnimScript = Move_MINIMIZE,
     },
 
     [MOVE_JET_PUNCH] =
