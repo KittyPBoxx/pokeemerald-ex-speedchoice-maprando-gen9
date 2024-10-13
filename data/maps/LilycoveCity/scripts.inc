@@ -15,7 +15,11 @@ LilycoveCity_OnTransition:
 	end
 
 LilycoveCity_OnLoad:
+	goto_if_set FLAG_MAP_RANDO, LilycoveCity_EventScript_DontSetWailmerMetatiles
 	call_if_unset FLAG_TEAM_AQUA_ESCAPED_IN_SUBMARINE, LilycoveCity_EventScript_SetWailmerMetatiles
+	end
+
+LilycoveCity_EventScript_DontSetWailmerMetatiles::
 	end
 
 LilycoveCity_EventScript_SetWailmerMetatiles::

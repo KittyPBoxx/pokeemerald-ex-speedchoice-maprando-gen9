@@ -3,6 +3,7 @@ Route124_MapScripts::
 	.byte 0
 
 Route124_OnTransition:
+	setflag FLAG_VISITED_ROUTE_124
 	call_if_set FLAG_SYS_WEATHER_CTRL, Common_EventScript_SetAbnormalWeather
 	end
 

@@ -440,6 +440,33 @@
       "var": "VAR_MOSSDEEP_CITY_STATE",
       "var_value": "1",
       "script": "MossdeepCity_EventScript_TeamMagmaEnterSpaceCenter"
+    },
+    {
+      "type": "trigger",
+      "x": 52,
+      "y": 28,
+      "elevation": 5,
+      "var": "VAR_MOSSDEEP_CITY_STATE",
+      "var_value": "1",
+      "script": "MossdeepCity_EventScript_TeamMagmaEnterSpaceCenter"
+    },
+    {
+      "type": "trigger",
+      "x": 51,
+      "y": 29,
+      "elevation": 5,
+      "var": "VAR_MOSSDEEP_CITY_STATE",
+      "var_value": "1",
+      "script": "MossdeepCity_EventScript_TeamMagmaEnterSpaceCenter"
+    },
+    {
+      "type": "trigger",
+      "x": 50,
+      "y": 30,
+      "elevation": 5,
+      "var": "VAR_MOSSDEEP_CITY_STATE",
+      "var_value": "1",
+      "script": "MossdeepCity_EventScript_TeamMagmaEnterSpaceCenter"
     }
   ],
   "bg_events": [

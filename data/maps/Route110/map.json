@@ -365,7 +365,7 @@
       "movement_range_y": 0,
       "trainer_type": "TRAINER_TYPE_NONE",
       "trainer_sight_or_berry_tree_id": "0",
-      "script": "0x0",
+      "script": "Route110_EventScript_AquaGrunt2",
       "flag": "FLAG_HIDE_ROUTE_110_TEAM_AQUA"
     },
     {
@@ -624,6 +624,33 @@
       "var": "VAR_REGISTER_BIRCH_STATE",
       "var_value": "1",
       "script": "Route110_EventScript_BirchScene4"
+    },
+    {
+      "type": "trigger",
+      "x": 10,
+      "y": 77,
+      "elevation": 3,
+      "var": "TRIGGER_RUN_IMMEDIATELY",
+      "var_value": "0",
+      "script": "Route110_EventScript_HideGrunts"
+    },
+    {
+      "type": "trigger",
+      "x": 9,
+      "y": 77,
+      "elevation": 3,
+      "var": "TRIGGER_RUN_IMMEDIATELY",
+      "var_value": "0",
+      "script": "Route110_EventScript_HideGrunts"
+    },
+    {
+      "type": "trigger",
+      "x": 8,
+      "y": 77,
+      "elevation": 3,
+      "var": "TRIGGER_RUN_IMMEDIATELY",
+      "var_value": "0",
+      "script": "Route110_EventScript_HideGrunts"
     }
   ],
   "bg_events": [

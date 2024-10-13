@@ -425,6 +425,13 @@ int main(int argc, char ** argv)
         print("]\n");
     }
 
+    fprintf(stderr, "Configuring type effectivness tables\n");
+    config_sym("TypeEffectivenessTable", "gTypeEffectivenessTable");
+    
+
+    fprintf(stderr, "Configuring random warps\n");
+    config_sym("RandomWarpTable", "gWarpRemappingList");
+
     // TODO: what's happening with 
     // Contest Prizes, Vending Machines / slateport drinks / mauville prizes / lava cookie
     // TODO: these should only be randomized to TMS, I think they already get randomized

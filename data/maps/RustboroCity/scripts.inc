@@ -92,10 +92,11 @@ RustboroCity_EventScript_MatchCallTutorial::
 	case 5, RustboroCity_EventScript_PleaseSelectPokenav
 	case 6, RustboroCity_EventScript_PleaseSelectPokenav
 	case 7, RustboroCity_EventScript_PleaseSelectPokenav
-	case MULTI_B_PRESSED, RustboroCity_EventScript_PleaseSelectPokenav
+	case MULTI_B_PRESSED, RustboroCity_EventScript_SkipTutorial
 	special OpenPokenavForTutorial
 	waitstate
 	delay 20
+RustboroCity_EventScript_SkipTutorial::	
 	msgbox RustboroCity_Text_IdBetterGetBackToWork, MSGBOX_DEFAULT
 	closemessage
 	applymovement LOCALID_SCIENTIST, RustboroCity_Movement_ScientistLeave

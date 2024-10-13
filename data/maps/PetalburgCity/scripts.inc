@@ -265,6 +265,7 @@ PetalburgCity_EventScript_ShowGymToPlayer3::
 	end
 
 PetalburgCity_EventScript_ShowGymToPlayer::
+	goto_if_set FLAG_MAP_RANDO, PetalburgCity_EventScript_ShowGymToPlayerMapRando
 	applymovement LOCALID_GYM_BOY, Common_Movement_FacePlayer
 	waitmovement 0
 	playbgm MUS_FOLLOW_ME, FALSE
@@ -292,6 +293,20 @@ PetalburgCity_EventScript_ShowGymToPlayer::
 	applymovement LOCALID_GYM_BOY, PetalburgCity_Movement_BoyWalkAway
 	waitmovement 0
 	fadedefaultbgm
+	releaseall
+	end
+
+PetalburgCity_EventScript_ShowGymToPlayerMapRando::
+	applymovement LOCALID_GYM_BOY, Common_Movement_FacePlayer
+	waitmovement 0
+	playbgm MUS_FOLLOW_ME, FALSE
+	playse SE_PIN
+	applymovement LOCALID_GYM_BOY, Common_Movement_ExclamationMark
+	waitmovement 0
+	applymovement LOCALID_GYM_BOY, PetalburgCity_Movement_BoyWalkAway
+	waitmovement 0
+	fadedefaultbgm
+	setvar VAR_PETALBURG_CITY_STATE, 1
 	releaseall
 	end
 

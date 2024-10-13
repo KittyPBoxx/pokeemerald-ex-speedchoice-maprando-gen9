@@ -163,8 +163,16 @@ SlateportCity_Harbor_Movement_PlayerWalkUp:
 SlateportCity_Harbor_EventScript_FerryAttendant::
 	lock
 	faceplayer
+	goto_if_set FLAG_MAP_RANDO, SlateportCity_Harbor_EventScript_FerryUnavailableMapRando
 	goto_if_set FLAG_SYS_GAME_CLEAR, SlateportCity_Harbor_EventScript_AskForTicket
 	msgbox SlateportCity_Harbor_Text_FerryServiceUnavailable, MSGBOX_DEFAULT
+	release
+	end
+
+SlateportCity_Harbor_EventScript_FerryUnavailableMapRando::
+	message LilycoveCity_Harbor_Text_NoUseDuringMapRando
+	waitmessage
+	waitbuttonpress
 	release
 	end
 

@@ -13,7 +13,12 @@ LilycoveCity_DepartmentStore_5F_OnWarp:
 	.2byte 0
 
 LilycoveCity_DepartmentStore_5F_EventScript_BlockRoofStairs::
+	goto_if_set FLAG_MAP_RANDO, LilycoveCity_DepartmentStore_5F_EventScript_UnblockRoofStairs
 	setobjectxy LOCALID_WOMAN, 16, 2
+	turnobject LOCALID_WOMAN, DIR_NORTH
+	end
+
+LilycoveCity_DepartmentStore_5F_EventScript_UnblockRoofStairs::
 	turnobject LOCALID_WOMAN, DIR_NORTH
 	end
 

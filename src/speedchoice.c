@@ -142,6 +142,7 @@ const u8 gSpeedchoiceTextFast[]   = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}FAST");
 const u8 gSpeedchoiceTextInst[]   = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}INST");
 
 const u8 gSpeedchoiceTextR[]     = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}R");
+const u8 gSpeedchoiceTextB[]     = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}B");
 
 /* ----------------------------------------------- */
 /* SPEEDCHOICE MENU TEXT (Option Names)            */
@@ -179,13 +180,15 @@ const u8 gSpeedchoiceOptionFastEggHatch[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}
 // PAGE 5
 const u8 gSpeedchoiceOptionGen7XItems[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}GEN 7 X ITEMS");
 const u8 gSpeedchoiceOptionEvoEveryLv[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}EVO EVERY LV");
-const u8 gSpeedchoiceOptionInverseBattles[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}INVERSE BATTLES");
+const u8 gSpeedchoiceOptionAutosave[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}AUTOSAVE");
 const u8 gSpeedchoiceOptionShuffleMusic[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}SHUFFLE MUSIC");
 const u8 gSpeedchoiceOptionDebug[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}DEBUG MENUS");
 
 const u8 gSpeedchoiceOptionBattleSpeed[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}BATTLE SPEED");
 
 const u8 gSpeedchoiceOptionSpeedup[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}SPEEDUP");
+
+const u8 gSpeedchoiceOptionAutoMach[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}MACH ASSIST");
 
 // CONSTANT OPTIONS
 const u8 gSpeedchoiceOptionPage[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}PAGE");
@@ -227,11 +230,12 @@ const u8 gSpeedchoiceTooltipEarlyBike[] = _("Start game with Bicycle.");
 const u8 gSpeedchoiceTooltipFastEggHatch[] = _("Makes eggs hatch quickly.");
 const u8 gSpeedchoiceTooltipGen7XItems[] = _("Stat boost +2 instead of +1.");
 const u8 gSpeedchoiceTooltipEvoEveryLv[] = _("{PKMN} evolve into a random\nbut set species every lv.");
-const u8 gSpeedchoiceTooltipInverseBattles[] = _("Inverse battles mechanic is\nenabled.\pSwitches type effectiveness.");
+const u8 gSpeedchoiceTooltipAutosave[] = _("Skips PokeCenter heal animation.\nGame quicksaves during the jingle.");
 const u8 gSpeedchoiceTooltipShuffleMusic[] = _("ON: Randomly shuffles music and \nfanfares between others.\pEXP: In addition, Gen 4 music is shuffled\ninto the pool.");
-const u8 gSpeedchoiceTooltipDebug[] = _("Enables the debug menus for\ntroubleshooting.\pR+Start in the field for the\nField Debug menu.\pSelect in battle for the Battle\nDebug Menu.");
-const u8 gSpeedchoiceTooltipBattleSpeed[] = _("Slow is original\n Inst is barely readable.");
-const u8 gSpeedchoiceTooltipSpeedup[] = _("In game speedup\nthat will not alter audio\p'R', will activate on R hold.\n'ON' deactivate on R hold");
+const u8 gSpeedchoiceTooltipDebug[] = _("R+Start for field Debug Menu.\nSelect for battle Debug Menu.\pAllows various extra settings\ngame modes and utilities.");
+const u8 gSpeedchoiceTooltipBattleSpeed[] = _("Slow is original\nInst is barely readable.");
+const u8 gSpeedchoiceTooltipSpeedup[] = _("In game speedup that will not alter\naudio.\pR = active if held.\nON = active if R not held.");
+const u8 gSpeedchoiceTooltipAutoMach[] = _("When holding B the mach bike will auto\nsteer around objects to avoid bonks.");
 
 // START GAME
 const u8 gSpeedchoiceStartGameText[] = _("CV: {STR_VAR_1}\nStart the game?");
@@ -244,6 +248,7 @@ const u8 gSpeedchoiceEscapeText[] = _("ESCAPE");
 /* ----------------- */
 const u8 gPresetNames[][20] = {
     _("{COLOR GREEN}{SHADOW LIGHT_GREEN}VANILLA"),
+    _("{COLOR GREEN}{SHADOW LIGHT_GREEN}MAPRANDO"),
     _("{COLOR GREEN}{SHADOW LIGHT_GREEN}BINGO"),
     _("{COLOR GREEN}{SHADOW LIGHT_GREEN}CEA"),
     _("{COLOR GREEN}{SHADOW LIGHT_GREEN}RACE"),
@@ -257,6 +262,7 @@ const u8 gPresetNames[][20] = {
 // -------------------------
 enum {
     PRESET_VANILLA,
+    PRESET_MAP_RANDO,
     PRESET_BINGO,
     PRESET_CEA,
     PRESET_RACE,
@@ -285,11 +291,35 @@ static const u8 gPresetVanilla[CURRENT_OPTIONS_NUM] = {
     FAST_CATCH_OFF,         // FAST_CATCH
     EARLY_BIKE_NO,          // EARLY_BIKE
     EVO_EV_OFF,             // EVO_EVERY_LEVEL
-    INV_BATTLES_OFF,        // INVERSE_BATTLES
+    AUTOSAVE_OFF,           // AUTOSAVE
     SHUFFLE_MUSIC_OFF,      // SHUFFLE_MUSIC
     DEBUG_MENUS_OFF,        // DEBUG_MENUS
     BATTLE_SPEED_MID,       // BATTLE SPEED
-    SPEEDUP_R               // SPEEDUP
+    SPEEDUP_R,              // SPEEDUP
+    AUTO_MACH_OFF           // AUTO MACH
+};
+
+static const u8 gPresetMapRando[CURRENT_OPTIONS_NUM] = {
+    PRESET_BINGO,           // PRESET
+    0xFF,                   // (Reserved for trainer name)
+    EXP_BW,                 // EXP
+    PLOT_FULL,              // PLOTLESS
+    SPIN_KEEP,              // SPINNERS
+    MAX_OFF,                // MAXVISION
+    FLY_NO,                 // EARLYFLY
+    GOOD_OFF,               // GOOD_EARLY_WILDS
+    SURF_OFF,               // EARLYSURF
+    NICE_MENU_ORDER_ON,     // NICE_MENU_ORDER
+    EASY_FALSE_SWIPE_OFF,   // EASY_FALSE_SWIPE
+    FAST_CATCH_ON,          // FAST_CATCH
+    GEN_7_X_ITEMS_ON,       // GEN_7_X_ITEMS
+    EVO_EV_OFF,             // EVO_EVERY_LEVEL
+    AUTOSAVE_ON,            // AUTOSAVE
+    SHUFFLE_MUSIC_OFF,      // SHUFFLE_MUSIC
+    DEBUG_MENUS_ON,         // DEBUG_MENUS
+    BATTLE_SPEED_INST,      // BATTLE SPEED
+    SPEEDUP_R,              // SPEEDUP
+    AUTO_MACH_B             // AUTO MACH
 };
 
 static const u8 gPresetBingo[CURRENT_OPTIONS_NUM] = {
@@ -307,11 +337,12 @@ static const u8 gPresetBingo[CURRENT_OPTIONS_NUM] = {
     FAST_CATCH_OFF,         // FAST_CATCH
     GEN_7_X_ITEMS_ON,       // GEN_7_X_ITEMS
     EVO_EV_OFF,             // EVO_EVERY_LEVEL
-    INV_BATTLES_OFF,        // INVERSE_BATTLES
+    AUTOSAVE_ON,            // AUTOSAVE
     SHUFFLE_MUSIC_OFF,      // SHUFFLE_MUSIC
     DEBUG_MENUS_OFF,        // DEBUG_MENUS
     BATTLE_SPEED_FAST,      // BATTLE SPEED
-    SPEEDUP_R               // SPEEDUP
+    SPEEDUP_R,              // SPEEDUP
+    AUTO_MACH_B             // AUTO MACH
 };
 
 static const u8 gPresetCEA[CURRENT_OPTIONS_NUM] = {
@@ -329,11 +360,12 @@ static const u8 gPresetCEA[CURRENT_OPTIONS_NUM] = {
     FAST_CATCH_ON,          // FAST_CATCH
     GEN_7_X_ITEMS_ON,       // GEN_7_X_ITEMS
     EVO_EV_OFF,             // EVO_EVERY_LEVEL
-    INV_BATTLES_OFF,        // INVERSE_BATTLES
+    AUTOSAVE_ON,            // AUTOSAVE
     SHUFFLE_MUSIC_OFF,      // SHUFFLE_MUSIC
     DEBUG_MENUS_OFF,        // DEBUG_MENUS
     BATTLE_SPEED_FAST,      // BATTLE SPEED
-    SPEEDUP_R               // SPEEDUP
+    SPEEDUP_R,              // SPEEDUP
+    AUTO_MACH_B             // AUTO MACH
 };
 
 static const u8 gPresetRace[CURRENT_OPTIONS_NUM] = {
@@ -351,11 +383,12 @@ static const u8 gPresetRace[CURRENT_OPTIONS_NUM] = {
     FAST_CATCH_OFF,         // FAST_CATCH
     GEN_7_X_ITEMS_ON,       // GEN_7_X_ITEMS
     EVO_EV_OFF,             // EVO_EVERY_LEVEL
-    INV_BATTLES_OFF,        // INVERSE_BATTLES
+    AUTOSAVE_OFF,           // AUTOSAVE
     SHUFFLE_MUSIC_OFF,      // SHUFFLE_MUSIC
     DEBUG_MENUS_OFF,        // DEBUG_MENUS
     BATTLE_SPEED_INST,      // BATTLE SPEED
-    SPEEDUP_R               // SPEEDUP
+    SPEEDUP_R,              // SPEEDUP
+    AUTO_MACH_B             // AUTO MACH
 };
 
 static const u8 gPresetMeme[CURRENT_OPTIONS_NUM] = {
@@ -373,11 +406,12 @@ static const u8 gPresetMeme[CURRENT_OPTIONS_NUM] = {
     FAST_CATCH_OFF,         // FAST_CATCH
     GEN_7_X_ITEMS_OFF,      // GEN_7_X_ITEMS
     EVO_EV_ON,              // EVO_EVERY_LEVEL
-    INV_BATTLES_ON,         // INVERSE_BATTLES
+    AUTOSAVE_ON,            // AUTOSAVE
     SHUFFLE_MUSIC_EXP,      // SHUFFLE_MUSIC
     DEBUG_MENUS_ON,         // DEBUG_MENUS
     BATTLE_SPEED_FAST,      // BATTLE SPEED
-    SPEEDUP_R               // SPEEDUP
+    SPEEDUP_R,              // SPEEDUP
+    AUTO_MACH_B             // AUTO MACH
 };
 
 /*
@@ -388,6 +422,8 @@ const u8 *GetPresetPtr(int presetID) {
         case PRESET_VANILLA:
         default:
             return gPresetVanilla;
+        case PRESET_MAP_RANDO:
+            return gPresetMapRando;
         case PRESET_BINGO:
             return gPresetBingo;
         case PRESET_CEA:
@@ -512,6 +548,16 @@ const struct OptionChoiceConfig OptionChoiceConfigSpeedup[MAX_CHOICES] =
     { -1, NULL }
 };
 
+const struct OptionChoiceConfig OptionChoiceConfigAutoMach[MAX_CHOICES] = 
+{
+    { 120, (u8 *)&gSpeedchoiceTextOff  },
+    { 145, (u8 *)&gSpeedchoiceTextB },
+    { -1, NULL },
+    { -1, NULL },
+    { -1, NULL },
+    { -1, NULL }
+};
+
 
 /*
  * In order to use ProcessGeneralInput, a struct is needed for page, so, I opt to have a
@@ -559,7 +605,7 @@ const struct SpeedchoiceOption SpeedchoiceOptions[CURRENT_OPTIONS_NUM + 1] = // 
     // PRESET OPTION
     // ----------------------------------
     { 
-        /* Option Count   */ 5,
+        /* Option Count   */ 6,
         /* Option Type    */ ARROW,
         /* Option Preset  */ gSpeedchoiceOptionPreset,
         /* Option Text    */ Arrows,
@@ -710,14 +756,14 @@ const struct SpeedchoiceOption SpeedchoiceOptions[CURRENT_OPTIONS_NUM + 1] = // 
         /* Option Usable  */ TRUE
     },
     // ----------------------------------
-    // INVERSE BATTLES OPTION
+    // AUTOSAVE OPTION
     // ----------------------------------
     { 
         /* Option Count   */ 2,
         /* Option Type    */ NORMAL,
-        /* Option Preset  */ gSpeedchoiceOptionInverseBattles,
+        /* Option Preset  */ gSpeedchoiceOptionAutosave,
         /* Option Text    */ OptionChoiceConfigOnOff,
-        /* Option Tooltip */ gSpeedchoiceTooltipInverseBattles,
+        /* Option Tooltip */ gSpeedchoiceTooltipAutosave,
         /* Option Usable  */ TRUE
     },
     // ----------------------------------
@@ -762,6 +808,17 @@ const struct SpeedchoiceOption SpeedchoiceOptions[CURRENT_OPTIONS_NUM + 1] = // 
         /* Option Preset  */ gSpeedchoiceOptionSpeedup,
         /* Option Text    */ OptionChoiceConfigSpeedup,
         /* Option Tooltip */ gSpeedchoiceTooltipSpeedup,
+        /* Option Usable  */ TRUE
+    },
+    // ----------------------------------
+    // AUTO_MACH OPTION
+    // ----------------------------------
+    { 
+        /* Option Count   */ 2,
+        /* Option Type    */ NORMAL,
+        /* Option Preset  */ gSpeedchoiceOptionAutoMach,
+        /* Option Text    */ OptionChoiceConfigAutoMach,
+        /* Option Tooltip */ gSpeedchoiceTooltipAutoMach,
         /* Option Usable  */ TRUE
     },
     // ----------------------------------
@@ -837,11 +894,12 @@ void SetOptionChoicesAndConfigFromPreset(const u8 *preset)
     gSaveBlock2Ptr->speedchoiceConfig.fastCatch = preset[FAST_CATCH];
     gSaveBlock2Ptr->speedchoiceConfig.gen7XItems = preset[GEN_7_X_ITEMS];
     gSaveBlock2Ptr->speedchoiceConfig.evoEveryLevel = preset[EVO_EVERY_LEVEL];
-    gSaveBlock2Ptr->speedchoiceConfig.inverseBattles = preset[INVERSE_BATTLES];
+    gSaveBlock2Ptr->speedchoiceConfig.autosave = preset[AUTOSAVE];
     gSaveBlock2Ptr->speedchoiceConfig.shuffleMusic = preset[SHUFFLE_MUSIC];
     gSaveBlock2Ptr->speedchoiceConfig.debugMenus = preset[DEBUG_MENUS];
     gSaveBlock2Ptr->speedchoiceConfig.battleSpeed = preset[BATTLE_SPEED];
     gSaveBlock2Ptr->speedchoiceConfig.speedup = preset[SPEEDUP];
+    gSaveBlock2Ptr->speedchoiceConfig.autoMach = preset[AUTO_MACH];
 }
 
 /*
@@ -878,8 +936,8 @@ bool8 CheckSpeedchoiceOption(u8 option, u8 selection)
             return gSaveBlock2Ptr->speedchoiceConfig.gen7XItems == selection;
         case EVO_EVERY_LEVEL:
             return gSaveBlock2Ptr->speedchoiceConfig.evoEveryLevel == selection;
-        case INVERSE_BATTLES:
-            return gSaveBlock2Ptr->speedchoiceConfig.inverseBattles == selection;
+        case AUTOSAVE:
+            return gSaveBlock2Ptr->speedchoiceConfig.autosave == selection;
         case SHUFFLE_MUSIC:
             return gSaveBlock2Ptr->speedchoiceConfig.shuffleMusic == selection;
         case DEBUG_MENUS:
@@ -888,6 +946,8 @@ bool8 CheckSpeedchoiceOption(u8 option, u8 selection)
             return gSaveBlock2Ptr->speedchoiceConfig.battleSpeed == selection;
         case SPEEDUP:
             return gSaveBlock2Ptr->speedchoiceConfig.speedup == selection;
+        case AUTO_MACH:
+            return gSaveBlock2Ptr->speedchoiceConfig.autoMach == selection;
         default:
             return FALSE;
     }
@@ -896,8 +956,10 @@ bool8 CheckSpeedchoiceOption(u8 option, u8 selection)
 void ToggleSpeedchoiceDebug() {
     if (gSaveBlock2Ptr->speedchoiceConfig.debugMenus == DEBUG_MENUS_ON) {
         gSaveBlock2Ptr->speedchoiceConfig.debugMenus = DEBUG_MENUS_OFF;
+        PlaySE(SE_PC_OFF);
     } else {
         gSaveBlock2Ptr->speedchoiceConfig.debugMenus = DEBUG_MENUS_ON;
+        PlaySE(SE_PC_LOGIN);
     }
 }
 
@@ -1041,6 +1103,14 @@ void FormatInitialTempName(u8 nameId)
     for (i = 0; i < 7; i++)
         gTempPlayerName[i] = name[i];
     gTempPlayerName[7] = 0xFF;
+}
+
+void ConfigureNewGameForPreset(void) 
+{
+    if (gLocalSpeedchoiceConfig.optionConfig[PRESET] == PRESET_MAP_RANDO)
+        FlagSet(FLAG_MAP_RANDO);
+    else 
+        FlagClear(FLAG_MAP_RANDO);
 }
 
 // Used to signal to avoid redrawing specific stuff. This is used for the naming screen switchover
@@ -1433,11 +1503,12 @@ static void SaveSpeedchoiceOptions(u8 taskId)
     gSaveBlock2Ptr->speedchoiceConfig.fastCatch = gLocalSpeedchoiceConfig.optionConfig[FAST_CATCH];
     gSaveBlock2Ptr->speedchoiceConfig.gen7XItems = gLocalSpeedchoiceConfig.optionConfig[GEN_7_X_ITEMS];
     gSaveBlock2Ptr->speedchoiceConfig.evoEveryLevel = gLocalSpeedchoiceConfig.optionConfig[EVO_EVERY_LEVEL];
-    gSaveBlock2Ptr->speedchoiceConfig.inverseBattles = gLocalSpeedchoiceConfig.optionConfig[INVERSE_BATTLES];
+    gSaveBlock2Ptr->speedchoiceConfig.autosave = gLocalSpeedchoiceConfig.optionConfig[AUTOSAVE];
     gSaveBlock2Ptr->speedchoiceConfig.shuffleMusic = gLocalSpeedchoiceConfig.optionConfig[SHUFFLE_MUSIC];
     gSaveBlock2Ptr->speedchoiceConfig.debugMenus = gLocalSpeedchoiceConfig.optionConfig[DEBUG_MENUS];
     gSaveBlock2Ptr->speedchoiceConfig.battleSpeed = gLocalSpeedchoiceConfig.optionConfig[BATTLE_SPEED];
     gSaveBlock2Ptr->speedchoiceConfig.speedup = gLocalSpeedchoiceConfig.optionConfig[SPEEDUP];
+    gSaveBlock2Ptr->speedchoiceConfig.autoMach = gLocalSpeedchoiceConfig.optionConfig[AUTO_MACH];
 
     // write the playername.
     for (i = 0; i < PLAYER_NAME_LENGTH; i++) {
@@ -1611,6 +1682,17 @@ static void Task_SpeedchoiceMenuProcessInput(u8 taskId)
                 gTasks[taskId].func = Task_SpeedchoiceMenuFadeOut;
                 if(CheckSpeedchoiceOption(SHUFFLE_MUSIC, SHUFFLE_MUSIC_OFF) == FALSE)
                     gShuffleMusic = TRUE;
+
+                if (gLocalSpeedchoiceConfig.optionConfig[PRESET] == PRESET_MAP_RANDO)
+                    FlagSet(FLAG_MAP_RANDO);
+                else 
+                    FlagClear(FLAG_MAP_RANDO);
+
+                if (CheckSpeedchoiceOption(AUTOSAVE, AUTOSAVE_ON) == TRUE)
+                    FlagSet(FLAG_HEAL_AUTOSAVE);
+                else 
+                    FlagClear(FLAG_HEAL_AUTOSAVE);
+
                 SetMainCallback2(CB2_LoadMap);
                 DestroyTask(taskId);
             }
@@ -1628,7 +1710,7 @@ static void Task_SpeedchoiceMenuProcessInput(u8 taskId)
     else if (gMain.newKeys & SELECT_BUTTON) // do tooltip.
     {
         if(gLocalSpeedchoiceConfig.trueIndex <= CURRENT_OPTIONS_NUM && SpeedchoiceOptions[gLocalSpeedchoiceConfig.trueIndex].tooltip != NULL)
-            DrawTooltip(taskId, SpeedchoiceOptions[gLocalSpeedchoiceConfig.trueIndex].tooltip, TEXT_SKIP_DRAW, FALSE);
+            DrawTooltip(taskId, SpeedchoiceOptions[gLocalSpeedchoiceConfig.trueIndex].tooltip, 1, FALSE);
     }
     else if (gMain.newKeys & DPAD_UP)
     {

@@ -7,6 +7,7 @@ Route101_MapScripts::
 	.byte 0
 
 Route101_OnTransition:
+	setflag FLAG_VISITED_ROUTE_101
 	call ProfBirch_EventScript_UpdateLocation
 	end
 
@@ -88,60 +89,56 @@ Route101_Movement_PreventExitNorth:
 	step_end
 
 Route101_Movement_ZigzagoonChaseInCircles:
-	walk_fast_up
-	walk_fast_up
-	walk_fast_up
-	walk_fast_right
-	walk_fast_right
-	walk_fast_right
-	walk_fast_down
-	walk_fast_down
-	walk_fast_left
-	walk_fast_left
-	walk_fast_left
-	walk_fast_up
-	walk_fast_up
-	walk_fast_right
-	walk_fast_right
-	walk_fast_right
-	walk_fast_down
-	walk_fast_down
-	walk_fast_left
-	walk_fast_left
-	walk_fast_left
-	walk_fast_up
-	walk_fast_up
-	walk_fast_right
-	walk_fast_right
-	walk_fast_right
-	walk_fast_down
-	walk_fast_down
-	walk_fast_left
-	walk_fast_left
+	walk_up
+	walk_up
+	walk_up
+	walk_right
+	walk_right
+	walk_right
+	walk_down
+	walk_down
+	walk_left
+	walk_left
+	walk_left
+	walk_up
+	walk_up
+	walk_right
+	walk_right
+	walk_right
+	walk_down
+	walk_down
+	walk_left
+	walk_left
+	walk_left
+	walk_up
+	walk_up
+	walk_right
+	walk_right
+	walk_right
+	walk_down
+	walk_down
+	walk_left
+	walk_left
 	step_end
 
 Route101_Movement_ZigzagoonChase1:
-	walk_fast_up
-	walk_fast_right
-	walk_fast_right
-	walk_fast_right
-	walk_fast_right
-	walk_fast_up
+	walk_up
+	waitmovement 0
+	walk_right
+	walk_right
+	walk_right
+	walk_right
+	walk_up
 	step_end
 
 @ Leftover data? This command is unused.
 	step_end
 
 Route101_Movement_ZigzagoonFaceBirch:
-	face_up
-	delay_8
-	face_down
-	delay_8
 	face_left
 	delay_8
-	face_right
-	delay_8
-	face_left
+	jump_in_place_left
+	jump_in_place_left
 	step_end
 
 Route101_Movement_EnterScene:

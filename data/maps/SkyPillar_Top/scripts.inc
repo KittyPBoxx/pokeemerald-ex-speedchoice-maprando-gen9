@@ -1,4 +1,5 @@
 .set LOCALID_RAYQUAZA_SLEEPING, 1
+.set LOCALID_RAYQUAZA_AWAKE, 2
 
 SkyPillar_Top_MapScripts::
 	map_script MAP_SCRIPT_ON_RESUME, SkyPillar_Top_OnResume
@@ -37,6 +38,14 @@ SkyPillar_Top_EventScript_ShowRayquaza::
 SkyPillar_Top_OnWarp:
 	map_script_2 VAR_SKY_PILLAR_STATE, 0, SkyPillar_Top_EventScript_RayquazaFaceDown
 	.2byte 0
+
+SkyPillar_Top_EventScript_TryHideExtraRayquaza::
+	call_if_unset FLAG_HIDE_SKY_PILLAR_TOP_RAYQUAZA, SkyPillar_Top_EventScript_HideExtraRayquaza
+	end
+
+SkyPillar_Top_EventScript_HideExtraRayquaza::
+	removeobject LOCALID_RAYQUAZA_AWAKE
+	return
 
 SkyPillar_Top_EventScript_RayquazaFaceDown::
 	turnobject LOCALID_RAYQUAZA_SLEEPING, DIR_SOUTH
@@ -117,9 +126,9 @@ SkyPillar_Top_EventScript_AwakenRayquaza::
 	waitmoncry
 	applymovement LOCALID_RAYQUAZA_SLEEPING, SkyPillar_Top_Movement_RayquazaFlyOff
 	waitmovement 0
-	removeobject LOCALID_RAYQUAZA_SLEEPING
 	msgbox SkyPillar_Top_Text_RayquazaFlewOff, MSGBOX_DEFAULT
 	closemessage
+	call_if_set FLAG_MAP_RANDO, SkyPillar_Top_RayquazaCameBack
 	delay 20
 	fadeinbgm 1
 	special SpawnCameraObject
@@ -131,6 +140,15 @@ SkyPillar_Top_EventScript_AwakenRayquaza::
 	setvar VAR_SKY_PILLAR_RAYQUAZA_CRY_DONE, 1
 	releaseall
 	end
+
+SkyPillar_Top_RayquazaCameBack:
+	applymovement LOCALID_RAYQUAZA_SLEEPING, SkyPillar_Top_Movement_RayquazaFlyBack
+	waitmovement 0
+	addobject LOCALID_RAYQUAZA_AWAKE
+	removeobject LOCALID_RAYQUAZA_SLEEPING
+	msgbox SkyPillar_Top_Text_RayquazaFlewBack, MSGBOX_DEFAULT
+	closemessage
+	return
 
 @ Rayquaza has unusual movement frames
 @ See comments, or sAnimTable_Rayquaza
@@ -168,6 +186,18 @@ SkyPillar_Top_Movement_RayquazaFlyOff:
 	slide_up
 	step_end
 
+SkyPillar_Top_Movement_RayquazaFlyBack:
+	walk_faster_up  @ Fly up
+	slide_down
+	slide_down
+	slide_down
+	slide_down
+	slide_down
+	slide_down
+	slide_down
+	slide_down
+	step_end
+
 SkyPillar_Top_Movement_CameraPanUp:
 	walk_slow_up
 	walk_slow_up
@@ -179,6 +209,9 @@ SkyPillar_Top_Movement_CameraPanDown:
 	walk_slow_down
 	walk_slow_down
 	step_end
+
+SkyPillar_Top_Text_RayquazaFlewBack:
+	.string "…but it was too sleepy to leave.$"
 
 SkyPillar_Top_Text_RayquazaFlewOff:
 	.string "The awakened RAYQUAZA flew off…$"

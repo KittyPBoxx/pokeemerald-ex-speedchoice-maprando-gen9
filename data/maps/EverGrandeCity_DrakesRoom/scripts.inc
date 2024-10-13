@@ -1,12 +1,11 @@
 EverGrandeCity_DrakesRoom_MapScripts::
 	map_script MAP_SCRIPT_ON_FRAME_TABLE, EverGrandeCity_DrakesRoom_OnFrame
 	map_script MAP_SCRIPT_ON_LOAD, EverGrandeCity_DrakesRoom_OnLoad
-	map_script MAP_SCRIPT_ON_WARP_INTO_MAP_TABLE, EverGrandeCity_SidneysRoom_OnWarp
+	map_script MAP_SCRIPT_ON_WARP_INTO_MAP_TABLE, EverGrandeCity_DrakesRoom_OnWarp
 	.byte 0
 
-@ Unused, Drake uses Sidneys identical OnWarp for some reason
 EverGrandeCity_DrakesRoom_OnWarp:
-	map_script_2 VAR_TEMP_1, 0, EverGrandeCity_DrakesRoom_EventScript_PlayerTurnNorth
+	map_script_2 VAR_ELITE_4_STATE, 3, EverGrandeCity_DrakesRoom_EventScript_PlayerTurnNorth
 	.2byte 0
 
 EverGrandeCity_DrakesRoom_EventScript_PlayerTurnNorth::
@@ -20,6 +19,7 @@ EverGrandeCity_DrakesRoom_OnFrame:
 EverGrandeCity_DrakesRoom_EventScript_WalkInCloseDoor::
 	lockall
 	call PokemonLeague_EliteFour_EventScript_WalkInCloseDoor
+	call_if_set FLAG_MAP_RANDO, PokemonLeague_EliteFour_EventScript_WalkInOpenDoors
 	setvar VAR_ELITE_4_STATE, 4
 	releaseall
 	end
@@ -27,6 +27,7 @@ EverGrandeCity_DrakesRoom_EventScript_WalkInCloseDoor::
 EverGrandeCity_DrakesRoom_OnLoad:
 	call_if_set FLAG_DEFEATED_ELITE_4_DRAKE, EverGrandeCity_DrakesRoom_EventScript_ResetAdvanceToNextRoom
 	call_if_eq VAR_ELITE_4_STATE, 4, EverGrandeCity_DrakesRoom_EventScript_CloseDoor
+	call_if_set FLAG_MAP_RANDO, PokemonLeague_EliteFour_EventScript_OpenDoors
 	end
 
 EverGrandeCity_DrakesRoom_EventScript_ResetAdvanceToNextRoom::

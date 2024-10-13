@@ -2,6 +2,9 @@
 .set LOCALID_RIVAL, 28
 .set LOCALID_RIVAL_ON_BIKE, 29
 .set LOCALID_BIRCH, 36
+.set LOCALID_GRUNT1, 22
+.set LOCALID_GRUNT2, 24
+.set LOCALID_GRUNT3, 25
 
 Route110_MapScripts::
 	map_script MAP_SCRIPT_ON_RESUME, Route110_OnResume
@@ -14,6 +17,7 @@ Route110_OnResume:
 	end
 
 Route110_OnTransition:
+	setflag FLAG_VISITED_ROUTE_110
 	call Common_EventScript_SetupRivalGfxId
 	call Common_EventScript_SetupRivalOnBikeGfxId
 	call_if_eq VAR_CYCLING_CHALLENGE_STATE, 1, Route110_EventScript_SaveCyclingMusic
@@ -31,6 +35,13 @@ Route110_EventScript_BeginCylcingRoadChallenge::
 	special Special_BeginCyclingRoadChallenge
 	setvar VAR_CYCLING_CHALLENGE_STATE, 2
 	return
+
+Route110_EventScript_HideGrunts::
+	removeobject LOCALID_GRUNT1
+	removeobject LOCALID_GRUNT2
+	removeobject LOCALID_GRUNT3
+	setflag FLAG_HIDE_ROUTE_110_TEAM_AQUA
+	end
 
 Route110_EventScript_AquaGrunt1::
 	lock

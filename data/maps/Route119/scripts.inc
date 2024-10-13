@@ -1,6 +1,9 @@
 .set LOCALID_RIVAL, 16
 .set LOCALID_RIVAL_ON_BIKE, 25
 .set LOCALID_SCOTT, 43
+.set LOCALID_SCOTT, 43
+.set LOCALID_GRUNT1, 24
+.set LOCALID_GRUNT2, 23
 
 Route119_MapScripts::
 	map_script MAP_SCRIPT_ON_RESUME, Route119_OnResume
@@ -19,6 +22,7 @@ Route119_EventScript_TryRemoveKecleon::
 	return
 
 Route119_OnTransition:
+	setflag FLAG_VISITED_ROUTE_119
 	call Common_EventScript_SetupRivalGfxId
 	call Common_EventScript_SetupRivalOnBikeGfxId
 	compare VAR_WEATHER_INSTITUTE_STATE, 1
@@ -40,6 +44,12 @@ Route119_EventScript_RivalTrigger1::
 Route119_EventScript_RivalTrigger2::
 	setvar VAR_TEMP_1, 2
 	goto Route119_EventScript_RivalEncounter
+	end
+
+Route119_EventScript_HideAquaGrunts::
+	removeobject LOCALID_GRUNT1
+	removeobject LOCALID_GRUNT2
+	setflag FLAG_HIDE_ROUTE_119_TEAM_AQUA
 	end
 
 Route119_EventScript_RivalEncounter::

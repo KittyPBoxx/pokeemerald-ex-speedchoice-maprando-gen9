@@ -7,7 +7,7 @@
 
 // The current total number of selectable options. Be sure to count preset too and
 // player name.
-#define CURRENT_OPTIONS_NUM 19
+#define CURRENT_OPTIONS_NUM 20
 
 // Maximum number of possible selectable options per option.
 #define MAX_CHOICES 6
@@ -99,11 +99,12 @@ enum
     //FAST_EGG_HATCH, // DEPRECATED (default)
     GEN_7_X_ITEMS,
     EVO_EVERY_LEVEL,
-    INVERSE_BATTLES,
+    AUTOSAVE,
     SHUFFLE_MUSIC,
     DEBUG_MENUS,
     BATTLE_SPEED,
     SPEEDUP,
+    AUTO_MACH,
     // ----------------------
     // STATIC OPTIONS
     // ----------------------
@@ -321,12 +322,12 @@ enum
 };
 
 // ----------------------
-// INVERSE_BATTLES ENUM
+// AUTOSAVE ENUM
 // ----------------------
 enum
 {
-    INV_BATTLES_ON,
-    INV_BATTLES_OFF
+    AUTOSAVE_ON,
+    AUTOSAVE_OFF
 };
 
 // ----------------------
@@ -367,6 +368,15 @@ enum
     SPEEDUP_OFF,
     SPEEDUP_R,
     SPEEDUP_ON
+};
+
+// ----------------------
+// AUTO MACH
+// ----------------------
+enum
+{
+    AUTO_MACH_OFF,
+    AUTO_MACH_B
 };
 
 // Enumeration for optionType in the Speedchoice struct below.
@@ -472,6 +482,7 @@ extern u32 gGlobalSpeed;
 void CB2_InitSpeedchoiceMenu(void);
 bool8 CheckSpeedchoiceOption(u8, u8);
 void ToggleSpeedchoiceDebug(void);
+void ConfigureNewGameForPreset(void);
 
 void SetSpeed(u32);
 void ClearSpeed(u32);

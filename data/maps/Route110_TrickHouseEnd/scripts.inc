@@ -33,13 +33,21 @@ Route110_TrickHouseEnd_OnFrame:
 
 Route110_TrickHouseEnd_EventScript_CloseDoor::
 	setvar VAR_TEMP_1, 1
+	goto_if_set FLAG_MAP_RANDO, Route110_TrickHouseEnd_EventScript_DontCloseDoor
 	call Route110_TrickHouseEnd_EventScript_SetDoorClosedMetatile
 	special DrawWholeMapView
 	end
 
+Route110_TrickHouseEnd_EventScript_DontCloseDoor::
+	end	
+
 Route110_TrickHouseEnd_EventScript_SetDoorClosedMetatile::
 	setmetatile 10, 1, METATILE_GenericBuilding_TrickHouse_Door_Closed, TRUE
 	return
+
+Route110_TrickHouseEnd_EventScript_SetDoorOpenMetatile::
+	setmetatile 10, 1, METATILE_TrickHousePuzzle_Stairs_Down, FALSE
+	end
 
 Route110_TrickHouseEnd_EventScript_TrickMaster::
 	lock

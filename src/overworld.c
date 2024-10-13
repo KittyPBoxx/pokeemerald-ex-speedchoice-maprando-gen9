@@ -75,6 +75,7 @@
 #include "constants/event_objects.h"
 #include "qol_field_moves.h"
 #include "dexnav.h"
+#include "random_warps.h"
 
 struct CableClubPlayer
 {
@@ -686,8 +687,14 @@ void WarpIntoMap(void)
     SetPlayerCoordsFromWarp();
 }
 
+void SetWarpDestinationNoRando(s8 mapGroup, s8 mapNum, s8 warpId, s8 x, s8 y)
+{
+    SetWarpData(&sWarpDestination, mapGroup, mapNum, warpId, x, y);
+}
+
 void SetWarpDestination(s8 mapGroup, s8 mapNum, s8 warpId, s8 x, s8 y)
 {
+    InterceptWarp(&mapGroup, &mapNum, &warpId, &x, &y);
     SetWarpData(&sWarpDestination, mapGroup, mapNum, warpId, x, y);
 }
 
@@ -910,6 +917,8 @@ static void LoadMapFromWarp(bool32 a1)
     bool8 isIndoors;
 
     LoadCurrentMapData();
+    CorrectPositionAfterIntercept();
+
     if (!(sObjectEventLoadFlag & SKIP_OBJECT_EVENT_LOAD))
     {
         if (gMapHeader.mapLayoutId == LAYOUT_BATTLE_FRONTIER_BATTLE_PYRAMID_FLOOR)
@@ -2059,6 +2068,7 @@ void CB2_ContinueSavedGame(void)
 {
     u8 trainerHillMapId;
 
+    resetPositionCorrection();
     FieldClearVBlankHBlankCallbacks();
     StopMapMusic();
     ResetSafariZoneFlag_();

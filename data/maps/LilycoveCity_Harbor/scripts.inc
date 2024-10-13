@@ -15,6 +15,7 @@ LilycoveCity_Harbor_EventScript_FerryAttendant::
 	lock
 	faceplayer
 	@goto_if_unset FLAG_SYS_GAME_CLEAR, LilycoveCity_Harbor_EventScript_FerryUnavailable
+	goto_if_set FLAG_MAP_RANDO, LilycoveCity_Harbor_EventScript_FerryUnavailableMapRando
 	call LilycoveCity_Harbor_EventScript_GetEonTicketState
 	call LilycoveCity_Harbor_EventScript_GetAuroraTicketState
 	call LilycoveCity_Harbor_EventScript_GetOldSeaMapState
@@ -37,6 +38,13 @@ LilycoveCity_Harbor_EventScript_NoFirstTimeEventTickets::
 	message LilycoveCity_Harbor_Text_FlashTicketWhereTo
 	waitmessage
 	goto LilycoveCity_Harbor_EventScript_FerryRegularLocationSelect
+	end
+
+LilycoveCity_Harbor_EventScript_FerryUnavailableMapRando::
+	message LilycoveCity_Harbor_Text_NoUseDuringMapRando
+	waitmessage
+	waitbuttonpress
+	release
 	end
 
 LilycoveCity_Harbor_EventScript_FerryRegularLocationSelect::
@@ -590,3 +598,7 @@ LilycoveCity_Harbor_Text_SailorFerryAvailable:
 	.string "The folks at the SHIPYARD in SLATEPORT\n"
 	.string "must've worked extra hard.\p"
 	.string "Well, it's my turn to get busy now!$"
+
+LilycoveCity_Harbor_Text_NoUseDuringMapRando:
+	.string "The ferry cannot be used while\n"
+	.string "playing with random warps.$"

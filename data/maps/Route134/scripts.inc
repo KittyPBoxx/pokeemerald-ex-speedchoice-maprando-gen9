@@ -1,6 +1,11 @@
 Route134_MapScripts::
 	map_script MAP_SCRIPT_ON_RESUME, Route134_OnResume
+	map_script MAP_SCRIPT_ON_TRANSITION, Route134_OnTransition
 	.byte 0
+
+Route134_OnTransition:
+	setflag FLAG_VISITED_ROUTE_134
+	end
 
 Route134_OnResume:
 	setdivewarp MAP_UNDERWATER_ROUTE134, 8, 6

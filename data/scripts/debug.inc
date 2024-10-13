@@ -169,6 +169,105 @@ Debug_EventScript_Script_8::
 	release
 	end
 
+EverGrandeCity_ChampionsRoom_UnlockDoor::
+	playse SE_DOOR
+	setmetatile 6, 1, METATILE_EliteFour_OpenDoorChampion_Frame, FALSE
+	setmetatile 6, 2, METATILE_EliteFour_OpenDoorChampion_Opening, FALSE
+	end
+
+Debug_RustboroCity_Gym_EventScript_Roxanne::
+	trainerbattle_no_intro TRAINER_ROXANNE_NERFED, RustboroCity_Gym_Text_RoxanneDefeat
+	goto RustboroCity_Gym_EventScript_RoxanneDefeated
+	release
+	end
+
+Debug_DewfordTown_Gym_EventScript_Brawly::
+	trainerbattle_no_intro TRAINER_BRAWLY_1, DewfordTown_Gym_Text_BrawlyDefeat
+	goto DewfordTown_Gym_EventScript_BrawlyDefeated_debug
+	release
+	end
+
+Debug_MauvilleCity_Gym_EventScript_Wattson::
+	trainerbattle_no_intro TRAINER_WATTSON_1, RustboroCity_Gym_Text_RoxanneDefeat
+	goto MauvilleCity_Gym_EventScript_WattsonDefeated
+	release
+	end
+
+
+Debug_LavaridgeTown_Gym_1F_EventScript_Flannery::
+	trainerbattle_no_intro TRAINER_FLANNERY_1, LavaridgeTown_Gym_1F_Text_FlanneryDefeat
+	goto LavaridgeTown_Gym_1F_EventScript_FlanneryDefeated
+	release
+	end
+
+Debug_PetalburgCity_Gym_EventScript_NormanBattle::
+	giveitem ITEM_HM03
+	goto PetalburgCity_Gym_EventScript_NormanBattle
+	release
+	end
+
+Debug_FortreeCity_Gym_EventScript_Winona::
+	trainerbattle_no_intro TRAINER_WINONA_1, FortreeCity_Gym_Text_WinonaDefeat
+	goto FortreeCity_Gym_EventScript_WinonaDefeated
+	release
+	end
+
+Debug_MossdeepCity_Gym_EventScript_TateAndLiza::
+	trainerbattle_no_intro TRAINER_TATE_AND_LIZA_1, MossdeepCity_Gym_Text_TateAndLizaRematchDefeat
+	goto MossdeepCity_Gym_EventScript_TateAndLizaDefeated
+	release
+	end
+
+Debug_SootopolisCity_Gym_1F_EventScript_Juan::
+	trainerbattle_no_intro TRAINER_JUAN_1, SootopolisCity_Gym_1F_Text_JuanDefeat
+	goto SootopolisCity_Gym_1F_EventScript_JuanDefeated
+	release
+	end
+
+Debug_EverGrandeCity_SidneysRoom_EventScript_Sidney::
+	trainerbattle_no_intro TRAINER_SIDNEY, EverGrandeCity_SidneysRoom_Text_Defeat
+	goto EverGrandeCity_SidneysRoom_EventScript_Defeated
+	release
+	end
+
+Debug_EverGrandeCity_PhoebesRoom_EventScript_Phoebe::
+	trainerbattle_no_intro TRAINER_PHOEBE, EverGrandeCity_PhoebesRoom_Text_Defeat
+	goto EverGrandeCity_PhoebesRoom_EventScript_Defeated
+	release
+	end
+
+Debug_EverGrandeCity_GlaciasRoom_EventScript_Glacia::
+	trainerbattle_no_intro TRAINER_GLACIA, EverGrandeCity_GlaciasRoom_Text_Defeat
+	goto EverGrandeCity_GlaciasRoom_EventScript_Defeated
+	release
+	end
+
+Debug_EverGrandeCity_DrakesRoom_EventScript_Drake::
+	trainerbattle_no_intro TRAINER_DRAKE, EverGrandeCity_DrakesRoom_Text_Defeat
+	goto EverGrandeCity_DrakesRoom_EventScript_Defeated
+	release
+	end
+
+Debug_EverGrandeCity_ChampionsRoom_EventScript_Wallace::
+	trainerbattle_no_intro TRAINER_WALLACE, EverGrandeCity_ChampionsRoom_Text_Defeat
+	goto EverGrandeCity_ChampionsRoom_EventScript_Defeated
+	release
+	end
+
+Debug_MeteorFalls_StevensCave_EventScript_Steven::
+	trainerbattle_no_intro TRAINER_STEVEN, MeteorFalls_StevensCave_Text_StevenDefeat
+	goto MeteorFalls_StevensCave_EventScript_Defeated
+	release
+	end
+
+Debug_YouAreNotInAGym::
+	message Debug_YouAreNotInAGym_Text
+	goto Debug_MessageEnd
+	end
+
+Debug_YouAreNotInAGym_Text::
+	.string "You are not in a gym, gym-town or league.$"
+
 Debug_CheckSaveBlock::
 	callnative CheckSaveBlock1Size
 	msgbox Debug_SaveBlock1Size, MSGBOX_DEFAULT

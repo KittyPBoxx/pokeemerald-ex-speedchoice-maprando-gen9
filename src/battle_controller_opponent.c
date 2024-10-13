@@ -573,10 +573,16 @@ static void OpponentHandleChooseMove(u32 battler)
     {
         u16 move;
         u8 target;
+        u8 moveRolls = 0;
         do
         {
             chosenMoveId = Random() & 3;
             move = moveInfo->moves[chosenMoveId];
+            moveRolls++;
+
+            if (moveRolls > 100)
+                move = MOVE_STRUGGLE;
+
         } while (move == MOVE_NONE);
 
         if (GetBattlerMoveTargetType(battler, move) & (MOVE_TARGET_USER_OR_SELECTED | MOVE_TARGET_USER))

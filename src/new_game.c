@@ -237,8 +237,10 @@ void NewGameInitData(void)
     handleRandomizedBerryTreeSetup();
 
     // ADD SPEEDCHOICE EXTRAS
-    if (CheckSpeedchoiceOption(INVERSE_BATTLES, INV_BATTLES_ON) == TRUE)
-        FlagSet(FLAG_INVERSE_BATTLE);
+    if (CheckSpeedchoiceOption(AUTOSAVE, AUTOSAVE_ON) == TRUE)
+        FlagSet(FLAG_HEAL_AUTOSAVE);
+    else 
+        FlagClear(FLAG_HEAL_AUTOSAVE);
 
     AddBagItem(ITEM_DONE_BUTTON, 1);
     AddBagItem(ITEM_SLEEPING_BAG, 1);
@@ -266,6 +268,8 @@ void NewGameInitData(void)
     //AddBagItem(ITEM_DYNAMAX_BAND, 1);
 
     FlagSet(FLAG_DISABLE_FOLLOWER);
+
+    ConfigureNewGameForPreset();
 
     // Player has access to teleport tools so we need to avoid them skipping stuff
     SetLastHealLocationWarp(HEAL_LOCATION_LITTLEROOT_TOWN_MAYS_HOUSE_2F);

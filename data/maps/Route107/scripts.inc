@@ -1,5 +1,10 @@
 Route107_MapScripts::
+	map_script MAP_SCRIPT_ON_TRANSITION, Route107_OnTransition
 	.byte 0
+
+Route107_OnTransition:
+	setflag FLAG_VISITED_ROUTE_107
+	end
 
 Route107_EventScript_Darrin::
 	trainerbattle_single TRAINER_DARRIN, Route107_Text_DarrinIntro, Route107_Text_DarrinDefeated

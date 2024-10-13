@@ -20,7 +20,12 @@ RustboroCity_DevonCorp_3F_OnWarp:
 	.2byte 0
 
 RustboroCity_DevonCorp_3F_EventScript_PlayerFaceEast::
+	goto_if_set FLAG_MAP_RANDO, RustboroCity_DevonCorp_3F_EventScript_PlayerFaceEastMapRando
 	turnobject OBJ_EVENT_ID_PLAYER, DIR_EAST
+	end
+
+RustboroCity_DevonCorp_3F_EventScript_PlayerFaceEastMapRando::
+	turnobject OBJ_EVENT_ID_PLAYER, DIR_WEST
 	end
 
 RustboroCity_DevonCorp_3F_OnFrame:

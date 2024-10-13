@@ -5,6 +5,7 @@
 #include "fldeff.h"
 #include "task.h"
 #include "constants/metatile_labels.h"
+#include "event_data.h"
 
 static EWRAM_DATA u8 sEscalatorAnim_TaskId = 0;
 
@@ -70,6 +71,9 @@ static void SetEscalatorMetatile(u8 taskId, const s16 *metatileIds, u16 metatile
     s16 transitionStage = gTasks[taskId].tTransitionStage;
     s16 i;
     s16 j;
+
+    if (!gTasks[taskId].tGoingUp && FlagGet(FLAG_MAP_RANDO))
+        return;
 
     // Check all the escalator sections and only progress the selected one to the next stage
     if (!gTasks[taskId].tGoingUp)

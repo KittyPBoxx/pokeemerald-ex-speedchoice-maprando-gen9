@@ -7,6 +7,7 @@ Route117_MapScripts::
 	.byte 0
 
 Route117_OnTransition:
+	setflag FLAG_VISITED_ROUTE_117
 	call Route117_EventScript_TryMoveDayCareMan
 	@ set flags for OW daycare mons
 	setflag FLAG_TEMP_1

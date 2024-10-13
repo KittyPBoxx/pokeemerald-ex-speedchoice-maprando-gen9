@@ -60,3 +60,36 @@ PokemonLeague_EliteFour_EventScript_CloseDoor::
 	setmetatile 6, 13, METATILE_EliteFour_EntryDoor_ClosedBottom, TRUE
 	setmetatile 7, 13, METATILE_EliteFour_EntryDoor_ClosedBottom, TRUE
 	return
+
+PokemonLeague_EliteFour_EventScript_WalkInOpenDoors::
+	waitmovement 0
+	playse SE_TRUCK_DOOR
+	setmetatile 5, 12, METATILE_EliteFour_EntryDoor_OpenTopLeft, 1
+	setmetatile 6, 12, METATILE_EliteFour_OpenDoor_Frame, 0
+	setmetatile 7, 12, METATILE_EliteFour_EntryDoor_OpenTopRight, 1
+	setmetatile 5, 13, METATILE_EliteFour_EntryDoor_OpenLeft, 1
+	setmetatile 6, 13, METATILE_EliteFour_OpenDoor_Opening, 0
+	setmetatile 7, 13, METATILE_EliteFour_EntryDoor_OpenRight, 1
+	special DrawWholeMapView
+	return
+
+PokemonLeague_EliteFour_EventScript_OpenDoors:: 
+	setmetatile 5, 12, METATILE_EliteFour_EntryDoor_OpenTopLeft, 1
+	setmetatile 6, 12, METATILE_EliteFour_OpenDoor_Frame, 0
+	setmetatile 7, 12, METATILE_EliteFour_EntryDoor_OpenTopRight, 1
+	setmetatile 5, 13, METATILE_EliteFour_EntryDoor_OpenLeft, 1
+	setmetatile 6, 13, METATILE_EliteFour_OpenDoor_Opening, 0
+	setmetatile 7, 13, METATILE_EliteFour_EntryDoor_OpenRight, 1
+	setmetatile 6, 1, METATILE_EliteFour_OpenDoor_Frame, 0
+	setmetatile 6, 2, METATILE_EliteFour_OpenDoor_Opening, 0
+	setmetatile 0, 2, METATILE_EliteFour_RightSpotlightOff, 1
+	setmetatile 1, 2, METATILE_EliteFour_LeftSpotlightOff, 1
+	setmetatile 2, 2, METATILE_EliteFour_RightSpotlightOff, 1
+	setmetatile 3, 2, METATILE_EliteFour_LeftSpotlightOff, 1
+	setmetatile 4, 2, METATILE_EliteFour_RightSpotlightOff, 1
+	setmetatile 8, 2, METATILE_EliteFour_LeftSpotlightOff, 1
+	setmetatile 9, 2, METATILE_EliteFour_RightSpotlightOff, 1
+	setmetatile 10, 2, METATILE_EliteFour_LeftSpotlightOff, 1
+	setmetatile 11, 2, METATILE_EliteFour_RightSpotlightOff, 1
+	setmetatile 12, 2, METATILE_EliteFour_LeftSpotlightOff, 1
+	return

@@ -1,5 +1,10 @@
 Route132_MapScripts::
+	map_script MAP_SCRIPT_ON_TRANSITION, Route132_OnTransition
 	.byte 0
+
+Route132_OnTransition:
+	setflag FLAG_VISITED_ROUTE_132
+	end
 
 Route132_EventScript_Gilbert::
 	trainerbattle_single TRAINER_GILBERT, Route132_Text_GilbertIntro, Route132_Text_GilbertDefeat

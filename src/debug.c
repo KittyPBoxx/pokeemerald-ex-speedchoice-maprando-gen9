@@ -68,6 +68,10 @@
 #include "constants/weather.h"
 #include "save.h"
 #include "speedchoice.h"
+#include "random_warps.h"
+#include "constants/layouts.h"
+#include "constants/event_objects.h"
+#include "field_camera.h"
 
 #if DEBUG_OVERWORLD_MENU == TRUE
 // *******************************
@@ -89,6 +93,7 @@ enum UtilDebugMenu
 {
     DEBUG_UTIL_MENU_ITEM_FLY,
     DEBUG_UTIL_MENU_ITEM_WARP,
+    DEBUG_UTIL_MENU_ITEM_GOAL,
     DEBUG_UTIL_MENU_ITEM_PLAYER_NAME,
     DEBUG_UTIL_MENU_ITEM_PLAYER_GENDER,
     DEBUG_UTIL_MENU_ITEM_SAVEBLOCK,
@@ -144,9 +149,9 @@ enum ScriptDebugMenu
     DEBUG_UTIL_MENU_ITEM_SCRIPT_3,
     DEBUG_UTIL_MENU_ITEM_SCRIPT_4,
     DEBUG_UTIL_MENU_ITEM_SCRIPT_5,
-    DEBUG_UTIL_MENU_ITEM_SCRIPT_6,
-    DEBUG_UTIL_MENU_ITEM_SCRIPT_7,
-    DEBUG_UTIL_MENU_ITEM_SCRIPT_8,
+    // DEBUG_UTIL_MENU_ITEM_SCRIPT_6,
+    // DEBUG_UTIL_MENU_ITEM_SCRIPT_7,
+    // DEBUG_UTIL_MENU_ITEM_SCRIPT_8,
 };
 
 enum FlagsVarsDebugMenu
@@ -167,7 +172,7 @@ enum FlagsVarsDebugMenu
 
 enum SettingsDebugMenu
 {
-    DEBUG_SETTINGS_MENU_ITEM_TOGGLE_AUTOSAVE,
+    DEBUG_SETTINGS_MENU_ITEM_TOGGLE_INVERSE_BATTLES,
     DEBUG_SETTINGS_MENU_ITEM_TOGGLE_LEVEL_SCALING,
     DEBUG_SETTINGS_MENU_ITEM_TOGGLE_LEVEL_CAPS,
     DEBUG_SETTINGS_MENU_ITEM_TOGGLE_MAP_RANDO,
@@ -350,9 +355,9 @@ static void DebugAction_Util_Script_2(u8 taskId);
 static void DebugAction_Util_Script_3(u8 taskId);
 static void DebugAction_Util_Script_4(u8 taskId);
 static void DebugAction_Util_Script_5(u8 taskId);
-static void DebugAction_Util_Script_6(u8 taskId);
-static void DebugAction_Util_Script_7(u8 taskId);
-static void DebugAction_Util_Script_8(u8 taskId);
+// static void DebugAction_Util_Script_6(u8 taskId);
+// static void DebugAction_Util_Script_7(u8 taskId);
+// static void DebugAction_Util_Script_8(u8 taskId);
 
 static void DebugAction_OpenUtilitiesMenu(u8 taskId);
 static void DebugAction_OpenPCBagMenu(u8 taskId);
@@ -378,6 +383,7 @@ static void DebugTask_HandleMenuInput_BerryFunctions(u8 taskId);
 
 static void DebugAction_Util_Fly(u8 taskId);
 static void DebugAction_Util_Warp_Warp(u8 taskId);
+static void DebugAction_Util_Warp_Goal(u8 taskId);
 static void DebugAction_Util_Warp_SelectMapGroup(u8 taskId);
 static void DebugAction_Util_Warp_SelectMap(u8 taskId);
 static void DebugAction_Util_Warp_SelectWarp(u8 taskId);
@@ -438,7 +444,7 @@ static void DebugAction_Settings_EncounterOnOff(u8 taskId);
 static void DebugAction_Settings_TrainerSeeOnOff(u8 taskId);
 static void DebugAction_Settings_BagUseOnOff(u8 taskId);
 static void DebugAction_Settings_CatchingOnOff(u8 taskId);
-static void DebugAction_Settings_AutosaveOnOff(u8 taskId);
+static void DebugAction_Settings_InverseBattlesOnOff(u8 taskId);
 static void DebugAction_Settings_AiVsAi(u8 taskId);
 static void DebugAction_Settings_LevelCap(u8 taskId);
 static void DebugAction_Settings_MapRando(u8 taskId);
@@ -487,8 +493,8 @@ extern const u8 Debug_EventScript_CheckEVs[];
 extern const u8 Debug_EventScript_CheckIVs[];
 extern const u8 Debug_EventScript_InflictStatus1[];
 // extern const u8 Debug_EventScript_Script_1[];
-extern const u8 Debug_EventScript_Script_2[];
-extern const u8 Debug_EventScript_Script_3[];
+// extern const u8 Debug_EventScript_Script_2[];
+// extern const u8 Debug_EventScript_Script_3[];
 extern const u8 Debug_EventScript_Script_4[];
 extern const u8 Debug_EventScript_Script_5[];
 extern const u8 Debug_EventScript_Script_6[];
@@ -497,6 +503,25 @@ extern const u8 Debug_EventScript_Script_8[];
 extern const u8 DebugScript_DaycareMonsNotCompatible[];
 extern const u8 DebugScript_OneDaycareMons[];
 extern const u8 DebugScript_ZeroDaycareMons[];
+
+extern const u8 Debug_RustboroCity_Gym_EventScript_Roxanne[];
+extern const u8 Debug_DewfordTown_Gym_EventScript_Brawly[];
+extern const u8 Debug_MauvilleCity_Gym_EventScript_Wattson[];
+extern const u8 Debug_LavaridgeTown_Gym_1F_EventScript_Flannery[];
+extern const u8 Debug_PetalburgCity_Gym_EventScript_NormanBattle[];
+extern const u8 Debug_FortreeCity_Gym_EventScript_Winona[];
+extern const u8 Debug_MossdeepCity_Gym_EventScript_TateAndLiza[];
+extern const u8 Debug_SootopolisCity_Gym_1F_EventScript_Juan[];
+extern const u8 Debug_EverGrandeCity_SidneysRoom_EventScript_Sidney[];
+extern const u8 Debug_EverGrandeCity_PhoebesRoom_EventScript_Phoebe[];
+extern const u8 Debug_EverGrandeCity_GlaciasRoom_EventScript_Glacia[];
+extern const u8 Debug_EverGrandeCity_DrakesRoom_EventScript_Drake[];
+extern const u8 Debug_EverGrandeCity_ChampionsRoom_EventScript_Wallace[];
+extern const u8 Debug_MeteorFalls_StevensCave_EventScript_Steven[];
+extern const u8 Debug_YouAreNotInAGym[];
+
+extern const u8 EverGrandeCity_ChampionsRoom_UnlockDoor[];
+extern const u8 Route110_TrickHouseEnd_EventScript_SetDoorOpenMetatile[];
 
 extern const u8 Debug_ShowFieldMessageStringVar4[];
 extern const u8 Debug_CheatStart[];
@@ -543,9 +568,9 @@ static const u8 sDebugText_Cancel[] =        _("Cancel");
 // Script menu
 static const u8 sDebugText_Util_Script_1[] = _("Speedchoice Menu");
 static const u8 sDebugText_Util_Script_2[] = _("Slow Mo");
-static const u8 sDebugText_Util_Script_3[] = _("Script 3");
-static const u8 sDebugText_Util_Script_4[] = _("Script 4");
-static const u8 sDebugText_Util_Script_5[] = _("Script 5");
+static const u8 sDebugText_Util_Script_3[] = _("Force Gym Battle");
+static const u8 sDebugText_Util_Script_4[] = _("Unlock Doors");
+static const u8 sDebugText_Util_Script_5[] = _("Unexist NPCs");
 static const u8 sDebugText_Util_Script_6[] = _("Script 6");
 static const u8 sDebugText_Util_Script_7[] = _("Script 7");
 static const u8 sDebugText_Util_Script_8[] = _("Script 8");
@@ -556,6 +581,8 @@ static const u8 sDebugText_Util_WarpToMap_SelectMapGroup[] = _("Group: {STR_VAR_
 static const u8 sDebugText_Util_WarpToMap_SelectMap[] =      _("Map: {STR_VAR_1}{CLEAR_TO 90}\nMapSec:{CLEAR_TO 90}\n{STR_VAR_2}{CLEAR_TO 90}\n{STR_VAR_3}{CLEAR_TO 90}");
 static const u8 sDebugText_Util_WarpToMap_SelectWarp[] =     _("Warp:{CLEAR_TO 90}\n{STR_VAR_1}{CLEAR_TO 90}\n{CLEAR_TO 90}\n{STR_VAR_3}{CLEAR_TO 90}");
 static const u8 sDebugText_Util_WarpToMap_SelMax[] =         _("{STR_VAR_1} / {STR_VAR_2}");
+static const u8 sDebugText_Util_WarpToGoal[] =               _("Warp to goal…{CLEAR_TO 110}{RIGHT_ARROW}");
+static const u8 sDebugText_Util_WarpToMap_SelectGoal[] =     _("Goal: {STR_VAR_1}{CLEAR_TO 90}\n{CLEAR_TO 90}\n\n{STR_VAR_3}{CLEAR_TO 90}");
 static const u8 sDebugText_Util_SaveBlockSpace[] =           _("Save Block space…{CLEAR_TO 110}{RIGHT_ARROW}");
 static const u8 sDebugText_Util_ROMSpace[] =                 _("ROM space…{CLEAR_TO 110}{RIGHT_ARROW}");
 static const u8 sDebugText_Util_Weather[] =                  _("Set weather…{CLEAR_TO 110}{RIGHT_ARROW}");
@@ -618,7 +645,7 @@ static const u8 sDebugText_Settings_SwitchEncounter[] =     _("Toggle {STR_VAR_1
 static const u8 sDebugText_Settings_SwitchTrainerSee[] =    _("Toggle {STR_VAR_1}Trainer See OFF");
 static const u8 sDebugText_Settings_SwitchBagUse[] =        _("Toggle {STR_VAR_1}Bag Use OFF");
 static const u8 sDebugText_Settings_SwitchCatching[] =      _("Toggle {STR_VAR_1}Catching OFF");
-static const u8 sDebugText_Settings_Autosave[] =            _("Toggle {STR_VAR_1}Autosave");
+static const u8 sDebugText_Settings_InverseBattles[] =      _("Toggle {STR_VAR_1}Inverse Battles");
 static const u8 sDebugText_Settings_AiVsAi[] =              _("Toggle {STR_VAR_1}Ai Vs Ai");
 static const u8 sDebugText_Settings_LevelCap[] =            _("Toggle {STR_VAR_1}Level Cap");
 static const u8 sDebugText_Settings_MapRando[] =            _("Toggle {STR_VAR_1}Map Rando");
@@ -760,6 +787,7 @@ static const struct ListMenuItem sDebugMenu_Items_Utilities[] =
 {
     [DEBUG_UTIL_MENU_ITEM_FLY]             = {sDebugText_Util_FlyToMap,         DEBUG_UTIL_MENU_ITEM_FLY},
     [DEBUG_UTIL_MENU_ITEM_WARP]            = {sDebugText_Util_WarpToMap,        DEBUG_UTIL_MENU_ITEM_WARP},
+    [DEBUG_UTIL_MENU_ITEM_GOAL]            = {sDebugText_Util_WarpToGoal,       DEBUG_UTIL_MENU_ITEM_GOAL},
     [DEBUG_UTIL_MENU_ITEM_SAVEBLOCK]       = {sDebugText_Util_SaveBlockSpace,   DEBUG_UTIL_MENU_ITEM_SAVEBLOCK},
     [DEBUG_UTIL_MENU_ITEM_ROM_SPACE]       = {sDebugText_Util_ROMSpace,         DEBUG_UTIL_MENU_ITEM_ROM_SPACE},
     [DEBUG_UTIL_MENU_ITEM_WEATHER]         = {sDebugText_Util_Weather,          DEBUG_UTIL_MENU_ITEM_WEATHER},
@@ -815,9 +843,9 @@ static const struct ListMenuItem sDebugMenu_Items_Scripts[] =
     [DEBUG_UTIL_MENU_ITEM_SCRIPT_3] = {sDebugText_Util_Script_3, DEBUG_UTIL_MENU_ITEM_SCRIPT_3},
     [DEBUG_UTIL_MENU_ITEM_SCRIPT_4] = {sDebugText_Util_Script_4, DEBUG_UTIL_MENU_ITEM_SCRIPT_4},
     [DEBUG_UTIL_MENU_ITEM_SCRIPT_5] = {sDebugText_Util_Script_5, DEBUG_UTIL_MENU_ITEM_SCRIPT_5},
-    [DEBUG_UTIL_MENU_ITEM_SCRIPT_6] = {sDebugText_Util_Script_6, DEBUG_UTIL_MENU_ITEM_SCRIPT_6},
-    [DEBUG_UTIL_MENU_ITEM_SCRIPT_7] = {sDebugText_Util_Script_7, DEBUG_UTIL_MENU_ITEM_SCRIPT_7},
-    [DEBUG_UTIL_MENU_ITEM_SCRIPT_8] = {sDebugText_Util_Script_8, DEBUG_UTIL_MENU_ITEM_SCRIPT_8},
+    // [DEBUG_UTIL_MENU_ITEM_SCRIPT_6] = {sDebugText_Util_Script_6, DEBUG_UTIL_MENU_ITEM_SCRIPT_6},
+    // [DEBUG_UTIL_MENU_ITEM_SCRIPT_7] = {sDebugText_Util_Script_7, DEBUG_UTIL_MENU_ITEM_SCRIPT_7},
+    // [DEBUG_UTIL_MENU_ITEM_SCRIPT_8] = {sDebugText_Util_Script_8, DEBUG_UTIL_MENU_ITEM_SCRIPT_8},
 };
 
 static const struct ListMenuItem sDebugMenu_Items_FlagsVars[] =
@@ -838,17 +866,17 @@ static const struct ListMenuItem sDebugMenu_Items_FlagsVars[] =
 
 static const struct ListMenuItem sDebugMenu_Items_Settings[] =
 {
-    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_COLISSION]     = {sDebugText_Settings_SwitchCollision,    DEBUG_SETTINGS_MENU_ITEM_TOGGLE_COLISSION},
-    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_ENCOUNTER]     = {sDebugText_Settings_SwitchEncounter,    DEBUG_SETTINGS_MENU_ITEM_TOGGLE_ENCOUNTER},
-    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_TRAINER_SEE]   = {sDebugText_Settings_SwitchTrainerSee,   DEBUG_SETTINGS_MENU_ITEM_TOGGLE_TRAINER_SEE},
-    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_BAG_USE]       = {sDebugText_Settings_SwitchBagUse,       DEBUG_SETTINGS_MENU_ITEM_TOGGLE_BAG_USE},
-    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_CATCHING]      = {sDebugText_Settings_SwitchCatching,     DEBUG_SETTINGS_MENU_ITEM_TOGGLE_CATCHING},
-    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_AUTOSAVE]      = {sDebugText_Settings_Autosave,           DEBUG_SETTINGS_MENU_ITEM_TOGGLE_AUTOSAVE},
-    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_AI_VS_AI]      = {sDebugText_Settings_AiVsAi,             DEBUG_SETTINGS_MENU_ITEM_TOGGLE_AI_VS_AI},
-    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_LEVEL_CAPS]    = {sDebugText_Settings_LevelCap,           DEBUG_SETTINGS_MENU_ITEM_TOGGLE_LEVEL_CAPS},
-    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_MAP_RANDO]     = {sDebugText_Settings_MapRando,           DEBUG_SETTINGS_MENU_ITEM_TOGGLE_MAP_RANDO},
-    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_LEVEL_SCALING] = {sDebugText_Settings_LevelScaling,       DEBUG_SETTINGS_MENU_ITEM_TOGGLE_LEVEL_SCALING},
-    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_CATCH_EXP]     = {sDebugText_Settings_CatchExp,           DEBUG_SETTINGS_MENU_ITEM_TOGGLE_CATCH_EXP},
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_COLISSION]       = {sDebugText_Settings_SwitchCollision,    DEBUG_SETTINGS_MENU_ITEM_TOGGLE_COLISSION},
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_ENCOUNTER]       = {sDebugText_Settings_SwitchEncounter,    DEBUG_SETTINGS_MENU_ITEM_TOGGLE_ENCOUNTER},
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_TRAINER_SEE]     = {sDebugText_Settings_SwitchTrainerSee,   DEBUG_SETTINGS_MENU_ITEM_TOGGLE_TRAINER_SEE},
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_BAG_USE]         = {sDebugText_Settings_SwitchBagUse,       DEBUG_SETTINGS_MENU_ITEM_TOGGLE_BAG_USE},
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_CATCHING]        = {sDebugText_Settings_SwitchCatching,     DEBUG_SETTINGS_MENU_ITEM_TOGGLE_CATCHING},
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_INVERSE_BATTLES] = {sDebugText_Settings_InverseBattles,     DEBUG_SETTINGS_MENU_ITEM_TOGGLE_INVERSE_BATTLES},
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_AI_VS_AI]        = {sDebugText_Settings_AiVsAi,             DEBUG_SETTINGS_MENU_ITEM_TOGGLE_AI_VS_AI},
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_LEVEL_CAPS]      = {sDebugText_Settings_LevelCap,           DEBUG_SETTINGS_MENU_ITEM_TOGGLE_LEVEL_CAPS},
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_MAP_RANDO]       = {sDebugText_Settings_MapRando,           DEBUG_SETTINGS_MENU_ITEM_TOGGLE_MAP_RANDO},
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_LEVEL_SCALING]   = {sDebugText_Settings_LevelScaling,       DEBUG_SETTINGS_MENU_ITEM_TOGGLE_LEVEL_SCALING},
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_CATCH_EXP]       = {sDebugText_Settings_CatchExp,           DEBUG_SETTINGS_MENU_ITEM_TOGGLE_CATCH_EXP},
 };
 
 static const struct ListMenuItem sDebugMenu_Items_Battle_0[] =
@@ -945,6 +973,7 @@ static void (*const sDebugMenu_Actions_Utilities[])(u8) =
 {
     [DEBUG_UTIL_MENU_ITEM_FLY]             = DebugAction_Util_Fly,
     [DEBUG_UTIL_MENU_ITEM_WARP]            = DebugAction_Util_Warp_Warp,
+    [DEBUG_UTIL_MENU_ITEM_GOAL]            = DebugAction_Util_Warp_Goal,
     [DEBUG_UTIL_MENU_ITEM_SAVEBLOCK]       = DebugAction_Util_CheckSaveBlock,
     [DEBUG_UTIL_MENU_ITEM_ROM_SPACE]       = DebugAction_Util_CheckROMSpace,
     [DEBUG_UTIL_MENU_ITEM_WEATHER]         = DebugAction_Util_Weather,
@@ -1000,9 +1029,9 @@ static void (*const sDebugMenu_Actions_Scripts[])(u8) =
     [DEBUG_UTIL_MENU_ITEM_SCRIPT_3] = DebugAction_Util_Script_3,
     [DEBUG_UTIL_MENU_ITEM_SCRIPT_4] = DebugAction_Util_Script_4,
     [DEBUG_UTIL_MENU_ITEM_SCRIPT_5] = DebugAction_Util_Script_5,
-    [DEBUG_UTIL_MENU_ITEM_SCRIPT_6] = DebugAction_Util_Script_6,
-    [DEBUG_UTIL_MENU_ITEM_SCRIPT_7] = DebugAction_Util_Script_7,
-    [DEBUG_UTIL_MENU_ITEM_SCRIPT_8] = DebugAction_Util_Script_8,
+    // [DEBUG_UTIL_MENU_ITEM_SCRIPT_6] = DebugAction_Util_Script_6,
+    // [DEBUG_UTIL_MENU_ITEM_SCRIPT_7] = DebugAction_Util_Script_7,
+    // [DEBUG_UTIL_MENU_ITEM_SCRIPT_8] = DebugAction_Util_Script_8,
 };
 
 static void (*const sDebugMenu_Actions_Flags[])(u8) =
@@ -1022,17 +1051,17 @@ static void (*const sDebugMenu_Actions_Flags[])(u8) =
 };
 static void (*const sDebugMenu_Actions_Settings[])(u8) =
 {
-    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_AUTOSAVE]      = DebugAction_Settings_AutosaveOnOff,
-    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_LEVEL_SCALING] = DebugAction_Settings_LevelScaling,
-    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_LEVEL_CAPS]    = DebugAction_Settings_LevelCap,
-    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_MAP_RANDO]     = DebugAction_Settings_MapRando,
-    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_BAG_USE]       = DebugAction_Settings_BagUseOnOff,
-    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_CATCHING]      = DebugAction_Settings_CatchingOnOff,
-    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_AI_VS_AI]      = DebugAction_Settings_AiVsAi,
-    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_ENCOUNTER]     = DebugAction_Settings_EncounterOnOff,
-    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_TRAINER_SEE]   = DebugAction_Settings_TrainerSeeOnOff,
-    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_COLISSION]     = DebugAction_Settings_CollisionOnOff,
-    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_CATCH_EXP]     = DebugAction_Settings_CatchExp,
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_INVERSE_BATTLES] = DebugAction_Settings_InverseBattlesOnOff,
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_LEVEL_SCALING]   = DebugAction_Settings_LevelScaling,
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_LEVEL_CAPS]      = DebugAction_Settings_LevelCap,
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_MAP_RANDO]       = DebugAction_Settings_MapRando,
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_BAG_USE]         = DebugAction_Settings_BagUseOnOff,
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_CATCHING]        = DebugAction_Settings_CatchingOnOff,
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_AI_VS_AI]        = DebugAction_Settings_AiVsAi,
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_ENCOUNTER]       = DebugAction_Settings_EncounterOnOff,
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_TRAINER_SEE]     = DebugAction_Settings_TrainerSeeOnOff,
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_COLISSION]       = DebugAction_Settings_CollisionOnOff,
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_CATCH_EXP]       = DebugAction_Settings_CatchExp,
 };
 static void (*const sDebugMenu_Actions_Give[])(u8) =
 {
@@ -1377,23 +1406,57 @@ static u8 Debug_CheckToggleFlags(u8 id)
         //     break;
         case DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_LOCATIONS:
             result = FlagGet(FLAG_VISITED_LITTLEROOT_TOWN) &&
-                FlagGet(FLAG_VISITED_OLDALE_TOWN) &&
-                FlagGet(FLAG_VISITED_DEWFORD_TOWN) &&
-                FlagGet(FLAG_VISITED_LAVARIDGE_TOWN) &&
-                FlagGet(FLAG_VISITED_FALLARBOR_TOWN) &&
-                FlagGet(FLAG_VISITED_VERDANTURF_TOWN) &&
-                FlagGet(FLAG_VISITED_PACIFIDLOG_TOWN) &&
-                FlagGet(FLAG_VISITED_PETALBURG_CITY) &&
-                FlagGet(FLAG_VISITED_SLATEPORT_CITY) &&
-                FlagGet(FLAG_VISITED_MAUVILLE_CITY) &&
-                FlagGet(FLAG_VISITED_RUSTBORO_CITY) &&
-                FlagGet(FLAG_VISITED_FORTREE_CITY) &&
-                FlagGet(FLAG_VISITED_LILYCOVE_CITY) &&
-                FlagGet(FLAG_VISITED_MOSSDEEP_CITY) &&
-                FlagGet(FLAG_VISITED_SOOTOPOLIS_CITY) &&
-                FlagGet(FLAG_VISITED_EVER_GRANDE_CITY) &&
-                FlagGet(FLAG_LANDMARK_POKEMON_LEAGUE) &&
-                FlagGet(FLAG_LANDMARK_BATTLE_FRONTIER);
+                     FlagGet(FLAG_VISITED_OLDALE_TOWN) &&
+                     FlagGet(FLAG_VISITED_DEWFORD_TOWN) &&
+                     FlagGet(FLAG_VISITED_LAVARIDGE_TOWN) &&
+                     FlagGet(FLAG_VISITED_FALLARBOR_TOWN) &&
+                     FlagGet(FLAG_VISITED_VERDANTURF_TOWN) &&
+                     FlagGet(FLAG_VISITED_PACIFIDLOG_TOWN) &&
+                     FlagGet(FLAG_VISITED_PETALBURG_CITY) &&
+                     FlagGet(FLAG_VISITED_SLATEPORT_CITY) &&
+                     FlagGet(FLAG_VISITED_MAUVILLE_CITY) &&
+                     FlagGet(FLAG_VISITED_RUSTBORO_CITY) &&
+                     FlagGet(FLAG_VISITED_FORTREE_CITY) &&
+                     FlagGet(FLAG_VISITED_LILYCOVE_CITY) &&
+                     FlagGet(FLAG_VISITED_MOSSDEEP_CITY) &&
+                     FlagGet(FLAG_VISITED_SOOTOPOLIS_CITY) &&
+                     FlagGet(FLAG_VISITED_EVER_GRANDE_CITY) &&
+                     FlagGet(FLAG_LANDMARK_POKEMON_LEAGUE) &&
+                     FlagGet(FLAG_LANDMARK_BATTLE_FRONTIER) && 
+                     FlagGet(FLAG_VISITED_ROUTE_101) &&
+                     FlagGet(FLAG_VISITED_ROUTE_102) &&
+                     FlagGet(FLAG_VISITED_ROUTE_103) &&
+                     FlagGet(FLAG_VISITED_ROUTE_104) &&
+                     FlagGet(FLAG_VISITED_ROUTE_105) &&
+                     FlagGet(FLAG_VISITED_ROUTE_106) &&
+                     FlagGet(FLAG_VISITED_ROUTE_107) &&
+                     FlagGet(FLAG_VISITED_ROUTE_108) &&
+                     FlagGet(FLAG_VISITED_ROUTE_109) &&
+                     FlagGet(FLAG_VISITED_ROUTE_110) &&
+                     FlagGet(FLAG_VISITED_ROUTE_111) &&
+                     FlagGet(FLAG_VISITED_ROUTE_112) &&
+                     FlagGet(FLAG_VISITED_ROUTE_113) &&
+                     FlagGet(FLAG_VISITED_ROUTE_114) &&
+                     FlagGet(FLAG_VISITED_ROUTE_115) &&
+                     FlagGet(FLAG_VISITED_ROUTE_116) &&
+                     FlagGet(FLAG_VISITED_ROUTE_117) &&
+                     FlagGet(FLAG_VISITED_ROUTE_118) &&
+                     FlagGet(FLAG_VISITED_ROUTE_119) &&
+                     FlagGet(FLAG_VISITED_ROUTE_120) &&
+                     FlagGet(FLAG_VISITED_ROUTE_121) &&
+                     FlagGet(FLAG_VISITED_ROUTE_122) &&
+                     FlagGet(FLAG_VISITED_ROUTE_123) &&
+                     FlagGet(FLAG_VISITED_ROUTE_124) &&
+                     FlagGet(FLAG_VISITED_ROUTE_125) &&
+                     FlagGet(FLAG_VISITED_ROUTE_126) &&
+                     FlagGet(FLAG_VISITED_ROUTE_127) &&
+                     FlagGet(FLAG_VISITED_ROUTE_128) &&
+                     FlagGet(FLAG_VISITED_ROUTE_129) &&
+                     FlagGet(FLAG_VISITED_ROUTE_130) &&
+                     FlagGet(FLAG_VISITED_ROUTE_131) &&
+                     FlagGet(FLAG_VISITED_ROUTE_132) &&
+                     FlagGet(FLAG_VISITED_ROUTE_133) &&
+                     FlagGet(FLAG_VISITED_ROUTE_134);
             break;
         case DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_BADGES_ALL:
             result = FlagGet(FLAG_BADGE01_GET) &&
@@ -1467,8 +1530,8 @@ static u8 Debug_CheckToggleSettings(u8 id)
                 result = FlagGet(B_FLAG_NO_CATCHING);
                 break;
         #endif
-            case DEBUG_SETTINGS_MENU_ITEM_TOGGLE_AUTOSAVE:
-                result = FlagGet(FLAG_HEAL_AUTOSAVE);
+            case DEBUG_SETTINGS_MENU_ITEM_TOGGLE_INVERSE_BATTLES:
+                result = FlagGet(FLAG_INVERSE_BATTLE);
                 break;
             case DEBUG_SETTINGS_MENU_ITEM_TOGGLE_AI_VS_AI:
                 result = FlagGet(FLAG_AI_VS_AI);
@@ -2342,7 +2405,7 @@ static void DebugAction_Util_Warp_SelectWarp(u8 taskId)
     {
         gTasks[taskId].tWarp = gTasks[taskId].tInput;
         //If there's no warp with the number available, warp to the center of the map.
-        SetWarpDestinationToMapWarp(gTasks[taskId].tMapGroup, gTasks[taskId].tMapNum, gTasks[taskId].tWarp);
+        SetWarpDestinationNoRando(gTasks[taskId].tMapGroup, gTasks[taskId].tMapNum, gTasks[taskId].tWarp, -1, -1);
         DoWarp();
         ResetInitialPlayerAvatarState();
         DebugAction_DestroyExtraWindow(taskId);
@@ -2352,6 +2415,164 @@ static void DebugAction_Util_Warp_SelectWarp(u8 taskId)
         PlaySE(SE_SELECT);
         DebugAction_DestroyExtraWindow(taskId);
     }
+}
+
+#define GOAL_COUNT 26
+
+struct WarpGoal
+{
+    s8 mapGroup;
+    s8 mapNum;
+    s8 warpNum;
+    const u8 *name;
+};
+
+static const u8 sDebugText_warpGoals_Gym1[] = _("Gym 1 Roxanne");
+static const u8 sDebugText_warpGoals_Gym2[] = _("Gym 2 Brawly");
+static const u8 sDebugText_warpGoals_Gym3[] = _("Gym 3 Wattson");
+static const u8 sDebugText_warpGoals_Gym4[] = _("Gym 4 Flannery");
+static const u8 sDebugText_warpGoals_Gym5[] = _("Gym 5 Norman");
+static const u8 sDebugText_warpGoals_Gym6[] = _("Gym 6 Winona");
+static const u8 sDebugText_warpGoals_Gym7[] = _("Gym 7 T&L");
+static const u8 sDebugText_warpGoals_Gym8[] = _("Gym 8 Juan");
+static const u8 sDebugText_warpGoals_e4_1[] = _("E4 1 Sidney");
+static const u8 sDebugText_warpGoals_e4_2[] = _("E4 2 Phoebe");
+static const u8 sDebugText_warpGoals_e4_3[] = _("E4 3 Glacia");
+static const u8 sDebugText_warpGoals_e4_4[] = _("E4 4 Drake");
+static const u8 sDebugText_warpGoals_champion[] = _("Champ Wallace");
+static const u8 sDebugText_warpGoals_final[] = _("Boss Steven");
+static const u8 sDebugText_warpGoals_legendRay[] = _("Rayquaza");
+static const u8 sDebugText_warpGoals_legendGro[] = _("Groudon");
+static const u8 sDebugText_warpGoals_legendKyo[] = _("Kyogre");
+static const u8 sDebugText_warpGoals_legendLug[] = _("Lugia");
+static const u8 sDebugText_warpGoals_legendHoo[] = _("Ho-oh");
+static const u8 sDebugText_warpGoals_trigSC[] = _("Steven Cave");
+static const u8 sDebugText_warpGoals_trigME[] = _("Magma Emblem");
+static const u8 sDebugText_warpGoals_flagRS[] = _("Rock Smash");
+static const u8 sDebugText_warpGoals_flagSTR[] = _("Strength");
+static const u8 sDebugText_warpGoals_flagFLA[] = _("Flash");
+static const u8 sDebugText_warpGoals_flagSK[] = _("Storage Key");
+static const u8 sDebugText_warpGoals_flagOW[] = _("Origin Walace");
+
+const struct WarpGoal warpGoals[GOAL_COUNT] = 
+{
+    {11 ,  3 , 0 , sDebugText_warpGoals_Gym1},
+    { 3 ,  3 , 0 , sDebugText_warpGoals_Gym2},
+    {10 ,  0 , 0 , sDebugText_warpGoals_Gym3},
+    { 4 ,  1 , 0 , sDebugText_warpGoals_Gym4},
+    { 8 ,  1 , 0 , sDebugText_warpGoals_Gym5},
+    {12 ,  1 , 0 , sDebugText_warpGoals_Gym6},
+    {14 ,  0 , 0 , sDebugText_warpGoals_Gym7},
+    {15 ,  0 , 0 , sDebugText_warpGoals_Gym8},
+
+    {16 ,  0 , 0 , sDebugText_warpGoals_e4_1},
+    {16 ,  1 , 0 , sDebugText_warpGoals_e4_2},
+    {16 ,  2 , 0 , sDebugText_warpGoals_e4_3},
+    {16 ,  3 , 0 , sDebugText_warpGoals_e4_4},
+    {16 ,  4 , 0 , sDebugText_warpGoals_champion},
+
+    {24 , 107 , 0 , sDebugText_warpGoals_final},
+
+    {24 , 85  , 0 , sDebugText_warpGoals_legendRay},
+    {24 , 105 , 0 , sDebugText_warpGoals_legendGro},
+    {24 , 103 , 0 , sDebugText_warpGoals_legendKyo},
+    {26 , 87  , 0 , sDebugText_warpGoals_legendLug},
+    {26 , 75  , 0 , sDebugText_warpGoals_legendHoo},
+
+    {24 , 10 , 0 , sDebugText_warpGoals_trigSC},
+    {24 , 22 , 0 , sDebugText_warpGoals_trigME},
+    {10 ,  2 , 0 , sDebugText_warpGoals_flagRS},
+    {24 ,  4 , 0 , sDebugText_warpGoals_flagSTR},
+    {24 ,  7 , 0 , sDebugText_warpGoals_flagFLA},
+    {24 , 63 , 0 , sDebugText_warpGoals_flagSK},
+    {24 , 42 , 0 , sDebugText_warpGoals_flagOW},
+};
+
+static void DebugAction_Util_Warp_SelectGoal(u8 taskId)
+{
+    if (JOY_NEW(DPAD_ANY))
+    {
+        PlaySE(SE_SELECT);
+        if (JOY_NEW(DPAD_UP))
+        {
+            gTasks[taskId].tInput += sPowersOfTen[gTasks[taskId].tDigit];
+            if (gTasks[taskId].tInput >= GOAL_COUNT)
+                gTasks[taskId].tInput = GOAL_COUNT - 1;
+        }
+        if (JOY_NEW(DPAD_DOWN))
+        {
+            gTasks[taskId].tInput -= sPowersOfTen[gTasks[taskId].tDigit];
+            if (gTasks[taskId].tInput < 0)
+                gTasks[taskId].tInput = 0;
+        }
+        if (JOY_NEW(DPAD_LEFT))
+        {
+            if (gTasks[taskId].tDigit > 0)
+                gTasks[taskId].tDigit -= 1;
+        }
+        if (JOY_NEW(DPAD_RIGHT))
+        {
+            if (gTasks[taskId].tDigit < 2)
+                gTasks[taskId].tDigit += 1;
+        }
+
+        ConvertIntToDecimalStringN(gStringVar1, gTasks[taskId].tInput, STR_CONV_MODE_LEADING_ZEROS, 3);
+        ConvertIntToDecimalStringN(gStringVar2, GOAL_COUNT - 1, STR_CONV_MODE_LEADING_ZEROS, 3);
+        StringExpandPlaceholders(gStringVar1, sDebugText_Util_WarpToMap_SelMax);
+        StringCopy(gStringVar2, warpGoals[gTasks[taskId].tInput].name);
+        StringCopy(gStringVar3, gText_DigitIndicator[gTasks[taskId].tDigit]);
+        StringExpandPlaceholders(gStringVar4, sDebugText_Util_WarpToMap_SelectMap);
+        AddTextPrinterParameterized(gTasks[taskId].tSubWindowId, DEBUG_MENU_FONT, gStringVar4, 1, 1, 0, NULL);
+    }
+
+    if (JOY_NEW(A_BUTTON))
+    {
+        gTasks[taskId].tMapGroup = warpGoals[gTasks[taskId].tInput].mapGroup;
+        gTasks[taskId].tMapNum = warpGoals[gTasks[taskId].tInput].mapNum;
+        gTasks[taskId].tWarp = warpGoals[gTasks[taskId].tInput].warpNum;
+        //If there's no warp with the number available, warp to the center of the map.
+        SetWarpDestinationNoRando(gTasks[taskId].tMapGroup, gTasks[taskId].tMapNum, gTasks[taskId].tWarp, -1, -1);
+        DoWarp();
+        ResetInitialPlayerAvatarState();
+        DebugAction_DestroyExtraWindow(taskId);
+    }
+    else if (JOY_NEW(B_BUTTON))
+    {
+        PlaySE(SE_SELECT);
+        DebugAction_DestroyExtraWindow(taskId);
+    }
+}
+
+
+static void DebugAction_Util_Warp_Goal(u8 taskId)
+{
+    u8 windowId;
+
+    ClearStdWindowAndFrame(gTasks[taskId].tWindowId, TRUE);
+    RemoveWindow(gTasks[taskId].tWindowId);
+
+    HideMapNamePopUpWindow();
+    LoadMessageBoxAndBorderGfx();
+    windowId = AddWindow(&sDebugMenuWindowTemplateExtra);
+    DrawStdWindowFrame(windowId, FALSE);
+
+    CopyWindowToVram(windowId, COPYWIN_FULL);
+
+    gTasks[taskId].func = DebugAction_Util_Warp_SelectGoal;
+    gTasks[taskId].tSubWindowId = windowId;
+    gTasks[taskId].tInput = 0;
+    gTasks[taskId].tDigit = 0;
+    gTasks[taskId].tMapGroup = 0;
+    gTasks[taskId].tMapNum = 0;
+    gTasks[taskId].tWarp = 0;
+
+    ConvertIntToDecimalStringN(gStringVar1, gTasks[taskId].tInput, STR_CONV_MODE_LEADING_ZEROS, 3);
+    ConvertIntToDecimalStringN(gStringVar2, GOAL_COUNT - 1, STR_CONV_MODE_LEADING_ZEROS, 3);
+    StringExpandPlaceholders(gStringVar1, sDebugText_Util_WarpToMap_SelMax);
+    StringCopy(gStringVar2, warpGoals[gTasks[taskId].tInput].name);
+    StringCopy(gStringVar3, gText_DigitIndicator[gTasks[taskId].tDigit]);
+    StringExpandPlaceholders(gStringVar4, sDebugText_Util_WarpToMap_SelectMap);
+    AddTextPrinterParameterized(gTasks[taskId].tSubWindowId, DEBUG_MENU_FONT, gStringVar4, 1, 1, 0, NULL);
 }
 
 #undef tMapGroup
@@ -2633,52 +2854,229 @@ void BufferExpansionVersion(struct ScriptContext *ctx)
 
 // *******************************
 // Actions Scripts
+//
+// Speedchoice Menu
 static void DebugAction_Util_Script_1(u8 taskId)
 {
     PlaySE(SE_SELECT);
     gSpecialVar_Result = RETURN_TO_GAME_TASK_OPT;
     gTasks[taskId].func = Task_InitSpeedchoiceMenu;
     FreeAllWindowBuffers();
-    //Debug_DestroyMenu_Full_Script(taskId, Debug_EventScript_Script_1);
 }
 
+// Slow Motion
 static void DebugAction_Util_Script_2(u8 taskId)
 {
     PlaySE(SE_SELECT);
     SetSpeed(SLOW_MO_ON);
     DebugAction_DestroyExtraWindow(taskId);
-   // Debug_DestroyMenu_Full_Script(taskId, Debug_EventScript_Script_2);
 }
 
+// Force Gym Battle
 static void DebugAction_Util_Script_3(u8 taskId)
 {
-    Debug_DestroyMenu_Full_Script(taskId, Debug_EventScript_Script_3);
+    switch(gMapHeader.mapLayoutId)
+    {
+        case LAYOUT_RUSTBORO_CITY_GYM:
+        case LAYOUT_RUSTBORO_CITY:
+            Debug_DestroyMenu_Full_Script(taskId, Debug_RustboroCity_Gym_EventScript_Roxanne);
+            break;
+        case LAYOUT_DEWFORD_TOWN_GYM:
+        case LAYOUT_DEWFORD_TOWN:
+            Debug_DestroyMenu_Full_Script(taskId, Debug_DewfordTown_Gym_EventScript_Brawly);
+            break;
+        case LAYOUT_MAUVILLE_CITY_GYM:
+        case LAYOUT_MAUVILLE_CITY:
+            Debug_DestroyMenu_Full_Script(taskId, Debug_MauvilleCity_Gym_EventScript_Wattson);
+            break;
+        case LAYOUT_LAVARIDGE_TOWN_GYM_1F:
+        case LAYOUT_LAVARIDGE_TOWN_GYM_B1F:
+        case LAYOUT_LAVARIDGE_TOWN:
+            Debug_DestroyMenu_Full_Script(taskId, Debug_LavaridgeTown_Gym_1F_EventScript_Flannery);
+            break;
+        case LAYOUT_PETALBURG_CITY_GYM:
+        case LAYOUT_PETALBURG_CITY:
+            Debug_DestroyMenu_Full_Script(taskId, Debug_PetalburgCity_Gym_EventScript_NormanBattle);
+            break;
+        case LAYOUT_FORTREE_CITY_GYM:
+        case LAYOUT_FORTREE_CITY:
+            Debug_DestroyMenu_Full_Script(taskId, Debug_FortreeCity_Gym_EventScript_Winona);
+            break;
+        case LAYOUT_MOSSDEEP_CITY_GYM:
+        case LAYOUT_MOSSDEEP_CITY:
+            Debug_DestroyMenu_Full_Script(taskId, Debug_MossdeepCity_Gym_EventScript_TateAndLiza);
+            break;
+        case LAYOUT_SOOTOPOLIS_CITY_GYM_1F:
+        case LAYOUT_SOOTOPOLIS_CITY_GYM_B1F:    
+        case LAYOUT_SOOTOPOLIS_CITY:
+            Debug_DestroyMenu_Full_Script(taskId, Debug_SootopolisCity_Gym_1F_EventScript_Juan);
+            break;
+        case LAYOUT_EVER_GRANDE_CITY_SIDNEYS_ROOM:
+            Debug_DestroyMenu_Full_Script(taskId, Debug_EverGrandeCity_SidneysRoom_EventScript_Sidney);
+            break;
+        case LAYOUT_EVER_GRANDE_CITY_PHOEBES_ROOM:
+            Debug_DestroyMenu_Full_Script(taskId, Debug_EverGrandeCity_PhoebesRoom_EventScript_Phoebe);
+            break;
+        case LAYOUT_EVER_GRANDE_CITY_GLACIAS_ROOM:
+            Debug_DestroyMenu_Full_Script(taskId, Debug_EverGrandeCity_GlaciasRoom_EventScript_Glacia);
+            break;
+        case LAYOUT_EVER_GRANDE_CITY_DRAKES_ROOM:
+            Debug_DestroyMenu_Full_Script(taskId, Debug_EverGrandeCity_DrakesRoom_EventScript_Drake);
+            break;
+        case LAYOUT_EVER_GRANDE_CITY_CHAMPIONS_ROOM:    
+        case LAYOUT_EVER_GRANDE_CITY:
+            Debug_DestroyMenu_Full_Script(taskId, Debug_EverGrandeCity_ChampionsRoom_EventScript_Wallace);
+            break;
+        case LAYOUT_METEOR_FALLS_STEVENS_CAVE:
+            Debug_DestroyMenu_Full_Script(taskId, Debug_MeteorFalls_StevensCave_EventScript_Steven);
+            break;
+        default:
+            Debug_DestroyMenu_Full_Script(taskId, Debug_YouAreNotInAGym);
+    }
+
 }
 
+
+// Unlock doors
 static void DebugAction_Util_Script_4(u8 taskId)
 {
-    Debug_DestroyMenu_Full_Script(taskId, Debug_EventScript_Script_4);
+    switch(gMapHeader.mapLayoutId)
+    {
+        case LAYOUT_ROUTE105:
+        case LAYOUT_ROUTE111:
+        case LAYOUT_ROUTE120:
+            FlagSet(FLAG_REGI_DOORS_OPENED);
+            break;
+        case LAYOUT_ISLAND_CAVE:
+            FlagSet(FLAG_SYS_BRAILLE_REGICE_COMPLETED);
+            break;
+        case LAYOUT_DESERT_RUINS:
+            FlagSet(FLAG_SYS_REGIROCK_PUZZLE_COMPLETED);
+            break;
+        case LAYOUT_ANCIENT_TOMB:
+            FlagSet(FLAG_SYS_REGISTEEL_PUZZLE_COMPLETED);
+            break;
+        case LAYOUT_NEW_MAUVILLE_ENTRANCE:
+            VarSet(VAR_NEW_MAUVILLE_STATE, 1);
+            break;
+        case LAYOUT_SOOTOPOLIS_CITY:
+            FlagSet(FLAG_SOOTOPOLIS_ARCHIE_MAXIE_LEAVE);
+            break;
+        case LAYOUT_EVER_GRANDE_CITY_SIDNEYS_ROOM:
+            FlagSet(FLAG_DEFEATED_ELITE_4_SIDNEY);
+            VarSet(VAR_ELITE_4_STATE, 1);
+            break;
+        case LAYOUT_EVER_GRANDE_CITY_PHOEBES_ROOM:
+            FlagSet(FLAG_DEFEATED_ELITE_4_PHOEBE);
+            VarSet(VAR_ELITE_4_STATE, 2);
+            break;
+        case LAYOUT_EVER_GRANDE_CITY_GLACIAS_ROOM:
+            FlagSet(FLAG_DEFEATED_ELITE_4_GLACIA);
+            VarSet(VAR_ELITE_4_STATE, 3);
+            break;
+        case LAYOUT_EVER_GRANDE_CITY_DRAKES_ROOM:
+            FlagSet(FLAG_DEFEATED_ELITE_4_DRAKE);
+            VarSet(VAR_ELITE_4_STATE, 4);
+            break;
+        case LAYOUT_EVER_GRANDE_CITY_CHAMPIONS_ROOM:
+            PlaySE(SE_UNLOCK);
+            Debug_DestroyMenu_Full_Script(taskId, EverGrandeCity_ChampionsRoom_UnlockDoor);
+            DrawWholeMapView();
+            return;
+            break;
+        case LAYOUT_JAGGED_PASS:
+            VarSet(VAR_JAGGED_PASS_STATE, 2);
+            break;
+        case LAYOUT_METEOR_FALLS_1F_1R:
+            FlagSet(FLAG_SYS_GAME_CLEAR);
+            break;
+        case LAYOUT_ABANDONED_SHIP_CORRIDORS_B1F:
+            FlagSet(FLAG_USED_STORAGE_KEY);
+            break;
+        case LAYOUT_ROUTE110_TRICK_HOUSE_END:
+            PlaySE(SE_UNLOCK);
+            Debug_DestroyMenu_Full_Script(taskId, Route110_TrickHouseEnd_EventScript_SetDoorOpenMetatile);
+            DrawWholeMapView();
+            return;
+            break;
+        case LAYOUT_ROUTE114_FOSSIL_MANIACS_TUNNEL:
+            FlagSet(FLAG_SYS_GAME_CLEAR);
+            break;
+        case LAYOUT_SKY_PILLAR_OUTSIDE:
+            FlagSet(FLAG_WALLACE_GOES_TO_SKY_PILLAR);
+            break;
+        case LAYOUT_ROUTE103:
+            FlagSet(FLAG_SYS_GAME_CLEAR);
+            break; 
+        case LAYOUT_LILYCOVE_CITY:
+            FlagSet(FLAG_TEAM_AQUA_ESCAPED_IN_SUBMARINE);
+            break;    
+        case LAYOUT_SEALED_CHAMBER_OUTER_ROOM:
+            FlagSet(FLAG_SYS_BRAILLE_DIG);
+            break;            
+    }
+
+    SetMainCallback2(CB2_LoadMap);
+    DebugAction_DestroyExtraWindow(taskId);
 }
 
+// Unexist NPCs
 static void DebugAction_Util_Script_5(u8 taskId)
-{
-    Debug_DestroyMenu_Full_Script(taskId, Debug_EventScript_Script_5);
+{   
+    // u8 objEventId = GetObjectEventIdByXY(gSaveBlock1Ptr->pos.x + 1, gSaveBlock1Ptr->pos.y + 1);
+    // RemoveObjectEventByLocalIdAndMap(objEventId, gSaveBlock1Ptr->location.mapNum, gSaveBlock1Ptr->location.mapGroup);
+
+    // objEventId = GetObjectEventIdByXY(gSaveBlock1Ptr->pos.x + 1, gSaveBlock1Ptr->pos.y);
+    // RemoveObjectEventByLocalIdAndMap(objEventId, gSaveBlock1Ptr->location.mapNum, gSaveBlock1Ptr->location.mapGroup);
+
+    // objEventId = GetObjectEventIdByXY(gSaveBlock1Ptr->pos.x + 1, gSaveBlock1Ptr->pos.y - 1);
+    // RemoveObjectEventByLocalIdAndMap(objEventId, gSaveBlock1Ptr->location.mapNum, gSaveBlock1Ptr->location.mapGroup);
+
+    // objEventId = GetObjectEventIdByXY(gSaveBlock1Ptr->pos.x - 1, gSaveBlock1Ptr->pos.y + 1);
+    // RemoveObjectEventByLocalIdAndMap(objEventId, gSaveBlock1Ptr->location.mapNum, gSaveBlock1Ptr->location.mapGroup);
+
+    // objEventId = GetObjectEventIdByXY(gSaveBlock1Ptr->pos.x - 1, gSaveBlock1Ptr->pos.y);
+    // RemoveObjectEventByLocalIdAndMap(objEventId, gSaveBlock1Ptr->location.mapNum, gSaveBlock1Ptr->location.mapGroup);
+
+    // objEventId = GetObjectEventIdByXY(gSaveBlock1Ptr->pos.x - 1, gSaveBlock1Ptr->pos.y - 1);
+    // RemoveObjectEventByLocalIdAndMap(objEventId, gSaveBlock1Ptr->location.mapNum, gSaveBlock1Ptr->location.mapGroup);
+
+    // objEventId = GetObjectEventIdByXY(gSaveBlock1Ptr->pos.x, gSaveBlock1Ptr->pos.y + 1);
+    // RemoveObjectEventByLocalIdAndMap(objEventId, gSaveBlock1Ptr->location.mapNum, gSaveBlock1Ptr->location.mapGroup);
+
+    // objEventId = GetObjectEventIdByXY(gSaveBlock1Ptr->pos.x, gSaveBlock1Ptr->pos.y - 1);
+    // RemoveObjectEventByLocalIdAndMap(objEventId, gSaveBlock1Ptr->location.mapNum, gSaveBlock1Ptr->location.mapGroup);
+
+    u8 i;
+
+    PlaySE(SE_FLEE);
+
+    for (i = 0; i < OBJECT_EVENTS_COUNT; i++)
+    {
+        if (!gObjectEvents[i].isPlayer)
+        {
+            gObjectEvents[i].currentElevation = 10;
+            gObjectEvents[i].invisible = 1;
+        }
+    }   
+
+    DebugAction_DestroyExtraWindow(taskId);
 }
 
-static void DebugAction_Util_Script_6(u8 taskId)
-{
-    Debug_DestroyMenu_Full_Script(taskId, Debug_EventScript_Script_6);
-}
+// static void DebugAction_Util_Script_6(u8 taskId)
+// {
+//     Debug_DestroyMenu_Full_Script(taskId, Debug_EventScript_Script_6);
+// }
 
-static void DebugAction_Util_Script_7(u8 taskId)
-{
-    Debug_DestroyMenu_Full_Script(taskId, Debug_EventScript_Script_7);
-}
+// static void DebugAction_Util_Script_7(u8 taskId)
+// {
+//     Debug_DestroyMenu_Full_Script(taskId, Debug_EventScript_Script_7);
+// }
 
-static void DebugAction_Util_Script_8(u8 taskId)
-{
-    Debug_DestroyMenu_Full_Script(taskId, Debug_EventScript_Script_8);
-}
+// static void DebugAction_Util_Script_8(u8 taskId)
+// {
+//     Debug_DestroyMenu_Full_Script(taskId, Debug_EventScript_Script_8);
+// }
 
 // *******************************
 // Actions Flags and Vars
@@ -3070,6 +3468,40 @@ static void DebugAction_FlagsVars_ToggleFlyFlags(u8 taskId)
         FlagClear(FLAG_VISITED_EVER_GRANDE_CITY);
         FlagClear(FLAG_LANDMARK_POKEMON_LEAGUE);
         FlagClear(FLAG_LANDMARK_BATTLE_FRONTIER);
+        FlagClear(FLAG_VISITED_ROUTE_101);
+        FlagClear(FLAG_VISITED_ROUTE_102);
+        FlagClear(FLAG_VISITED_ROUTE_103);
+        FlagClear(FLAG_VISITED_ROUTE_104);
+        FlagClear(FLAG_VISITED_ROUTE_105);
+        FlagClear(FLAG_VISITED_ROUTE_106);
+        FlagClear(FLAG_VISITED_ROUTE_107);
+        FlagClear(FLAG_VISITED_ROUTE_108);
+        FlagClear(FLAG_VISITED_ROUTE_109);
+        FlagClear(FLAG_VISITED_ROUTE_110);
+        FlagClear(FLAG_VISITED_ROUTE_111);
+        FlagClear(FLAG_VISITED_ROUTE_112);
+        FlagClear(FLAG_VISITED_ROUTE_113);
+        FlagClear(FLAG_VISITED_ROUTE_114);
+        FlagClear(FLAG_VISITED_ROUTE_115);
+        FlagClear(FLAG_VISITED_ROUTE_116);
+        FlagClear(FLAG_VISITED_ROUTE_117);
+        FlagClear(FLAG_VISITED_ROUTE_118);
+        FlagClear(FLAG_VISITED_ROUTE_119);
+        FlagClear(FLAG_VISITED_ROUTE_120);
+        FlagClear(FLAG_VISITED_ROUTE_121);
+        FlagClear(FLAG_VISITED_ROUTE_122);
+        FlagClear(FLAG_VISITED_ROUTE_123);
+        FlagClear(FLAG_VISITED_ROUTE_124);
+        FlagClear(FLAG_VISITED_ROUTE_125);
+        FlagClear(FLAG_VISITED_ROUTE_126);
+        FlagClear(FLAG_VISITED_ROUTE_127);
+        FlagClear(FLAG_VISITED_ROUTE_128);
+        FlagClear(FLAG_VISITED_ROUTE_129);
+        FlagClear(FLAG_VISITED_ROUTE_130);
+        FlagClear(FLAG_VISITED_ROUTE_131);
+        FlagClear(FLAG_VISITED_ROUTE_132);
+        FlagClear(FLAG_VISITED_ROUTE_133);
+        FlagClear(FLAG_VISITED_ROUTE_134);
     }
     else
     {
@@ -3092,6 +3524,40 @@ static void DebugAction_FlagsVars_ToggleFlyFlags(u8 taskId)
         FlagSet(FLAG_VISITED_EVER_GRANDE_CITY);
         FlagSet(FLAG_LANDMARK_POKEMON_LEAGUE);
         FlagSet(FLAG_LANDMARK_BATTLE_FRONTIER);
+        FlagSet(FLAG_VISITED_ROUTE_101);
+        FlagSet(FLAG_VISITED_ROUTE_102);
+        FlagSet(FLAG_VISITED_ROUTE_103);
+        FlagSet(FLAG_VISITED_ROUTE_104);
+        FlagSet(FLAG_VISITED_ROUTE_105);
+        FlagSet(FLAG_VISITED_ROUTE_106);
+        FlagSet(FLAG_VISITED_ROUTE_107);
+        FlagSet(FLAG_VISITED_ROUTE_108);
+        FlagSet(FLAG_VISITED_ROUTE_109);
+        FlagSet(FLAG_VISITED_ROUTE_110);
+        FlagSet(FLAG_VISITED_ROUTE_111);
+        FlagSet(FLAG_VISITED_ROUTE_112);
+        FlagSet(FLAG_VISITED_ROUTE_113);
+        FlagSet(FLAG_VISITED_ROUTE_114);
+        FlagSet(FLAG_VISITED_ROUTE_115);
+        FlagSet(FLAG_VISITED_ROUTE_116);
+        FlagSet(FLAG_VISITED_ROUTE_117);
+        FlagSet(FLAG_VISITED_ROUTE_118);
+        FlagSet(FLAG_VISITED_ROUTE_119);
+        FlagSet(FLAG_VISITED_ROUTE_120);
+        FlagSet(FLAG_VISITED_ROUTE_121);
+        FlagSet(FLAG_VISITED_ROUTE_122);
+        FlagSet(FLAG_VISITED_ROUTE_123);
+        FlagSet(FLAG_VISITED_ROUTE_124);
+        FlagSet(FLAG_VISITED_ROUTE_125);
+        FlagSet(FLAG_VISITED_ROUTE_126);
+        FlagSet(FLAG_VISITED_ROUTE_127);
+        FlagSet(FLAG_VISITED_ROUTE_128);
+        FlagSet(FLAG_VISITED_ROUTE_129);
+        FlagSet(FLAG_VISITED_ROUTE_130);
+        FlagSet(FLAG_VISITED_ROUTE_131);
+        FlagSet(FLAG_VISITED_ROUTE_132);
+        FlagSet(FLAG_VISITED_ROUTE_133);
+        FlagSet(FLAG_VISITED_ROUTE_134);
     }
 }
 
@@ -3198,13 +3664,13 @@ static void DebugAction_Settings_CatchingOnOff(u8 taskId)
 #endif
 }
 
-static void DebugAction_Settings_AutosaveOnOff(u8 taskId)
+static void DebugAction_Settings_InverseBattlesOnOff(u8 taskId)
 {
-    if (FlagGet(FLAG_HEAL_AUTOSAVE))
+    if (FlagGet(FLAG_INVERSE_BATTLE))
         PlaySE(SE_PC_OFF);
     else
         PlaySE(SE_PC_LOGIN);
-    FlagToggle(FLAG_HEAL_AUTOSAVE);
+    FlagToggle(FLAG_INVERSE_BATTLE);
 }
 
 static void DebugAction_Settings_AiVsAi(u8 taskId)
@@ -3231,7 +3697,19 @@ static void DebugAction_Settings_MapRando(u8 taskId)
         PlaySE(SE_PC_OFF);
     else
         PlaySE(SE_PC_LOGIN);
+
     FlagToggle(FLAG_MAP_RANDO);
+
+    if (FlagGet(FLAG_MAP_RANDO)) 
+    {
+        ApplyFixesForEveryWarp();
+    }
+
+    /*
+    * We will need to reload the map so when random warps are enabled/disabled 
+    * For example if you walk into a an e4 room with random-warps-off, then turn them on to check where the connection was
+    */
+    SetMainCallback2(CB2_LoadMap);
 }
 
 static void DebugAction_Settings_LevelScaling(u8 taskId)

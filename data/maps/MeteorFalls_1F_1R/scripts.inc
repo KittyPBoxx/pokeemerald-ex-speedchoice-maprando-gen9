@@ -10,6 +10,7 @@ MeteorFalls_1F_1R_MapScripts::
 
 MeteorFalls_1F_1R_OnLoad:
 	call_if_set FLAG_SYS_GAME_CLEAR, MeteorFalls_1F_1R_EventScript_OpenStevensCave
+	call_if_set FLAG_MAP_RANDO, MeteorFalls_1F_1R_EventScript_OpenStevensCave
 	end
 
 MeteorFalls_1F_1R_EventScript_OpenStevensCave::
@@ -21,9 +22,9 @@ MeteorFalls_1F_1R_EventScript_OpenStevensCave::
 
 MeteorFalls_1F_1R_EventScript_MagmaStealsMeteoriteScene::
 	lockall
-	playbgm MUS_ENCOUNTER_MAGMA, FALSE
 	applymovement OBJ_EVENT_ID_PLAYER, Common_Movement_FaceDown
 	waitmovement 0
+	playbgm MUS_ENCOUNTER_MAGMA, FALSE
 	delay 30
 	applymovement LOCALID_MAGMA_GRUNT_1, Common_Movement_WalkInPlaceDown
 	waitmovement 0
@@ -44,6 +45,44 @@ MeteorFalls_1F_1R_EventScript_MagmaStealsMeteoriteScene::
 	msgbox MeteorFalls_1F_1R_Text_HoldItRightThereMagma, MSGBOX_DEFAULT
 	closemessage
 	applymovement OBJ_EVENT_ID_PLAYER, Common_Movement_WalkInPlaceFasterLeft
+	goto MeteorFalls_1F_1R_EventScript_MagmaStealsMeteoriteSceneCommon
+	end
+
+MeteorFalls_1F_1R_EventScript_MagmaStealsMeteoriteScene3::
+	lockall
+	applymovement OBJ_EVENT_ID_PLAYER, Common_Movement_WalkDown
+	waitmovement 0
+MeteorFalls_1F_1R_EventScript_MagmaStealsMeteoriteScene2::
+	lockall
+	applymovement OBJ_EVENT_ID_PLAYER, Common_Movement_WalkDown
+	waitmovement 0
+MeteorFalls_1F_1R_EventScript_MagmaStealsMeteoriteScene1::
+	lockall
+	applymovement OBJ_EVENT_ID_PLAYER, Common_Movement_FaceRight
+	waitmovement 0
+	playbgm MUS_ENCOUNTER_MAGMA, FALSE
+	delay 30
+	applymovement LOCALID_MAGMA_GRUNT_1, Common_Movement_WalkInPlaceDown
+	waitmovement 0
+	msgbox MeteorFalls_1F_1R_Text_WithThisMeteorite, MSGBOX_DEFAULT
+	closemessage
+	applymovement LOCALID_MAGMA_GRUNT_1, Common_Movement_WalkInPlaceFasterLeft
+	applymovement LOCALID_MAGMA_GRUNT_2, Common_Movement_WalkInPlaceFasterLeft
+	waitmovement 0
+	playse SE_PIN
+	applymovement LOCALID_MAGMA_GRUNT_1, Common_Movement_ExclamationMark
+	waitmovement 0
+	applymovement LOCALID_MAGMA_GRUNT_1, Common_Movement_Delay48
+	waitmovement 0
+	msgbox MeteorFalls_1F_1R_Text_DontExpectMercyFromMagma, MSGBOX_DEFAULT
+	closemessage
+	applymovement LOCALID_MAGMA_GRUNT_1, MeteorFalls_1F_1R_Movement_MagmaGruntApproachPlayer
+	applymovement LOCALID_MAGMA_GRUNT_2, Common_Movement_FaceUp
+	waitmovement 0
+	msgbox MeteorFalls_1F_1R_Text_HoldItRightThereMagma, MSGBOX_DEFAULT
+	closemessage
+	applymovement OBJ_EVENT_ID_PLAYER, Common_Movement_WalkInPlaceFasterRight
+MeteorFalls_1F_1R_EventScript_MagmaStealsMeteoriteSceneCommon::
 	applymovement LOCALID_MAGMA_GRUNT_1, Common_Movement_WalkInPlaceFasterLeft
 	applymovement LOCALID_MAGMA_GRUNT_2, Common_Movement_WalkInPlaceFasterLeft
 	waitmovement 0

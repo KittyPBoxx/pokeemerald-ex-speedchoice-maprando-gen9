@@ -3036,7 +3036,14 @@ void SurfFieldEffect_Init(struct Task *task)
     // Put follower into pokeball before using Surf
     HideFollowerForFieldEffect();
     gPlayerAvatar.preventStep = TRUE;
+
+    if (gPlayerAvatar.flags & PLAYER_AVATAR_STATE_MACH_BIKE)
+        gPlayerAvatar.surfHistory = 0;
+    else
+        gPlayerAvatar.surfHistory = 1;
+
     SetPlayerAvatarStateMask(PLAYER_AVATAR_FLAG_SURFING);
+    
     PlayerGetDestCoords(&task->tDestX, &task->tDestY);
     MoveCoords(gObjectEvents[gPlayerAvatar.objectEventId].movementDirection, &task->tDestX, &task->tDestY);
     task->tState++;

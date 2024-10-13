@@ -766,6 +766,24 @@
       "y": 13,
       "elevation": 3,
       "weather": "COORD_EVENT_WEATHER_ROUTE119_CYCLE"
+    },
+    {
+      "type": "trigger",
+      "x": 21,
+      "y": 33,
+      "elevation": 4,
+      "var": "TRIGGER_RUN_IMMEDIATELY",
+      "var_value": "0",
+      "script": "Route119_EventScript_HideAquaGrunts"
+    },
+    {
+      "type": "trigger",
+      "x": 21,
+      "y": 34,
+      "elevation": 4,
+      "var": "TRIGGER_RUN_IMMEDIATELY",
+      "var_value": "0",
+      "script": "Route119_EventScript_HideAquaGrunts"
     }
   ],
   "bg_events": [

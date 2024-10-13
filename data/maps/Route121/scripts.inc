@@ -3,7 +3,12 @@
 .set LOCALID_GRUNT_3, 14
 
 Route121_MapScripts::
+	map_script MAP_SCRIPT_ON_TRANSITION, Route121_OnTransition
 	.byte 0
+
+Route121_OnTransition:
+	setflag FLAG_VISITED_ROUTE_121
+	end
 
 Route121_EventScript_Woman::
 	msgbox Route121_Text_AheadLoomsMtPyre, MSGBOX_NPC
@@ -15,6 +20,27 @@ Route121_EventScript_MtPyrePierSign::
 
 Route121_EventScript_SafariZoneSign::
 	msgbox Route121_Text_SafariZoneSign, MSGBOX_SIGN
+	end
+
+
+Route121_EventScript_AquaGruntsMoveOutBottom::
+	lockall
+	playbgm MUS_ENCOUNTER_AQUA, FALSE
+	applymovement LOCALID_GRUNT_2, Common_Movement_WalkInPlaceRight
+	waitmovement 0
+	msgbox Route121_Text_OkayMoveOutToMtPyre, MSGBOX_DEFAULT
+	closemessage
+	applymovement OBJ_EVENT_ID_PLAYER, Route121_Movement_PlayerStepAside
+	applymovement LOCALID_GRUNT_1, Route121_Movement_Grunt1Exit
+	applymovement LOCALID_GRUNT_2, Route121_Movement_Grunt2Exit
+	applymovement LOCALID_GRUNT_3, Route121_Movement_Grunt3Exit
+	waitmovement 0
+	fadedefaultbgm
+	removeobject LOCALID_GRUNT_1
+	removeobject LOCALID_GRUNT_2
+	removeobject LOCALID_GRUNT_3
+	setvar VAR_ROUTE121_STATE, 1
+	releaseall
 	end
 
 Route121_EventScript_AquaGruntsMoveOut::
@@ -36,7 +62,17 @@ Route121_EventScript_AquaGruntsMoveOut::
 	releaseall
 	end
 
+Route121_Movement_PlayerStepAside:
+	walk_right
+	walk_right
+	face_left
+	step_end
+
 Route121_Movement_Grunt1Exit:
+	walk_down
+	walk_down
+	walk_down
+	walk_down
 	walk_down
 	walk_down
 	walk_down
@@ -56,9 +92,17 @@ Route121_Movement_Grunt2Exit:
 	walk_down
 	walk_down
 	walk_down
+	walk_down
+	walk_down
+	walk_down
+	walk_down
 	step_end
 
 Route121_Movement_Grunt3Exit:
+	walk_down
+	walk_down
+	walk_down
+	walk_down
 	walk_down
 	walk_down
 	walk_down

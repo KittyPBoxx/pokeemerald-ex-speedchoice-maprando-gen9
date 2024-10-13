@@ -347,6 +347,60 @@
       "var": "VAR_ROUTE118_STATE",
       "var_value": "0",
       "script": "Route118_EventScript_StevenTrigger2"
+    },
+    {
+      "type": "trigger",
+      "x": 42,
+      "y": 10,
+      "elevation": 3,
+      "var": "VAR_ROUTE118_STATE",
+      "var_value": "0",
+      "script": "Route118_EventScript_StevenTrigger7"
+    },
+    {
+      "type": "trigger",
+      "x": 42,
+      "y": 7,
+      "elevation": 3,
+      "var": "VAR_ROUTE118_STATE",
+      "var_value": "0",
+      "script": "Route118_EventScript_StevenTrigger5"
+    },
+    {
+      "type": "trigger",
+      "x": 46,
+      "y": 7,
+      "elevation": 3,
+      "var": "VAR_ROUTE118_STATE",
+      "var_value": "0",
+      "script": "Route118_EventScript_StevenTrigger6"
+    },
+    {
+      "type": "trigger",
+      "x": 41,
+      "y": 9,
+      "elevation": 3,
+      "var": "VAR_ROUTE118_STATE",
+      "var_value": "0",
+      "script": "Route118_EventScript_StevenTrigger3"
+    },
+    {
+      "type": "trigger",
+      "x": 46,
+      "y": 10,
+      "elevation": 3,
+      "var": "VAR_ROUTE118_STATE",
+      "var_value": "0",
+      "script": "Route118_EventScript_StevenTrigger8"
+    },
+    {
+      "type": "trigger",
+      "x": 47,
+      "y": 9,
+      "elevation": 3,
+      "var": "VAR_ROUTE118_STATE",
+      "var_value": "0",
+      "script": "Route118_EventScript_StevenTrigger4"
     }
   ],
   "bg_events": [

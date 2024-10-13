@@ -6810,6 +6810,10 @@ u16 MonTryLearningNewMoveEvolution(struct Pokemon *mon, bool8 firstMove)
             return GiveMoveToMon(mon, gMoveToLearn);
         }
         sLearningMoveTableID++;
+
+        // We should never hit this but the randomizer might break something so this is safer
+        if (sLearningMoveTableID > 100)
+            return 0;
     }
     return 0;
 }

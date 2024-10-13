@@ -15,6 +15,7 @@
 #include "window.h"
 #include "gba/m4a_internal.h"
 #include "constants/rgb.h"
+#include "speedchoice.h"
 
 #define tMenuSelection data[0]
 #define tTextSpeed data[1]
@@ -287,6 +288,10 @@ static void Task_OptionMenuProcessInput(u8 taskId)
         else
             gTasks[taskId].tMenuSelection = 0;
         HighlightOptionMenuItem(gTasks[taskId].tMenuSelection);
+    }
+    else if (JOY_HELD(START_BUTTON) && JOY_NEW(SELECT_BUTTON))
+    {
+        ToggleSpeedchoiceDebug();
     }
     else
     {

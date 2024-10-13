@@ -552,6 +552,9 @@ void CreateWildMon(u16 species, u8 level)
 
     ZeroEnemyPartyMons();
 
+    if (species >= SPECIES_EGG)
+        species = SPECIES_BULBASAUR;
+
     switch (gSpeciesInfo[species].genderRatio)
     {
     case MON_MALE:
@@ -600,19 +603,29 @@ u8 GetEvolutionBranchCount(u16 species)
 
 u16 GetRandomFinalEvolution(u16 species)
 {
-    // maybe this can be written as a for loop.
-    while(1)
+    u16 randomIndex = 0;
+
+    for(u8 i = 0; i < 10; i++)
     {
         u8 evoCount = GetEvolutionBranchCount(species);
-
         if(evoCount == 0) // there are no further evolutions, so return the current one.
+            return species;
+
+        if(gSpeciesInfo[species].evolutions[0].method > EVO_OVERWORLD_STEPS) 
             return species;
             
         if(CheckSpeedchoiceOption(GOOD_EARLY_WILDS, GOOD_STATIC) == TRUE)
             SeedRng(gRandomizerCheckValue + species); // prevent samey pattern-ness
 
-        species = gSpeciesInfo[species].evolutions[Random() % evoCount].targetSpecies;
+        randomIndex = Random() % evoCount;
+
+        if(gSpeciesInfo[species].evolutions[randomIndex].method > EVO_OVERWORLD_STEPS || gSpeciesInfo[species].evolutions[randomIndex].targetSpecies >= SPECIES_EGG) 
+            return species;
+
+        species = gSpeciesInfo[species].evolutions[randomIndex].targetSpecies;
     }
+
+    return species;
 }
 
 static bool8 TryGenerateWildMon(const struct WildPokemonInfo *wildMonInfo, u8 area, u8 flags)

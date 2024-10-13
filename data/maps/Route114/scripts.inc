@@ -5,6 +5,7 @@ Route114_MapScripts::
 	.byte 0
 
 Route114_OnTransition:
+	setflag FLAG_VISITED_ROUTE_114
 	compare VAR_SHOULD_END_ABNORMAL_WEATHER, 1
 	call_if_eq AbnormalWeather_EventScript_HideMapNamePopup
 	compare VAR_ABNORMAL_WEATHER_LOCATION, ABNORMAL_WEATHER_ROUTE_114_NORTH
