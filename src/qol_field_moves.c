@@ -232,6 +232,13 @@ u32 UseSurf(u32 fieldMoveStatus)
 	FlagSet(FLAG_SYS_USE_SURF);
 #endif //QOL_NO_MESSAGING_SURF
 
+    gPlayerAvatar.acroBikeState = 0;
+    gPlayerAvatar.newDirBackup = 0;
+    gPlayerAvatar.bikeFrameCounter = 0;
+    gPlayerAvatar.bikeSpeed = 0;
+    gPlayerAvatar.directionHistory = 0;
+    gPlayerAvatar.abStartSelectHistory = 0;
+
 	if (FlagGet(FLAG_SYS_USE_SURF))
 		ScriptContext_SetupScript(EventScript_UseSurfFieldEffect);
 	else if(fieldMoveStatus == FIELD_MOVE_POKEMON)
