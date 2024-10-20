@@ -2343,5 +2343,164 @@ $(MID_SUBDIR)/mus_hg_obtain_b_points.s: %.s: %.mid
 $(MID_SUBDIR)/mus_hg_win_minigame.s: %.s: %.mid
 	$(MID) $< $@ -E -R0 -G229 -V091 -p5
 
+$(MID_SUBDIR)/mus_bw_intro_1.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G274 -V092
+
+$(MID_SUBDIR)/mus_bw_new_game_2.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G274 -V090 
+
+$(MID_SUBDIR)/mus_bw_cycling.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G274 -V082
+
+$(MID_SUBDIR)/mus_bw_surf.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G274 -V068
+
+$(MID_SUBDIR)/mus_bw_nuvema.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G274 -V071
+
+$(MID_SUBDIR)/mus_bw_accumula.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G274 -V060
+
+$(MID_SUBDIR)/mus_bw_anville.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G274 -V082 
+
+$(MID_SUBDIR)/mus_bw_lacunosa.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G274 -V090 -X
+
+$(MID_SUBDIR)/mus_bw_undella_summer.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G274 -V094 -p5
+
+$(MID_SUBDIR)/mus_bw_undella_winter.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G274 -V094 -p5
+
+$(MID_SUBDIR)/mus_bw_striaton.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G274 -V091 -p5
+
+$(MID_SUBDIR)/mus_bw_nacrene.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G274 -V091 -p5
+
+$(MID_SUBDIR)/mus_bw_castelia.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G274 -V091 -p5
+
+$(MID_SUBDIR)/mus_bw_nimbasa.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G274 -V091 -p5
+
+$(MID_SUBDIR)/mus_bw_driftveil.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G274 -V091 -p5
+
+$(MID_SUBDIR)/mus_bw_mistralton.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G274 -V091 -p5
+
+$(MID_SUBDIR)/mus_bw_icirrus.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G274 -V091 -p5
+
+$(MID_SUBDIR)/mus_bw_opelucid_white.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G274 -V091 -p5
+
+$(MID_SUBDIR)/mus_bw_black_city.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G274 -V091 -p5
+
+$(MID_SUBDIR)/mus_bw_white_forest.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G274 -V091 -p5
+
+$(MID_SUBDIR)/mus_bw_route1.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G274 -V091 -p5
+
+$(MID_SUBDIR)/mus_bw_route4_summer.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G274 -V091 -p5
+
+$(MID_SUBDIR)/mus_bw_route6_summer.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G274 -V091 -p5
+
+$(MID_SUBDIR)/mus_bw_route10.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G274 -V091 -p5
+
+$(MID_SUBDIR)/mus_bw_tubeline_bridge.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G274 -V091 -p5
+
+$(MID_SUBDIR)/mus_bw_poke_center.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G274 -V091 -p5
+
+$(MID_SUBDIR)/mus_bw_shopping_mall_nine.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G274 -V091 -p5
+
+$(MID_SUBDIR)/mus_bw_gym.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G274 -V091 -p5
+
+$(MID_SUBDIR)/mus_bw_entralink.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G274 -V091 -p5
+
+$(MID_SUBDIR)/mus_bw_pokemon_league.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G274 -V091 -p5
+
+$(MID_SUBDIR)/mus_bw_n_castle.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G274 -V091 -p5
+
+$(MID_SUBDIR)/mus_bw_dreamyard.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G274 -V091 -p5
+
+$(MID_SUBDIR)/mus_bw_chargestone_cave.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G274 -V091 -p5
+
+$(MID_SUBDIR)/mus_bw_dragonspiral_tower.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G274 -V091 -p5
+
+$(MID_SUBDIR)/mus_bw_bianca.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G274 -V091 -p5
+
+$(MID_SUBDIR)/mus_bw_emotion.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G274 -V091 -p5
+
+$(MID_SUBDIR)/mus_bw_trouble.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G274 -V091 -p5
+
+$(MID_SUBDIR)/mus_bw_farewell.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G274 -V091 -p5
+
+$(MID_SUBDIR)/mus_bw_alder.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G274 -V091 -p5
+
+$(MID_SUBDIR)/mus_bw_ferris_wheel.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G274 -V091 -p5
+
+$(MID_SUBDIR)/mus_bw_vs_wild.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G274 -V091 -p5
+
+$(MID_SUBDIR)/mus_bw_low_health.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G274 -V091 -p5
+
+$(MID_SUBDIR)/mus_bw_gts.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G274 -V091 -p5
+
+$(MID_SUBDIR)/mus_b2_route19_summer.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G274 -V091
+
+$(MID_SUBDIR)/mus_b2_floccesy.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G274 -V093
+
+$(MID_SUBDIR)/mus_b2_plasma_frigate_1.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G274 -V092
+
 $(MID_SUBDIR)/mus_xy_boutique.s: %.s: %.mid
 	$(MID) $< $@ -E -R0 -G274 -V091 -p5
+
+$(MID_SUBDIR)/mus_xy_bicycle.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G191 -V091 -p5
+
+$(MID_SUBDIR)/mus_oras_soaring_dreams.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G229 -V091 -p5
+
+$(MID_SUBDIR)/mus_sm_hauoli.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G191 -V091 -p5
+
+$(MID_SUBDIR)/mus_col_miror_b_battle.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G191 -V091 -p5
+
+$(MID_SUBDIR)/mus_md_ragged_mountain.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G191 -V091 -p5
+
+$(MID_SUBDIR)/mus_md_dont_ever_forget.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G191 -V091 -p5
+
+$(MID_SUBDIR)/mus_ran_lyra_forest.s: %.s: %.mid
+	$(MID) $< $@ -E -R0 -G229 -V091 -p5

@@ -947,9 +947,69 @@
 #define MUS_HG_OBTAIN_CASTLE_POINTS       888 // Received Castle Points!
 #define MUS_HG_OBTAIN_B_POINTS            889 // Received Battle Points!
 #define MUS_HG_WIN_MINIGAME               890 // Cleared Wobbuffet Pop!
-#define MUS_XY_BOUTIQUE                   891
+
+// BW Music
+#define MUS_BW_INTRO_1                    891 // Coronation Day
+#define MUS_BW_NEW_GAME_2                 892 // Onward to Adventure! (Part 2)
+#define MUS_BW_CYCLING                    893 // Bicycle
+#define MUS_BW_SURF                       894 // Surf
+#define MUS_BW_NUVEMA                     895 // Nuvema Town
+#define MUS_BW_ACCUMULA                   896 // Accumula Town
+#define MUS_BW_ANVILLE                    897 // Anville Town
+#define MUS_BW_LACUNOSA                   898 // Lacunosa Town
+#define MUS_BW_UNDELLA_SUMMER             899 // Undella Town (Summer)
+#define MUS_BW_UNDELLA_WINTER             900 // Undella Town (Winter)
+#define MUS_BW_STRIATON                   901 // Striaton City
+#define MUS_BW_NACRENE                    902 // Nacrene City
+#define MUS_BW_CASTELIA                   903 // Castelia City
+#define MUS_BW_NIMBASA                    904 // Nimbasa City
+#define MUS_BW_DRIFTVEIL                  905 // Driftveil City
+#define MUS_BW_MISTRALTON                 906 // Mistralton City
+#define MUS_BW_ICIRRUS                    907 // Icirrus City
+#define MUS_BW_OPELUCID_WHITE             908 // Opelucid City (Pokémon White)
+#define MUS_BW_BLACK_CITY                 909 // Black City
+#define MUS_BW_WHITE_FOREST               910 // White Forest
+#define MUS_BW_ROUTE1                     911 // Route 1
+#define MUS_BW_ROUTE4_SUMMER              912 // Route 4 (Summer)
+#define MUS_BW_ROUTE6_SUMMER              913 // Route 6 (Summer)
+#define MUS_BW_ROUTE10                    914 // Route 10
+#define MUS_BW_TUBELINE_BRIDGE            915 // Tubeline Bridge
+#define MUS_BW_POKE_CENTER                916 // Pokémon Center
+#define MUS_BW_SHOPPING_MALL_NINE         917 // Shopping Mall Nine
+#define MUS_BW_GYM                        918 // Pokémon Gym
+#define MUS_BW_ENTRALINK                  919 // Entralink
+#define MUS_BW_POKEMON_LEAGUE             920 // The Pokémon League
+#define MUS_BW_N_CASTLE                   921 // N's Castle
+#define MUS_BW_DREAMYARD                  922 // The Dreamyard
+#define MUS_BW_CHARGESTONE_CAVE           923 // Chargestone Cave
+#define MUS_BW_DRAGONSPIRAL_TOWER         924 // Dragonspiral Tower
+#define MUS_BW_BIANCA                     925 // Bianca's Theme
+#define MUS_BW_EMOTION                    926 // An Unwavering Heart
+#define MUS_BW_TROUBLE                    927 // There's Trouble!
+#define MUS_BW_FAREWELL                   928 // Farewell
+#define MUS_BW_ALDER                      929 // Champion Alder
+#define MUS_BW_FERRIS_WHEEL               930 // A Ferris Wheel Ride Together
+#define MUS_BW_VS_WILD                    931 // Battle! (Wild Pokémon)
+#define MUS_BW_LOW_HEALTH                 932 // A Tight Spot During Battle!
+#define MUS_BW_GTS                        933 // Gts
+
+// BW2 Music Music
+#define MUS_B2_ROUTE19_SUMMER             934 // Route 19 (Summer)
+#define MUS_B2_FLOCCESY                   935 // Floccesy Town
+#define MUS_B2_PLASMA_FRIGATE_1           936 // Aboard the Plasma Frigate
+
+// Bonus Music
+#define MUS_XY_BOUTIQUE                   937 // XY - Boutique
+#define MUS_XY_BICYCLE                    938 // XY - Bicycle
+#define MUS_ORAS_SOARING_DREAMS           939 // ORAS -Soaring Dreams
+#define MUS_SM_HAUOLI                     940 // USUM - Hauoli
+#define MUS_COL_MIROR_B_BATTLE            941 // Colosseum - Miror b battle
+#define MUS_MD_RAGGED_MOUNTAIN            942 // Mystery Dungeon - Ragged Mountain
+#define MUS_MD_DONT_EVER_FORGET           943 // Mystery Dungeon -  Don't ever forget
+#define MUS_RAN_LYRA_FOREST               944 // Ranger - Lyra Forest
+
 // Extra song at the end
-#define MUS_VS_WILD_NIGHT                 892
+#define MUS_VS_WILD_NIGHT                 945
 
 #define HG_MUSIC_END                      MUS_VS_WILD_NIGHT // this isnt correct but who cares, im not accounting for a brand new category and updating all the numbers
 #define END_MUS                           HG_MUSIC_END 
@@ -961,3 +1021,5 @@
 #define MUS_NONE                          0xFFFF
 
 #endif  // GUARD_CONSTANTS_SONGS_H
+
+

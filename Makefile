@@ -352,6 +352,8 @@ include songs.mk
 
 $(CRY_SUBDIR)/uncomp_%.bin: $(CRY_SUBDIR)/uncomp_%.aif ; $(AIF) $< $@
 $(CRY_SUBDIR)/%.bin: $(CRY_SUBDIR)/%.aif ; $(AIF) $< $@ --compress
+sound/direct_sound_samples/bw_drum_loop_%.bin: sound/direct_sound_samples/bw_drum_loop_%.aif ; $(AIF) $< $@ --compress
+sound/direct_sound_samples/b2_drum_loop_%.bin: sound/direct_sound_samples/b2_drum_loop_%.aif ; $(AIF) $< $@ --compress
 sound/%.bin: sound/%.aif ; $(AIF) $< $@
 
 COMPETITIVE_PARTY_SYNTAX := $(shell PATH="$(PATH)"; echo 'COMPETITIVE_PARTY_SYNTAX' | $(CPP) $(CPPFLAGS) -imacros include/global.h | tail -n1)

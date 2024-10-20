@@ -892,7 +892,60 @@ gSongTable::
 	song mus_hg_obtain_castle_points, 2, 2
 	song mus_hg_obtain_b_points, 2, 2
 	song mus_hg_win_minigame, 2, 2
-	song mus_xy_boutique, 0, 0
+	song mus_bw_intro_1, 0, 0
+	song mus_bw_new_game_2, 0, 0
+	song mus_bw_cycling, 0, 0
+	song mus_bw_surf, 0, 0
+	song mus_bw_nuvema, 0, 0
+	song mus_bw_accumula, 0, 0
+	song mus_bw_anville, 0, 0
+	song mus_bw_lacunosa, 0, 0
+	song mus_bw_undella_summer, 0, 0
+	song mus_bw_undella_winter, 0, 0
+	song mus_bw_striaton, 0, 0
+	song mus_bw_nacrene, 0, 0
+	song mus_bw_castelia, 0, 0
+	song mus_bw_nimbasa, 0, 0
+	song mus_bw_driftveil, 0, 0
+	song mus_bw_mistralton, 0, 0
+	song mus_bw_icirrus, 0, 0
+	song mus_bw_opelucid_white, 0, 0
+	song mus_bw_black_city, 0, 0
+	song mus_bw_white_forest, 0, 0
+	song mus_bw_route1, 0, 0
+	song mus_bw_route4_summer, 0, 0
+	song mus_bw_route6_summer, 0, 0
+	song mus_bw_route10, 0, 0
+	song mus_bw_tubeline_bridge, 0, 0
+	song mus_bw_poke_center, 0, 0
+	song mus_bw_shopping_mall_nine, 0, 0
+	song mus_bw_gym, 0, 0
+	song mus_bw_entralink, 0, 0
+	song mus_bw_pokemon_league, 0, 0
+	song mus_bw_n_castle, 0, 0
+	song mus_bw_dreamyard, 0, 0
+	song mus_bw_chargestone_cave, 0, 0
+	song mus_bw_dragonspiral_tower, 0, 0
+	song mus_bw_bianca, 0, 0
+	song mus_bw_emotion, 0, 0
+	song mus_bw_trouble, 0, 0
+	song mus_bw_farewell, 0, 0
+	song mus_bw_alder, 0, 0
+	song mus_bw_ferris_wheel, 0, 0
+	song mus_bw_vs_wild, 0, 0
+	song mus_bw_low_health, 0, 0
+	song mus_bw_gts, 0, 0
+	song mus_b2_route19_summer, 0, 0
+	song mus_b2_floccesy, 0, 0
+	song mus_b2_plasma_frigate_1, 0, 0
+	song mus_xy_boutique, 2, 2
+	song mus_xy_bicycle, 2, 2
+	song mus_oras_soaring_dreams, 2, 2
+	song mus_sm_hauoli, 2, 2
+	song mus_col_miror_b_battle, 2, 2
+	song mus_md_ragged_mountain, 2, 2
+	song mus_md_dont_ever_forget, 2, 2
+	song mus_ran_lyra_forest, 2, 2
     song mus_vs_wild_night, 0, 0
 
 	.align 2
