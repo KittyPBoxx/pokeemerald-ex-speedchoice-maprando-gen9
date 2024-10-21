@@ -271,6 +271,12 @@ void NewGameInitData(void)
 
     ConfigureNewGameForPreset();
 
+    if (FlagGet(FLAG_MAP_RANDO))
+    {
+        FlagSet(FLAG_DISABLE_CATCH_EXP);
+        FlagSet(FLAG_ALWAYS_OBEY);
+    }
+
     // Player has access to teleport tools so we need to avoid them skipping stuff
     SetLastHealLocationWarp(HEAL_LOCATION_LITTLEROOT_TOWN_MAYS_HOUSE_2F);
 

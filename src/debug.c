@@ -156,7 +156,8 @@ enum ScriptDebugMenu
 
 enum FlagsVarsDebugMenu
 {
-    //    DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_RUN_SHOES,
+    // DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_RUN_SHOES,
+    DEBUG_SETTINGS_MENU_ITEM_TOGGLE_ALWAYS_OBEY,
     DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_LOCATIONS,
     DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_POKEDEX,
     DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_NATDEX,
@@ -450,6 +451,7 @@ static void DebugAction_Settings_LevelCap(u8 taskId);
 static void DebugAction_Settings_MapRando(u8 taskId);
 static void DebugAction_Settings_LevelScaling(u8 taskId);
 static void DebugAction_Settings_CatchExp(u8 taskId);
+static void DebugAction_Settings_AlwaysObey(u8 taskId);
 // static void DebugAction_FlagsVars_RunningShoes(u8 taskId);
 
 static void Debug_InitializeBattle(u8 taskId);
@@ -621,7 +623,7 @@ static const u8 sDebugText_Party_ClearParty[] =              _("Clear Party");
 static const u8 sDebugText_Party_Nickname[] =                _("Mon Nickname");
 static const u8 sDebugText_Party_HeadbuttTutor[] =           _("Headbutt Tutor");
 // Flags/Vars Menu
-//static const u8 sDebugText_FlagsVars_RunningShoes[] =        _("Toggle {STR_VAR_1}Running Shoes");
+// static const u8 sDebugText_FlagsVars_RunningShoes[] =        _("Toggle {STR_VAR_1}Running Shoes");
 static const u8 sDebugText_FlagsVars_Flags[] =               _("Set Flag XYZ…{CLEAR_TO 110}{RIGHT_ARROW}");
 static const u8 sDebugText_FlagsVars_Flag[] =                _("Flag: {STR_VAR_1}{CLEAR_TO 90}\n{STR_VAR_2}{CLEAR_TO 90}\n{STR_VAR_3}");
 static const u8 sDebugText_FlagsVars_FlagHex[] =             _("{STR_VAR_1}{CLEAR_TO 90}\n0x{STR_VAR_2}{CLEAR_TO 90}");
@@ -651,6 +653,8 @@ static const u8 sDebugText_Settings_LevelCap[] =            _("Toggle {STR_VAR_1
 static const u8 sDebugText_Settings_MapRando[] =            _("Toggle {STR_VAR_1}Map Rando");
 static const u8 sDebugText_Settings_LevelScaling[] =        _("Toggle {STR_VAR_1}Level Scaling");
 static const u8 sDebugText_Settings_CatchExp[] =            _("Toggle {STR_VAR_1}Catch Exp OFF");
+static const u8 sDebugText_Settings_AlwaysObey[] =          _("Toggle {STR_VAR_1}Always Obey");
+
 
 // Battle
 static const u8 sDebugText_Battle_0_Wild[] =        _("Wild…{CLEAR_TO 110}{RIGHT_ARROW}");
@@ -858,7 +862,8 @@ static const struct ListMenuItem sDebugMenu_Items_FlagsVars[] =
     [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_NATDEX]        = {sDebugText_FlagsVars_SwitchNationalDex,  DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_NATDEX},
     [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_POKENAV]       = {sDebugText_FlagsVars_SwitchPokeNav,      DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_POKENAV},
     [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_MATCH_CALL]    = {sDebugText_FlagsVars_SwitchMatchCall,    DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_MATCH_CALL},
-//    [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_RUN_SHOES]     = {sDebugText_FlagsVars_RunningShoes,       DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_RUN_SHOES},
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_ALWAYS_OBEY]  = {sDebugText_Settings_AlwaysObey,          DEBUG_SETTINGS_MENU_ITEM_TOGGLE_ALWAYS_OBEY},
+    // [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_RUN_SHOES]     = {sDebugText_FlagsVars_RunningShoes,       DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_RUN_SHOES},
     [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_LOCATIONS]     = {sDebugText_FlagsVars_ToggleFlyFlags,     DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_LOCATIONS},
     [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_BADGES_ALL]    = {sDebugText_FlagsVars_ToggleAllBadges,    DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_BADGES_ALL},
     [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_FRONTIER_PASS] = {sDebugText_FlagsVars_ToggleFrontierPass, DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_FRONTIER_PASS},
@@ -1036,7 +1041,8 @@ static void (*const sDebugMenu_Actions_Scripts[])(u8) =
 
 static void (*const sDebugMenu_Actions_Flags[])(u8) =
 {
- //   [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_RUN_SHOES]     = DebugAction_FlagsVars_RunningShoes,
+    // [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_RUN_SHOES]     = DebugAction_FlagsVars_RunningShoes,
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_ALWAYS_OBEY]  = DebugAction_Settings_AlwaysObey,
     [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_LOCATIONS]     = DebugAction_FlagsVars_ToggleFlyFlags,
     [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_POKEDEX]       = DebugAction_FlagsVars_SwitchDex,
     [DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_NATDEX]        = DebugAction_FlagsVars_SwitchNatDex,
@@ -1404,6 +1410,9 @@ static u8 Debug_CheckToggleFlags(u8 id)
         // case DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_RUN_SHOES:
         //     result = FlagGet(FLAG_SYS_B_DASH);
         //     break;
+        case DEBUG_SETTINGS_MENU_ITEM_TOGGLE_ALWAYS_OBEY:
+            result = FlagGet(FLAG_ALWAYS_OBEY);
+            break;
         case DEBUG_FLAGVAR_MENU_ITEM_TOGGLE_LOCATIONS:
             result = FlagGet(FLAG_VISITED_LITTLEROOT_TOWN) &&
                      FlagGet(FLAG_VISITED_OLDALE_TOWN) &&
@@ -1547,7 +1556,7 @@ static u8 Debug_CheckToggleSettings(u8 id)
                 break;
             case DEBUG_SETTINGS_MENU_ITEM_TOGGLE_CATCH_EXP:
                 result = FlagGet(FLAG_DISABLE_CATCH_EXP);
-                break;   
+                break;
             default:
                 result = 0xFF;
                 break;
@@ -3728,6 +3737,15 @@ static void DebugAction_Settings_CatchExp(u8 taskId)
     else
         PlaySE(SE_PC_LOGIN);
     FlagToggle(FLAG_DISABLE_CATCH_EXP);
+}
+
+static void DebugAction_Settings_AlwaysObey(u8 taskId)
+{
+    if (FlagGet(FLAG_ALWAYS_OBEY))
+        PlaySE(SE_PC_OFF);
+    else
+        PlaySE(SE_PC_LOGIN);
+    FlagToggle(FLAG_ALWAYS_OBEY);
 }
 
 // *******************************

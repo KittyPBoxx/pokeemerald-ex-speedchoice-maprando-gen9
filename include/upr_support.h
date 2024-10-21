@@ -15,6 +15,7 @@
 #define TMHM_COMPATIBILITY_INDEX 7
 #define MART_PROMO_ITEM_INDEX 8
 #define TRAINER_LEVEL_BOOST_PERCENT_INDEX 9
+#define GEN_RESTRICTIONS_INDEX 10
 
 #define USE_EXISTING_LEARNSET 2
 #define CAN_LEARN_MOVE 1
@@ -32,5 +33,6 @@ bool8 handleRandomizedBerryTreeItemCountText(u8 treeId, u8 count, u8 berry);
 bool8 handleRandomizedBerryTreeGive(u8 treeId, u8 count, u8 berry);
 u8 handleRandomizedBerryTreeGraphics(u8 berryId, u8 treeId);
 u8 handleRandomizedTeachableLearnsets(u16 species, u16 move);
+u16 getRandomSpeciesWithGenRestrictions(u32 seed, u16 candidateSpecies);
 
 #endif // GUARD_UPR_SUPPORT_H

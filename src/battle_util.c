@@ -8409,7 +8409,7 @@ u8 GetAttackerObedienceForAction()
         return OBEYS;
     if (B_OBEDIENCE_MECHANICS < GEN_8 && !IsOtherTrainer(gBattleMons[gBattlerAttacker].otId, gBattleMons[gBattlerAttacker].otName))
         return OBEYS;
-    if (FlagGet(FLAG_BADGE08_GET)) // Rain Badge, ignore obedience altogether
+    if (FlagGet(FLAG_BADGE08_GET) || FlagGet(FLAG_ALWAYS_OBEY)) // Rain Badge, ignore obedience altogether
         return OBEYS;
 
     obedienceLevel = 10;

@@ -6,6 +6,7 @@
 #include "constants/party_menu.h"
 #include "upr_support.h"
 #include "random.h"
+#include "constants/species.h"
 
 #define DEFAULT_LEARNSET_COMPATIBILITY 0
 #define FULL_LEARNSET_COMPATIBILITY 1
@@ -21,6 +22,8 @@
 #define TMHM_COMPATIBILITY DEFAULT_LEARNSET_COMPATIBILITY 
 #define MART_PROMO_ITEM ITEM_PREMIER_BALL 
 #define TRAINER_LEVEL_BOOST_PERCENT 100
+#define GEN_RESTRICTIONS 0xFFFF // If any of the first 9 bits are 0 we don't allow that gen
+
 
 // Berries are a u8 but the last bit is used for weeds 
 // (so we need to be over last berry but under 127)
@@ -35,7 +38,8 @@ const u16 gUprStaticVars[] = { BIRCH_INTRO_MON,
                                TUTOR_COMPATIBILITY,
                                TMHM_COMPATIBILITY,
                                MART_PROMO_ITEM, 
-                               TRAINER_LEVEL_BOOST_PERCENT}; // Set by upr so upr's level increase will still work with level scaling
+                               TRAINER_LEVEL_BOOST_PERCENT, // Set by upr so upr's level increase will still work with level scaling
+                               GEN_RESTRICTIONS}; // Used so we can restrict gens for evo every level
 
 const u16 gUprBerryTrees[] = {
     ITEM_NONE, // BERRY_TREE_ROUTE_102_PECHA    
@@ -366,4 +370,108 @@ u8 __attribute__((optimize("O0"))) handleRandomizedTeachableLearnsets(u16 specie
         
     }
 
+}
+
+#define GENS_TO_RESTRICT 9
+#define MAX_ROLLS 100
+
+typedef struct {
+    u16 lower;
+    u16 upper;
+} GenRange;
+
+bool8 isInGenRange(u16 value, GenRange range) 
+{
+    return (value >= range.lower && value <= range.upper);
+}
+
+u16 getRandomValueFromRange(u32 seed, GenRange range) {
+    return (PRandom(&seed) % (range.upper - range.lower + 1)) + range.lower;
+}
+
+u16 __attribute__((optimize("O0")))  getRandomSpeciesWithGenRestrictions(u32 seed, u16 candidateSpecies) 
+{
+    u8 i;
+    u8 restrictionSum;
+    u8 restriction = 0;
+    u16 newSpecies = candidateSpecies;
+    u16 restrictions = uprAccessVar(GEN_RESTRICTIONS_INDEX);
+
+    GenRange gens[GENS_TO_RESTRICT] = {
+        {SPECIES_BULBASAUR    , SPECIES_MEW}, 
+        {SPECIES_CHIKORITA    , SPECIES_CELEBI}, 
+        {SPECIES_TREECKO      , SPECIES_DEOXYS}, 
+        {SPECIES_TURTWIG      , SPECIES_ARCEUS},
+        {SPECIES_VICTINI      , SPECIES_GENESECT}, 
+        {SPECIES_CHESPIN      , SPECIES_VOLCANION}, 
+        {SPECIES_ROWLET       , SPECIES_MELMETAL}, 
+        {SPECIES_GROOKEY      , SPECIES_ENAMORUS}, 
+        {SPECIES_SPRIGATITO   , SPECIES_PECHARUNT} // This is not gen9, just whatever is left
+    };
+
+    bool8 gensAllowed[GENS_TO_RESTRICT] = { (restrictions & 1)   > 0,
+                                            (restrictions & 2)   > 0,
+                                            (restrictions & 4)   > 0,
+                                            (restrictions & 8)   > 0,
+                                            (restrictions & 16)  > 0,
+                                            (restrictions & 32)  > 0,
+                                            (restrictions & 64)  > 0,
+                                            (restrictions & 128) > 0,
+                                            (restrictions & 256) > 0 };
+
+    for (i = 0; i < GENS_TO_RESTRICT; i++)
+        restrictionSum += gensAllowed[i];                                        
+
+    // If they are trying to restrict everything or nothing, do nothing
+    if (restrictionSum == 0 || restrictionSum == GENS_TO_RESTRICT)
+        return candidateSpecies;
+
+    // Set restriction to the gen that the species is from
+    restriction = GENS_TO_RESTRICT;
+    for (i = 0; i < GENS_TO_RESTRICT; i++) 
+    {
+        if (isInGenRange(candidateSpecies, gens[i]))
+            restriction = i;
+
+        if (restriction != GENS_TO_RESTRICT)
+            break; 
+    }
+
+    // A species was picked that is not in any gen, so just return it
+    if (restriction == GENS_TO_RESTRICT)
+        return candidateSpecies;
+
+    // The species was allowed
+    if (gensAllowed[restriction])
+        return candidateSpecies;
+
+    // Find a random gen to select from
+    for (i = 0; i < MAX_ROLLS; i++) 
+    {
+        restriction = PRandom(&seed) % GENS_TO_RESTRICT;
+        if (gensAllowed[restriction])
+            break;
+    }
+
+    // If we hit max rolls and didn't find a random gen, then just go in order
+    if (!gensAllowed[restriction])
+    {
+        for (i = 0; i < MAX_ROLLS; i++) 
+        {
+            restriction = i;
+            if (gensAllowed[restriction])
+                break;
+        }
+    }
+
+    // Now we know the gen start rolling for a new species
+    for (i = 0; i < MAX_ROLLS; i++) 
+    {
+        newSpecies = getRandomValueFromRange(seed, gens[restriction]);
+        if (newSpecies != candidateSpecies)
+            break;
+    }
+
+
+    return newSpecies;
 }

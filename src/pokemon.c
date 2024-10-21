@@ -4470,6 +4470,8 @@ u16 GetEvolutionTargetSpecies(struct Pokemon *mon, u8 mode, u16 evolutionItem, s
                 newSpecies = NationalPokedexNumToSpecies((PRandom(&personality) * NATIONAL_DEX_COUNT / (PRAND_MAX + 1)) + 1);
             } while (attempts --> 0 && newSpecies == species);
 
+            newSpecies = getRandomSpeciesWithGenRestrictions(personality, newSpecies);
+
             // if you ran out of attempts and got the same species 3 times in a row, go buy
             // some lottery tickets.
             

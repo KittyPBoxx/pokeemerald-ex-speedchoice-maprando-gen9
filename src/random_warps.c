@@ -1104,7 +1104,7 @@ void InterceptWarp(s8 *mapGroup, s8 *mapNum, s8 *warpId, s8 *x, s8 *y)
     xPositionCorrection = -1;
     yPositionCorrection = -1;
 
-    if (!FlagGet(FLAG_MAP_RANDO) || (*warpId) == -1) 
+    if (!FlagGet(FLAG_MAP_RANDO)) 
     {
         return;
     }
@@ -1117,6 +1117,11 @@ void InterceptWarp(s8 *mapGroup, s8 *mapNum, s8 *warpId, s8 *x, s8 *y)
             VarSet(VAR_PETALBURG_GYM_STATE, 6);
             FlagSet(FLAG_HIDE_PETALBURG_CITY_WALLY);
             FlagSet(FLAG_HIDE_PETALBURG_GYM_WALLY);
+
+            VarSet(VAR_PETALBURG_WOODS_STATE, 1);
+            FlagSet(FLAG_HIDE_PETALBURG_WOODS_DEVON_EMPLOYEE);
+            FlagSet(FLAG_HIDE_PETALBURG_WOODS_AQUA_GRUNT);
+            FlagSet(FLAG_HIDE_JAGGED_PASS_MAGMA_GUARD);
         }
 
         return;

@@ -667,7 +667,7 @@
 #define FLAG_DISABLE_CATCH_EXP 0x270
 #define FLAG_NO_BGM            0x271
 #define FLAG_YT_SAFE_BGM       0x272
-#define FLAG_UNUSED_0x273  0x273 // Unused Flag
+#define FLAG_ALWAYS_OBEY       0x273
 #define FLAG_UNUSED_0x274  0x274 // Unused Flag
 #define FLAG_UNUSED_0x275  0x275 // Unused Flag
 #define FLAG_UNUSED_0x276  0x276 // Unused Flag
