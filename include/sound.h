@@ -3,7 +3,7 @@
 
 #include "constants/sound.h"
 
-#define SFANFARES_COUNT 74
+#define SFANFARES_COUNT 73
 
 void InitMapMusic(void);
 void MapMusicMain(void);
