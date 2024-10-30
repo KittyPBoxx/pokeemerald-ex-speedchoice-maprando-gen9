@@ -938,14 +938,14 @@ gSongTable::
 	song mus_b2_route19_summer, 0, 0
 	song mus_b2_floccesy, 0, 0
 	song mus_b2_plasma_frigate_1, 0, 0
-	song mus_xy_boutique, 2, 2
-	song mus_xy_bicycle, 2, 2
-	song mus_oras_soaring_dreams, 2, 2
-	song mus_sm_hauoli, 2, 2
-	song mus_col_miror_b_battle, 2, 2
-	song mus_md_ragged_mountain, 2, 2
-	song mus_md_dont_ever_forget, 2, 2
-	song mus_ran_lyra_forest, 2, 2
+	song mus_xy_boutique, 0, 0
+	song mus_xy_bicycle, 0, 0
+	song mus_oras_soaring_dreams, 0, 0
+	song mus_sm_hauoli, 0, 0
+	song mus_col_miror_b_battle, 0, 0
+	song mus_md_ragged_mountain, 0, 0
+	song mus_md_dont_ever_forget, 0, 0
+	song mus_ran_lyra_forest, 0, 0
     song mus_vs_wild_night, 0, 0
 
 	.align 2

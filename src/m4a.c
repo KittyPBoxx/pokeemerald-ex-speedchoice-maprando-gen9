@@ -146,7 +146,7 @@ void m4aSongNumStart(u16 n)
 
     if (FlagGet(FLAG_YT_SAFE_BGM))
     {
-        if (n == MUS_VS_CHAMPION || n == MUS_RG_VS_CHAMPION || n == MUS_DP_VS_CHAMPION || n == MUS_HG_VS_CHAMPION) 
+        if (n == MUS_VS_CHAMPION || n == MUS_RG_VS_CHAMPION || n == MUS_DP_VS_CHAMPION || n == MUS_HG_VS_CHAMPION || n == MUS_DP_ENCOUNTER_CHAMPION) 
         {
             n = MUS_VS_MEW;
         }

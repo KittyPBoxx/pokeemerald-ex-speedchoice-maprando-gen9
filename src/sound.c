@@ -248,12 +248,41 @@ bool8 IsNotWaitingForBGMStop(void)
     return TRUE;
 }
 
+extern EWRAM_DATA u16 gShuffledFanfares[][2];
+
+// take the unrandomized song num fanfare, find the new fanfare, and then
+// get the duration.
+u16 GetNewFanfareDuration(u16 songNum) {
+    int i = 0;
+    // find the entry of the fanfare via song ID in the shuffled array.
+    while (gShuffledFanfares[i][0] != 0xFFFF) {
+        // if there is a match, then take the randomized value at [1] and do
+        // another lookup via sFanfares.
+        if(songNum == gShuffledFanfares[i][0]) {
+            int j;
+            // found a match, look it up in the fanfare array.
+            for(j = 0; j < ARRAY_COUNT(sFanfares); j++) {
+                if(gShuffledFanfares[i][1] == sFanfares[j].songNum) {
+                    return sFanfares[j].duration;
+                }
+            }
+        }
+        i++;
+    }
+    return 100; // not found. uhhh.. default to 100 duration? Reaching this shouldn't be possible.
+}
+
+// Number of frames a fanfare can be before it goes past WaitFanfare
+#define MAX_FANFARE_LENGTH 180
+
 void PlayFanfareByFanfareNum(u8 fanfareNum)
 {
     u16 songNum;
     m4aMPlayStop(&gMPlayInfo_BGM);
     songNum = sFanfares[fanfareNum].songNum;
-    sFanfareCounter = sFanfares[fanfareNum].duration;
+    sFanfareCounter = GetNewFanfareDuration(songNum);
+    sFanfareCounter = (sFanfareCounter < MAX_FANFARE_LENGTH) ? sFanfareCounter : MAX_FANFARE_LENGTH;
+    //sFanfareCounter = sFanfares[fanfareNum].duration;
     m4aSongNumStart(songNum);
 }
 
