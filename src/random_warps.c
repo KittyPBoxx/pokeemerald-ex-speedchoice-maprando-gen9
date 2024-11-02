@@ -5,6 +5,7 @@
 #include "constants/flags.h"
 #include "constants/items.h"
 #include "item.h"
+#include "string_util.h"
 
 struct WarpRemap
 {
@@ -662,60 +663,72 @@ const struct WarpRemap gWarpRemappingList[RANDOM_WARP_LIMIT] =
 s8 xPositionCorrection;
 s8 yPositionCorrection;
 
-s8 WarpRemapCompare(s8 *mapGroup, s8 *mapNum, s8 *warpId, struct WarpRemap comparison) 
-{
-    if ((*mapGroup) < comparison.fromMapGroup) 
-    {
-        return 1;
-    } 
-    else if ((*mapGroup) > comparison.fromMapGroup)
-    {
-        return -1;
-    }
+// s8 WarpRemapCompare(s8 *mapGroup, s8 *mapNum, s8 *warpId, struct WarpRemap comparison) 
+// {
+//     if ((*mapGroup) < comparison.fromMapGroup) 
+//     {
+//         return -1;
+//     } 
+//     else if ((*mapGroup) > comparison.fromMapGroup)
+//     {
+//         return 1;
+//     }
 
-    if ((*mapNum) < comparison.fromMapNum) 
-    {
-        return 1;
-    } 
-    else if ((*mapNum) > comparison.fromMapNum)
-    {
-        return -1;
-    }
+//     if ((*mapNum) < comparison.fromMapNum) 
+//     {
+//         return -1;
+//     } 
+//     else if ((*mapNum) > comparison.fromMapNum)
+//     {
+//         return 1;
+//     }
 
-    if ((*warpId) < comparison.fromWarpId) 
-    {
-        return 1;
-    } 
-    else if ((*warpId) > comparison.fromWarpId)
-    {
-        return -1;
-    }
+//     if ((*warpId) < comparison.fromWarpId) 
+//     {
+//         return -1;
+//     } 
+//     else if ((*warpId) > comparison.fromWarpId)
+//     {
+//         return 1;
+//     }
 
-    return 0;
-}
+//     return 0;
+// }
 
 u16 WarpRemapBinarySearch(s8 *mapGroup, s8 *mapNum, s8 *warpId) 
 {
-    u16 high = RANDOM_WARP_LIMIT_SEARCH_HIGH;
-    u16 low  = RANDOM_WARP_LIMIT_SEARCH_LOW;
+    // u16 high = RANDOM_WARP_LIMIT_SEARCH_HIGH;
+    // u16 low  = RANDOM_WARP_LIMIT_SEARCH_LOW;
+    u16 i = 0;
+    u16 matchCount = 0;
+    u16 index;
 
-    while (low <= high) 
-    {
-        int mid = low + (high - low) / 2;
+    // while (low <= high) 
+    // {
+    //     int mid = low + (high - low) / 2;
 
-        if (WarpRemapCompare(mapGroup, mapNum, warpId, gWarpRemappingList[mid]) == 0)
-        {
-            return mid;
-        }
+    //     int comparison = WarpRemapCompare(mapGroup, mapNum, warpId, gWarpRemappingList[mid]);
         
-        if (WarpRemapCompare(mapGroup, mapNum, warpId, gWarpRemappingList[mid]) == -1)
-        {
-            low = mid + 1;
-        }
-        else
-        {
-            high = mid - 1;
-        }
+    //     if (comparison == 0) {
+    //         return mid;
+    //     } else if (comparison < 0) {
+    //         high = mid - 1;
+    //     } else {
+    //         low = mid + 1;
+    //     }
+    // }
+
+    // I don't see an issue in the binary search, so this should be nessacery. However sometimes it seems to get weird issues. I can't see an issume looking at the warp tables binary data, so I assume in this 'bad' code we're dodging compiler optimisations...
+    // The match count is pretty stupid but at least it should make the check script fail
+    for (i = 0; i < RANDOM_WARP_LIMIT; i++) {
+        if ((*mapGroup) == gWarpRemappingList[i].fromMapGroup && (*mapNum) == gWarpRemappingList[i].fromMapNum && (*warpId) == gWarpRemappingList[i].fromWarpId) {
+            index = i;
+            matchCount++;
+        } 
+    }
+
+    if (matchCount == 1) {
+        return index;
     }
 
     return RANDOM_WARP_LIMIT;
@@ -1185,4 +1198,565 @@ void CorrectPositionAfterIntercept()
 void resetPositionCorrection() {
     xPositionCorrection = -1;
     yPositionCorrection = -1;
+}
+
+static const u8 comma[] = _(",");
+bool8 CheckWarp(s8 mapGroup, s8 mapNum, s8 warpId) {
+
+    u16 remappedWarpIndex = WarpRemapBinarySearch(&mapGroup, &mapNum, &warpId);
+    if (remappedWarpIndex == RANDOM_WARP_LIMIT) 
+    {
+        ConvertIntToDecimalStringN(gStringVar1, mapGroup, STR_CONV_MODE_LEADING_ZEROS, 3);
+        gStringVar1[3] = comma[0];
+        ConvertIntToDecimalStringN(gStringVar1 + 4, mapNum, STR_CONV_MODE_LEADING_ZEROS, 3);
+        gStringVar1[7] = comma[0];
+        ConvertIntToDecimalStringN(gStringVar1 + 8, warpId, STR_CONV_MODE_LEADING_ZEROS, 3);
+        return FALSE;
+    }
+    else 
+    {
+        return TRUE;
+    }
+}
+
+bool8 CheckAllWarps() 
+{
+    bool8 result = TRUE;
+    result = result && CheckWarp(0,0,1);
+    result = result && CheckWarp(0,0,2);
+    result = result && CheckWarp(0,0,3);
+    result = result && CheckWarp(0,0,5);
+    result = result && CheckWarp(0,1,0);
+    result = result && CheckWarp(0,1,1);
+    result = result && CheckWarp(0,1,2);
+    result = result && CheckWarp(0,1,4);
+    result = result && CheckWarp(0,1,5);
+    result = result && CheckWarp(0,1,7);
+    result = result && CheckWarp(0,1,8);
+    result = result && CheckWarp(0,2,0);
+    result = result && CheckWarp(0,2,1);
+    result = result && CheckWarp(0,2,2);
+    result = result && CheckWarp(0,2,3);
+    result = result && CheckWarp(0,2,4);
+    result = result && CheckWarp(0,3,0);
+    result = result && CheckWarp(0,3,1);
+    result = result && CheckWarp(0,3,2);
+    result = result && CheckWarp(0,3,3);
+    result = result && CheckWarp(0,3,5);
+    result = result && CheckWarp(0,3,6);
+    result = result && CheckWarp(0,3,8);
+    result = result && CheckWarp(0,3,10);
+    result = result && CheckWarp(0,4,0);
+    result = result && CheckWarp(0,4,2);
+    result = result && CheckWarp(0,4,3);
+    result = result && CheckWarp(0,5,0);
+    result = result && CheckWarp(0,5,1);
+    result = result && CheckWarp(0,5,2);
+    result = result && CheckWarp(0,5,4);
+    result = result && CheckWarp(0,5,6);
+    result = result && CheckWarp(0,5,12);
+    result = result && CheckWarp(0,6,1);
+    result = result && CheckWarp(0,6,2);
+    result = result && CheckWarp(0,6,4);
+    result = result && CheckWarp(0,6,6);
+    result = result && CheckWarp(0,6,8);
+    result = result && CheckWarp(0,7,0);
+    result = result && CheckWarp(0,7,1);
+    result = result && CheckWarp(0,7,2);
+    result = result && CheckWarp(0,7,3);
+    result = result && CheckWarp(0,7,4);
+    result = result && CheckWarp(0,8,0);
+    result = result && CheckWarp(0,8,1);
+    result = result && CheckWarp(0,8,2);
+    result = result && CheckWarp(0,8,3);
+    result = result && CheckWarp(0,10,2);
+    result = result && CheckWarp(0,11,1);
+    result = result && CheckWarp(0,11,2);
+    result = result && CheckWarp(0,12,0);
+    result = result && CheckWarp(0,12,1);
+    result = result && CheckWarp(0,12,2);
+    result = result && CheckWarp(0,12,3);
+    result = result && CheckWarp(0,12,5);
+    result = result && CheckWarp(0,13,0);
+    result = result && CheckWarp(0,13,2);
+    result = result && CheckWarp(0,14,1);
+    result = result && CheckWarp(0,14,2);
+    result = result && CheckWarp(0,14,4);
+    result = result && CheckWarp(0,15,0);
+    result = result && CheckWarp(0,19,0);
+    result = result && CheckWarp(0,19,2);
+    result = result && CheckWarp(0,19,3);
+    result = result && CheckWarp(0,19,4);
+    result = result && CheckWarp(0,19,5);
+    result = result && CheckWarp(0,19,6);
+    result = result && CheckWarp(0,19,7);
+    result = result && CheckWarp(0,20,0);
+    result = result && CheckWarp(0,21,0);
+    result = result && CheckWarp(0,23,0);
+    result = result && CheckWarp(0,25,0);
+    result = result && CheckWarp(0,25,2);
+    result = result && CheckWarp(0,25,3);
+    result = result && CheckWarp(0,25,4);
+    result = result && CheckWarp(0,25,5);
+    result = result && CheckWarp(0,26,1);
+    result = result && CheckWarp(0,26,3);
+    result = result && CheckWarp(0,27,0);
+    result = result && CheckWarp(0,27,1);
+    result = result && CheckWarp(0,27,2);
+    result = result && CheckWarp(0,27,3);
+    result = result && CheckWarp(0,27,4);
+    result = result && CheckWarp(0,27,5);
+    result = result && CheckWarp(0,29,0);
+    result = result && CheckWarp(0,29,1);
+    result = result && CheckWarp(0,30,0);
+    result = result && CheckWarp(0,31,0);
+    result = result && CheckWarp(0,31,2);
+    result = result && CheckWarp(0,34,0);
+    result = result && CheckWarp(0,35,0);
+    result = result && CheckWarp(0,37,0);
+    result = result && CheckWarp(0,46,0);
+    result = result && CheckWarp(2,0,0);
+    result = result && CheckWarp(2,1,0);
+    result = result && CheckWarp(2,2,0);
+    result = result && CheckWarp(2,3,0);
+    result = result && CheckWarp(2,4,0);
+    result = result && CheckWarp(3,0,0);
+    result = result && CheckWarp(3,1,0);
+    result = result && CheckWarp(3,2,0);
+    result = result && CheckWarp(3,3,0);
+    result = result && CheckWarp(3,4,0);
+    result = result && CheckWarp(3,5,0);
+    result = result && CheckWarp(4,0,0);
+    result = result && CheckWarp(4,1,0);
+    result = result && CheckWarp(4,3,0);
+    result = result && CheckWarp(4,4,0);
+    result = result && CheckWarp(4,5,0);
+    result = result && CheckWarp(4,5,3);
+    result = result && CheckWarp(4,6,0);
+    result = result && CheckWarp(5,0,0);
+    result = result && CheckWarp(5,1,0);
+    result = result && CheckWarp(5,4,0);
+    result = result && CheckWarp(5,5,0);
+    result = result && CheckWarp(5,6,0);
+    result = result && CheckWarp(5,7,0);
+    result = result && CheckWarp(6,0,0);
+    result = result && CheckWarp(6,3,0);
+    result = result && CheckWarp(6,4,0);
+    result = result && CheckWarp(6,5,0);
+    result = result && CheckWarp(6,6,0);
+    result = result && CheckWarp(6,7,0);
+    result = result && CheckWarp(6,8,0);
+    result = result && CheckWarp(7,0,0);
+    result = result && CheckWarp(7,1,0);
+    result = result && CheckWarp(7,2,0);
+    result = result && CheckWarp(7,3,0);
+    result = result && CheckWarp(7,4,0);
+    result = result && CheckWarp(7,5,0);
+    result = result && CheckWarp(7,6,0);
+    result = result && CheckWarp(8,0,0);
+    result = result && CheckWarp(8,1,0);
+    result = result && CheckWarp(8,2,0);
+    result = result && CheckWarp(8,3,0);
+    result = result && CheckWarp(8,4,0);
+    result = result && CheckWarp(8,5,0);
+    result = result && CheckWarp(8,6,0);
+    result = result && CheckWarp(9,0,0);
+    result = result && CheckWarp(9,0,2);
+    result = result && CheckWarp(9,1,0);
+    result = result && CheckWarp(9,2,0);
+    result = result && CheckWarp(9,5,0);
+    result = result && CheckWarp(9,6,0);
+    result = result && CheckWarp(9,7,0);
+    result = result && CheckWarp(9,7,1);
+    result = result && CheckWarp(9,8,0);
+    result = result && CheckWarp(9,9,0);
+    result = result && CheckWarp(9,10,0);
+    result = result && CheckWarp(9,11,0);
+    result = result && CheckWarp(9,12,0);
+    result = result && CheckWarp(9,13,0);
+    result = result && CheckWarp(10,0,0);
+    result = result && CheckWarp(10,1,0);
+    result = result && CheckWarp(10,2,0);
+    result = result && CheckWarp(10,3,0);
+    result = result && CheckWarp(10,4,0);
+    result = result && CheckWarp(10,5,0);
+    result = result && CheckWarp(10,6,0);
+    result = result && CheckWarp(10,7,0);
+    result = result && CheckWarp(11,0,0);
+    result = result && CheckWarp(11,0,1);
+    result = result && CheckWarp(11,0,2);
+    result = result && CheckWarp(11,1,0);
+    result = result && CheckWarp(11,1,1);
+    result = result && CheckWarp(11,2,0);
+    result = result && CheckWarp(11,3,0);
+    result = result && CheckWarp(11,4,0);
+    result = result && CheckWarp(11,5,0);
+    result = result && CheckWarp(11,6,0);
+    result = result && CheckWarp(11,7,0);
+    result = result && CheckWarp(11,8,0);
+    result = result && CheckWarp(11,9,0);
+    result = result && CheckWarp(11,10,0);
+    result = result && CheckWarp(11,11,0);
+    result = result && CheckWarp(11,12,0);
+    result = result && CheckWarp(11,13,0);
+    result = result && CheckWarp(11,13,2);
+    result = result && CheckWarp(11,14,0);
+    result = result && CheckWarp(11,15,0);
+    result = result && CheckWarp(11,16,0);
+    result = result && CheckWarp(12,0,0);
+    result = result && CheckWarp(12,1,0);
+    result = result && CheckWarp(12,2,0);
+    result = result && CheckWarp(12,3,0);
+    result = result && CheckWarp(12,4,0);
+    result = result && CheckWarp(12,5,0);
+    result = result && CheckWarp(12,6,0);
+    result = result && CheckWarp(12,7,0);
+    result = result && CheckWarp(12,8,0);
+    result = result && CheckWarp(12,9,0);
+    result = result && CheckWarp(13,0,0);
+    result = result && CheckWarp(13,1,0);
+    result = result && CheckWarp(13,2,0);
+    result = result && CheckWarp(13,2,1);
+    result = result && CheckWarp(13,4,0);
+    result = result && CheckWarp(13,4,2);
+    result = result && CheckWarp(13,4,3);
+    result = result && CheckWarp(13,5,0);
+    result = result && CheckWarp(13,5,1);
+    result = result && CheckWarp(13,6,0);
+    result = result && CheckWarp(13,7,0);
+    result = result && CheckWarp(13,9,1);
+    result = result && CheckWarp(13,10,0);
+    result = result && CheckWarp(13,11,0);
+    result = result && CheckWarp(13,12,0);
+    result = result && CheckWarp(13,13,0);
+    result = result && CheckWarp(13,14,0);
+    result = result && CheckWarp(13,15,0);
+    result = result && CheckWarp(13,16,0);
+    result = result && CheckWarp(13,16,2);
+    result = result && CheckWarp(13,17,0);
+    result = result && CheckWarp(13,17,1);
+    result = result && CheckWarp(13,18,0);
+    result = result && CheckWarp(13,18,1);
+    result = result && CheckWarp(13,19,0);
+    result = result && CheckWarp(13,19,1);
+    result = result && CheckWarp(13,20,0);
+    result = result && CheckWarp(13,21,0);
+    result = result && CheckWarp(14,0,0);
+    result = result && CheckWarp(14,1,0);
+    result = result && CheckWarp(14,2,0);
+    result = result && CheckWarp(14,3,0);
+    result = result && CheckWarp(14,4,0);
+    result = result && CheckWarp(14,5,0);
+    result = result && CheckWarp(14,6,0);
+    result = result && CheckWarp(14,7,0);
+    result = result && CheckWarp(14,8,1);
+    result = result && CheckWarp(14,9,0);
+    result = result && CheckWarp(14,10,0);
+    result = result && CheckWarp(14,11,0);
+    result = result && CheckWarp(15,0,0);
+    result = result && CheckWarp(15,2,0);
+    result = result && CheckWarp(15,3,0);
+    result = result && CheckWarp(15,4,0);
+    result = result && CheckWarp(15,5,0);
+    result = result && CheckWarp(15,6,0);
+    result = result && CheckWarp(15,7,0);
+    result = result && CheckWarp(15,8,0);
+    result = result && CheckWarp(15,9,0);
+    result = result && CheckWarp(15,10,0);
+    result = result && CheckWarp(15,11,0);
+    result = result && CheckWarp(15,12,0);
+    result = result && CheckWarp(15,13,0);
+    result = result && CheckWarp(16,5,0);
+    result = result && CheckWarp(16,5,1);
+    result = result && CheckWarp(16,6,0);
+    result = result && CheckWarp(16,6,1);
+    result = result && CheckWarp(16,7,0);
+    result = result && CheckWarp(16,7,1);
+    result = result && CheckWarp(16,8,0);
+    result = result && CheckWarp(16,8,1);
+    result = result && CheckWarp(16,9,0);
+    result = result && CheckWarp(16,9,1);
+    result = result && CheckWarp(16,10,0);
+    result = result && CheckWarp(16,12,0);
+    result = result && CheckWarp(16,13,0);
+    result = result && CheckWarp(16,14,0);
+    result = result && CheckWarp(17,0,0);
+    result = result && CheckWarp(17,1,0);
+    result = result && CheckWarp(18,0,0);
+    result = result && CheckWarp(18,1,0);
+    result = result && CheckWarp(19,0,0);
+    result = result && CheckWarp(19,0,1);
+    result = result && CheckWarp(19,1,0);
+    result = result && CheckWarp(19,1,1);
+    result = result && CheckWarp(20,0,0);
+    result = result && CheckWarp(20,1,0);
+    result = result && CheckWarp(20,2,0);
+    result = result && CheckWarp(21,0,0);
+    result = result && CheckWarp(22,0,0);
+    result = result && CheckWarp(23,0,2);
+    result = result && CheckWarp(24,0,0);
+    result = result && CheckWarp(24,0,1);
+    result = result && CheckWarp(24,0,2);
+    result = result && CheckWarp(24,0,3);
+    result = result && CheckWarp(24,0,4);
+    result = result && CheckWarp(24,0,5);
+    result = result && CheckWarp(24,1,0);
+    result = result && CheckWarp(24,1,1);
+    result = result && CheckWarp(24,1,2);
+    result = result && CheckWarp(24,1,3);
+    result = result && CheckWarp(24,2,0);
+    result = result && CheckWarp(24,2,1);
+    result = result && CheckWarp(24,2,2);
+    result = result && CheckWarp(24,2,4);
+    result = result && CheckWarp(24,2,5);
+    result = result && CheckWarp(24,3,0);
+    result = result && CheckWarp(24,4,0);
+    result = result && CheckWarp(24,4,1);
+    result = result && CheckWarp(24,6,0);
+    result = result && CheckWarp(24,6,1);
+    result = result && CheckWarp(24,6,2);
+    result = result && CheckWarp(24,7,0);
+    result = result && CheckWarp(24,7,1);
+    result = result && CheckWarp(24,7,2);
+    result = result && CheckWarp(24,7,3);
+    result = result && CheckWarp(24,8,0);
+    result = result && CheckWarp(24,8,1);
+    result = result && CheckWarp(24,8,2);
+    result = result && CheckWarp(24,8,3);
+    result = result && CheckWarp(24,8,4);
+    result = result && CheckWarp(24,8,5);
+    result = result && CheckWarp(24,9,0);
+    result = result && CheckWarp(24,9,1);
+    result = result && CheckWarp(24,9,2);
+    result = result && CheckWarp(24,9,3);
+    result = result && CheckWarp(24,9,4);
+    result = result && CheckWarp(24,10,0);
+    result = result && CheckWarp(24,11,0);
+    result = result && CheckWarp(24,11,1);
+    result = result && CheckWarp(24,11,2);
+    result = result && CheckWarp(24,11,3);
+    result = result && CheckWarp(24,11,4);
+    result = result && CheckWarp(24,11,5);
+    result = result && CheckWarp(24,12,0);
+    result = result && CheckWarp(24,12,1);
+    result = result && CheckWarp(24,12,2);
+    result = result && CheckWarp(24,12,3);
+    result = result && CheckWarp(24,13,0);
+    result = result && CheckWarp(24,13,1);
+    result = result && CheckWarp(24,13,2);
+    result = result && CheckWarp(24,13,3);
+    result = result && CheckWarp(24,13,4);
+    result = result && CheckWarp(24,14,0);
+    result = result && CheckWarp(24,14,1);
+    result = result && CheckWarp(24,15,0);
+    result = result && CheckWarp(24,15,1);
+    result = result && CheckWarp(24,15,4);
+    result = result && CheckWarp(24,15,5);
+    result = result && CheckWarp(24,16,0);
+    result = result && CheckWarp(24,16,1);
+    result = result && CheckWarp(24,16,2);
+    result = result && CheckWarp(24,17,0);
+    result = result && CheckWarp(24,17,1);
+    result = result && CheckWarp(24,17,2);
+    result = result && CheckWarp(24,18,0);
+    result = result && CheckWarp(24,18,1);
+    result = result && CheckWarp(24,18,2);
+    result = result && CheckWarp(24,18,3);
+    result = result && CheckWarp(24,19,0);
+    result = result && CheckWarp(24,19,1);
+    result = result && CheckWarp(24,19,2);
+    result = result && CheckWarp(24,20,0);
+    result = result && CheckWarp(24,21,0);
+    result = result && CheckWarp(24,21,1);
+    result = result && CheckWarp(24,22,1);
+    result = result && CheckWarp(24,23,0);
+    result = result && CheckWarp(24,23,2);
+    result = result && CheckWarp(24,24,0);
+    result = result && CheckWarp(24,24,1);
+    result = result && CheckWarp(24,24,2);
+    result = result && CheckWarp(24,24,3);
+    result = result && CheckWarp(24,24,5);
+    result = result && CheckWarp(24,24,6);
+    result = result && CheckWarp(24,24,7);
+    result = result && CheckWarp(24,24,8);
+    result = result && CheckWarp(24,24,9);
+    result = result && CheckWarp(24,24,10);
+    result = result && CheckWarp(24,24,11);
+    result = result && CheckWarp(24,24,12);
+    result = result && CheckWarp(24,24,13);
+    result = result && CheckWarp(24,24,15);
+    result = result && CheckWarp(24,24,16);
+    result = result && CheckWarp(24,24,17);
+    result = result && CheckWarp(24,24,18);
+    result = result && CheckWarp(24,24,19);
+    result = result && CheckWarp(24,24,20);
+    result = result && CheckWarp(24,24,22);
+    result = result && CheckWarp(24,24,24);
+    result = result && CheckWarp(24,24,50);
+    result = result && CheckWarp(24,24,51);
+    result = result && CheckWarp(24,24,52);
+    result = result && CheckWarp(24,24,53);
+    result = result && CheckWarp(24,25,0);
+    result = result && CheckWarp(24,25,1);
+    result = result && CheckWarp(24,25,2);
+    result = result && CheckWarp(24,25,3);
+    result = result && CheckWarp(24,25,4);
+    result = result && CheckWarp(24,25,5);
+    result = result && CheckWarp(24,25,7);
+    result = result && CheckWarp(24,25,8);
+    result = result && CheckWarp(24,27,1);
+    result = result && CheckWarp(24,27,50);
+    result = result && CheckWarp(24,28,2);
+    result = result && CheckWarp(24,29,0);
+    result = result && CheckWarp(24,29,1);
+    result = result && CheckWarp(24,29,3);
+    result = result && CheckWarp(24,30,0);
+    result = result && CheckWarp(24,30,1);
+    result = result && CheckWarp(24,31,0);
+    result = result && CheckWarp(24,32,0);
+    result = result && CheckWarp(24,32,1);
+    result = result && CheckWarp(24,32,2);
+    result = result && CheckWarp(24,33,0);
+    result = result && CheckWarp(24,33,1);
+    result = result && CheckWarp(24,34,0);
+    result = result && CheckWarp(24,34,1);
+    result = result && CheckWarp(24,35,1);
+    result = result && CheckWarp(24,36,0);
+    result = result && CheckWarp(24,37,0);
+    result = result && CheckWarp(24,38,0);
+    result = result && CheckWarp(24,38,1);
+    result = result && CheckWarp(24,39,1);
+    result = result && CheckWarp(24,43,0);
+    result = result && CheckWarp(24,43,1);
+    result = result && CheckWarp(24,43,2);
+    result = result && CheckWarp(24,43,3);
+    result = result && CheckWarp(24,43,4);
+    result = result && CheckWarp(24,44,0);
+    result = result && CheckWarp(24,44,1);
+    result = result && CheckWarp(24,44,2);
+    result = result && CheckWarp(24,44,3);
+    result = result && CheckWarp(24,44,4);
+    result = result && CheckWarp(24,44,5);
+    result = result && CheckWarp(24,44,6);
+    result = result && CheckWarp(24,45,0);
+    result = result && CheckWarp(24,45,1);
+    result = result && CheckWarp(24,45,2);
+    result = result && CheckWarp(24,45,3);
+    result = result && CheckWarp(24,46,0);
+    result = result && CheckWarp(24,52,0);
+    result = result && CheckWarp(24,53,0);
+    result = result && CheckWarp(24,54,0);
+    result = result && CheckWarp(24,54,2);
+    result = result && CheckWarp(24,54,3);
+    result = result && CheckWarp(24,54,4);
+    result = result && CheckWarp(24,55,1);
+    result = result && CheckWarp(24,55,2);
+    result = result && CheckWarp(24,55,4);
+    result = result && CheckWarp(24,55,5);
+    result = result && CheckWarp(24,55,7);
+    result = result && CheckWarp(24,55,8);
+    result = result && CheckWarp(24,55,9);
+    result = result && CheckWarp(24,55,10);
+    result = result && CheckWarp(24,55,11);
+    result = result && CheckWarp(24,56,0);
+    result = result && CheckWarp(24,56,2);
+    result = result && CheckWarp(24,56,3);
+    result = result && CheckWarp(24,56,4);
+    result = result && CheckWarp(24,57,0);
+    result = result && CheckWarp(24,57,1);
+    result = result && CheckWarp(24,57,6);
+    result = result && CheckWarp(24,57,7);
+    result = result && CheckWarp(24,58,0);
+    result = result && CheckWarp(24,58,1);
+    result = result && CheckWarp(24,58,2);
+    result = result && CheckWarp(24,59,0);
+    result = result && CheckWarp(24,59,2);
+    result = result && CheckWarp(24,61,0);
+    result = result && CheckWarp(24,62,0);
+    result = result && CheckWarp(24,62,2);
+    result = result && CheckWarp(24,63,0);
+    result = result && CheckWarp(24,67,0);
+    result = result && CheckWarp(24,67,1);
+    result = result && CheckWarp(24,67,2);
+    result = result && CheckWarp(24,68,0);
+    result = result && CheckWarp(24,68,1);
+    result = result && CheckWarp(24,68,2);
+    result = result && CheckWarp(24,73,0);
+    result = result && CheckWarp(24,77,0);
+    result = result && CheckWarp(24,77,1);
+    result = result && CheckWarp(24,78,0);
+    result = result && CheckWarp(24,78,1);
+    result = result && CheckWarp(24,79,0);
+    result = result && CheckWarp(24,79,2);
+    result = result && CheckWarp(24,80,0);
+    result = result && CheckWarp(24,80,1);
+    result = result && CheckWarp(24,81,0);
+    result = result && CheckWarp(24,81,1);
+    result = result && CheckWarp(24,81,2);
+    result = result && CheckWarp(24,82,0);
+    result = result && CheckWarp(24,82,1);
+    result = result && CheckWarp(24,82,2);
+    result = result && CheckWarp(24,84,0);
+    result = result && CheckWarp(24,84,1);
+    result = result && CheckWarp(24,85,0);
+    result = result && CheckWarp(24,86,0);
+    result = result && CheckWarp(24,86,1);
+    result = result && CheckWarp(24,86,2);
+    result = result && CheckWarp(24,86,3);
+    result = result && CheckWarp(24,87,0);
+    result = result && CheckWarp(24,87,1);
+    result = result && CheckWarp(24,87,2);
+    result = result && CheckWarp(24,88,0);
+    result = result && CheckWarp(24,89,0);
+    result = result && CheckWarp(24,89,2);
+    result = result && CheckWarp(24,90,0);
+    result = result && CheckWarp(24,91,0);
+    result = result && CheckWarp(24,91,1);
+    result = result && CheckWarp(24,92,0);
+    result = result && CheckWarp(24,92,1);
+    result = result && CheckWarp(24,93,0);
+    result = result && CheckWarp(24,93,1);
+    result = result && CheckWarp(24,94,0);
+    result = result && CheckWarp(24,94,1);
+    result = result && CheckWarp(24,95,0);
+    result = result && CheckWarp(24,95,1);
+    result = result && CheckWarp(24,96,0);
+    result = result && CheckWarp(24,97,0);
+    result = result && CheckWarp(24,102,0);
+    result = result && CheckWarp(24,104,1);
+    result = result && CheckWarp(24,107,0);
+    result = result && CheckWarp(26,56,0);
+    result = result && CheckWarp(26,56,1);
+    result = result && CheckWarp(26,59,0);
+    result = result && CheckWarp(26,60,0);
+    result = result && CheckWarp(26,66,1);
+    result = result && CheckWarp(26,67,0);
+    result = result && CheckWarp(26,68,0);
+    result = result && CheckWarp(26,68,1);
+    result = result && CheckWarp(26,69,0);
+    result = result && CheckWarp(26,69,1);
+    result = result && CheckWarp(26,70,1);
+    result = result && CheckWarp(26,71,0);
+    result = result && CheckWarp(26,73,1);
+    result = result && CheckWarp(26,74,1);
+    result = result && CheckWarp(26,75,0);
+    result = result && CheckWarp(26,76,0);
+    result = result && CheckWarp(26,86,0);
+    result = result && CheckWarp(28,0,0);
+    result = result && CheckWarp(29,0,0);
+    result = result && CheckWarp(29,2,0);
+    result = result && CheckWarp(29,3,2);
+    result = result && CheckWarp(29,11,0);
+    result = result && CheckWarp(29,11,2);
+    result = result && CheckWarp(29,12,0);
+    result = result && CheckWarp(29,12,2);
+    result = result && CheckWarp(30,0,0);
+    result = result && CheckWarp(31,0,0);
+    result = result && CheckWarp(32,0,0);
+    result = result && CheckWarp(32,0,2);
+    result = result && CheckWarp(32,1,0);
+    result = result && CheckWarp(32,2,0);
+    result = result && CheckWarp(33,0,0);
+
+    return result;
 }
