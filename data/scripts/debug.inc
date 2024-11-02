@@ -157,9 +157,21 @@ Debug_EventScript_Script_5::
 	release
 	end
 
-Debug_EventScript_Script_6::
-	release
+Debug_EventScript_Script_6_CheckPassed::
+	message Debug_WarpCheckPassed_Text
+	goto Debug_MessageEnd
 	end
+
+Debug_EventScript_Script_6_CheckFailed::
+	message Debug_WarpCheckFailed_Text
+	goto Debug_MessageEnd
+	end
+
+Debug_WarpCheckPassed_Text::
+	.string "All warps appear to be working.$"
+
+Debug_WarpCheckFailed_Text::
+	.string "Some warps may be broken. {STR_VAR_1}$"
 
 Debug_EventScript_Script_7::
 	release

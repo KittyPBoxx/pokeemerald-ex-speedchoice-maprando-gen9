@@ -72,6 +72,7 @@
 #include "constants/layouts.h"
 #include "constants/event_objects.h"
 #include "field_camera.h"
+#include "random_warps.h"
 
 #if DEBUG_OVERWORLD_MENU == TRUE
 // *******************************
@@ -149,7 +150,7 @@ enum ScriptDebugMenu
     DEBUG_UTIL_MENU_ITEM_SCRIPT_3,
     DEBUG_UTIL_MENU_ITEM_SCRIPT_4,
     DEBUG_UTIL_MENU_ITEM_SCRIPT_5,
-    // DEBUG_UTIL_MENU_ITEM_SCRIPT_6,
+    DEBUG_UTIL_MENU_ITEM_SCRIPT_6,
     // DEBUG_UTIL_MENU_ITEM_SCRIPT_7,
     // DEBUG_UTIL_MENU_ITEM_SCRIPT_8,
 };
@@ -356,7 +357,7 @@ static void DebugAction_Util_Script_2(u8 taskId);
 static void DebugAction_Util_Script_3(u8 taskId);
 static void DebugAction_Util_Script_4(u8 taskId);
 static void DebugAction_Util_Script_5(u8 taskId);
-// static void DebugAction_Util_Script_6(u8 taskId);
+static void DebugAction_Util_Script_6(u8 taskId);
 // static void DebugAction_Util_Script_7(u8 taskId);
 // static void DebugAction_Util_Script_8(u8 taskId);
 
@@ -499,7 +500,8 @@ extern const u8 Debug_EventScript_InflictStatus1[];
 // extern const u8 Debug_EventScript_Script_3[];
 extern const u8 Debug_EventScript_Script_4[];
 extern const u8 Debug_EventScript_Script_5[];
-extern const u8 Debug_EventScript_Script_6[];
+extern const u8 Debug_EventScript_Script_6_CheckPassed[];
+extern const u8 Debug_EventScript_Script_6_CheckFailed[];
 extern const u8 Debug_EventScript_Script_7[];
 extern const u8 Debug_EventScript_Script_8[];
 extern const u8 DebugScript_DaycareMonsNotCompatible[];
@@ -573,7 +575,7 @@ static const u8 sDebugText_Util_Script_2[] = _("Slow Mo");
 static const u8 sDebugText_Util_Script_3[] = _("Force Gym Battle");
 static const u8 sDebugText_Util_Script_4[] = _("Unlock Doors");
 static const u8 sDebugText_Util_Script_5[] = _("Unexist NPCs");
-static const u8 sDebugText_Util_Script_6[] = _("Script 6");
+static const u8 sDebugText_Util_Script_6[] = _("Find Broken Warps");
 static const u8 sDebugText_Util_Script_7[] = _("Script 7");
 static const u8 sDebugText_Util_Script_8[] = _("Script 8");
 // Util Menu
@@ -847,7 +849,7 @@ static const struct ListMenuItem sDebugMenu_Items_Scripts[] =
     [DEBUG_UTIL_MENU_ITEM_SCRIPT_3] = {sDebugText_Util_Script_3, DEBUG_UTIL_MENU_ITEM_SCRIPT_3},
     [DEBUG_UTIL_MENU_ITEM_SCRIPT_4] = {sDebugText_Util_Script_4, DEBUG_UTIL_MENU_ITEM_SCRIPT_4},
     [DEBUG_UTIL_MENU_ITEM_SCRIPT_5] = {sDebugText_Util_Script_5, DEBUG_UTIL_MENU_ITEM_SCRIPT_5},
-    // [DEBUG_UTIL_MENU_ITEM_SCRIPT_6] = {sDebugText_Util_Script_6, DEBUG_UTIL_MENU_ITEM_SCRIPT_6},
+    [DEBUG_UTIL_MENU_ITEM_SCRIPT_6] = {sDebugText_Util_Script_6, DEBUG_UTIL_MENU_ITEM_SCRIPT_6},
     // [DEBUG_UTIL_MENU_ITEM_SCRIPT_7] = {sDebugText_Util_Script_7, DEBUG_UTIL_MENU_ITEM_SCRIPT_7},
     // [DEBUG_UTIL_MENU_ITEM_SCRIPT_8] = {sDebugText_Util_Script_8, DEBUG_UTIL_MENU_ITEM_SCRIPT_8},
 };
@@ -1034,7 +1036,7 @@ static void (*const sDebugMenu_Actions_Scripts[])(u8) =
     [DEBUG_UTIL_MENU_ITEM_SCRIPT_3] = DebugAction_Util_Script_3,
     [DEBUG_UTIL_MENU_ITEM_SCRIPT_4] = DebugAction_Util_Script_4,
     [DEBUG_UTIL_MENU_ITEM_SCRIPT_5] = DebugAction_Util_Script_5,
-    // [DEBUG_UTIL_MENU_ITEM_SCRIPT_6] = DebugAction_Util_Script_6,
+    [DEBUG_UTIL_MENU_ITEM_SCRIPT_6] = DebugAction_Util_Script_6,
     // [DEBUG_UTIL_MENU_ITEM_SCRIPT_7] = DebugAction_Util_Script_7,
     // [DEBUG_UTIL_MENU_ITEM_SCRIPT_8] = DebugAction_Util_Script_8,
 };
@@ -3072,10 +3074,15 @@ static void DebugAction_Util_Script_5(u8 taskId)
     DebugAction_DestroyExtraWindow(taskId);
 }
 
-// static void DebugAction_Util_Script_6(u8 taskId)
-// {
-//     Debug_DestroyMenu_Full_Script(taskId, Debug_EventScript_Script_6);
-// }
+static void DebugAction_Util_Script_6(u8 taskId)
+{
+    if (CheckAllWarps()){
+        Debug_DestroyMenu_Full_Script(taskId, Debug_EventScript_Script_6_CheckPassed);
+    } else {
+        Debug_DestroyMenu_Full_Script(taskId, Debug_EventScript_Script_6_CheckFailed);
+    }
+    
+}
 
 // static void DebugAction_Util_Script_7(u8 taskId)
 // {
