@@ -22,6 +22,10 @@ static const u16 sFossils[] = {
     ITEM_PLUME_FOSSIL,
     ITEM_JAW_FOSSIL,
     ITEM_SAIL_FOSSIL,
+    ITEM_FOSSILIZED_BIRD, 
+    ITEM_FOSSILIZED_FISH,
+    ITEM_FOSSILIZED_DRAKE,
+    ITEM_FOSSILIZED_DINO,
 };
 
 #define tState         data[0]

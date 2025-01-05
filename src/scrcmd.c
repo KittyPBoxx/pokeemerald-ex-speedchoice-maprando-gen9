@@ -2534,10 +2534,9 @@ int CountNumberUniqueFossils()
 {
     int i;
     int numUnique = 0;
-    for(i = ITEM_ARMOR_FOSSIL; i <= ITEM_CLAW_FOSSIL; i++) { // check every fossil.
+    for(i = ITEM_HELIX_FOSSIL; i <= ITEM_FOSSILIZED_DINO; i++) { // check every fossil.
         numUnique += CheckBagHasItem(i, 1);
     }
-    numUnique += CheckBagHasItem(ITEM_OLD_AMBER, 1); // add old amber too.
     return numUnique;
 }
 
