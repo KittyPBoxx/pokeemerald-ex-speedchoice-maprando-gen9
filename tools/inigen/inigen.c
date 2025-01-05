@@ -15,6 +15,7 @@
 #include "constants/moves.h"
 #include "constants/pokemon.h"
 #include "constants/event_objects.h"
+#include "constants/battle_frontier_mons.h"
 
 /*
  * ---------------------------------------------------------
@@ -329,6 +330,10 @@ int main(int argc, char ** argv)
     print("TrainerClassStructSize=%d\n", 16); // hardcoded for now (Size of trainer TrainerClass Struct)
     print("TrainerNameLength=%d\n", 11); // hardcoded for now
     print("DoublesTrainerClasses=[%d, %d, %d, %d, %d]\n", TRAINER_CLASS_SR_AND_JR, TRAINER_CLASS_TWINS, TRAINER_CLASS_YOUNG_COUPLE, TRAINER_CLASS_OLD_COUPLE, TRAINER_CLASS_SIS_AND_BRO); // hardcoded for now
+
+    fprintf(stderr, "Configuring frontier mons\n");
+    config_sym("FrontierPokemon", "gBattleFrontierMons");
+    print("FrontierPokemonCount=%d\n", NUM_FRONTIER_MONS);
 
     fprintf(stderr, "Configuring items\n");
     Elf32_Sym * Em_gItems = GetSymbolByName("gItemsInfo");
