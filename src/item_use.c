@@ -53,6 +53,7 @@
 #include "region_map.h"
 #include "fldeff.h"
 #include "graphics.h"
+#include "constants/layouts.h"
 
 static void SetUpItemUseCallback(u8);
 static void FieldCB_UseItemOnField(void);
@@ -246,7 +247,11 @@ void ItemUseOutOfBattle_ExpShare(u8 taskId)
 
 void ItemUseOutOfBattle_FlyTool(u8 taskId)
 {
-    if (!(FlagGet(FLAG_BADGE06_GET) || CheckSpeedchoiceOption(EARLYFLY, FLY_YES)))
+    if (!FlagGet(FLAG_MAP_RANDO) && (gMapHeader.mapLayoutId >= LAYOUT_EVER_GRANDE_CITY_SIDNEYS_ROOM && gMapHeader.mapLayoutId <= LAYOUT_EVER_GRANDE_CITY_SHORT_HALL)) 
+    {
+        DisplayCannotUseItemMessage(taskId, gTasks[taskId].tUsingRegisteredKeyItem, gText_DadsAdvice);
+    }
+    else if (!(FlagGet(FLAG_BADGE06_GET) || CheckSpeedchoiceOption(EARLYFLY, FLY_YES)))
     {
         DisplayCannotUseItemMessage(taskId, gTasks[taskId].tUsingRegisteredKeyItem, gText_CantUseUntilNewBadge);
     }
