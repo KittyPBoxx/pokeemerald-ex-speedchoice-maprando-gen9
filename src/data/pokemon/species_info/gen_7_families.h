@@ -6953,6 +6953,8 @@ const struct SpeciesInfo gSpeciesInfoGen7[] =
         .isFrontierBanned = TRUE,
         .levelUpLearnset = sMeltanLevelUpLearnset,
         .teachableLearnset = sMeltanTeachableLearnset,
+        .evolutions = EVOLUTION({EVO_ITEM, ITEM_METAL_COAT, SPECIES_MELMETAL},
+                                {EVO_LEVEL, 30, SPECIES_MELMETAL}),
     },
 
     [SPECIES_MELMETAL] =
