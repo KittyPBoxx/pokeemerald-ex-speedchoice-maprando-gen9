@@ -1167,10 +1167,10 @@ void CB2_InitCopyrightScreenAfterBootup(void)
     }
 }
 
-void CB2_InitCopyrightScreenAfterTitleScreen(void)
-{
-    SetUpCopyrightScreen();
-}
+// void CB2_InitCopyrightScreenAfterTitleScreen(void)
+// {
+//     SetUpCopyrightScreen();
+// }
 
 #define sBigDropSpriteId data[0]
 
