@@ -444,6 +444,8 @@ extern const u8 gText_ICanPayVar1[];
 extern const u8 gText_TurnedOverVar1ForVar2[];
 extern const u8 gText_DepositHowManyVar1[];
 extern const u8 gText_CantStoreImportantItems[];
+extern const u8 gText_CantTossImportantItems[];
+extern const u8 gText_CantTossRegisteredItems[];
 extern const u8 gText_DepositedVar2Var1s[];
 extern const u8 gText_NoRoomForItems[];
 extern const u8 gText_ThreeDashes[];

@@ -2239,7 +2239,7 @@ const struct Item gItemsInfo[] =
             "cave or a dungeon."),
         #if I_KEY_ESCAPE_ROPE >= GEN_8
             .price = 0,
-            .importance = 1,
+            .importance = 0,
             .pocket = POCKET_KEY_ITEMS,
         #else
             .price = (I_PRICE >= GEN_7) ? 1000 : 550,
@@ -3015,7 +3015,7 @@ const struct Item gItemsInfo[] =
             .pocket = POCKET_TREASURES,
         #else
             .price = 0,
-            .importance = 1,
+            .importance = 0,
             .pocket = POCKET_KEY_ITEMS,
         #endif
         .type = ITEM_USE_BAG_MENU,
@@ -3037,7 +3037,7 @@ const struct Item gItemsInfo[] =
             .pocket = POCKET_TREASURES,
         #else
             .price = 0,
-            .importance = 1,
+            .importance = 0,
             .pocket = POCKET_KEY_ITEMS,
         #endif
         .type = ITEM_USE_BAG_MENU,
@@ -3059,7 +3059,7 @@ const struct Item gItemsInfo[] =
             .pocket = POCKET_TREASURES,
         #else
             .price = 0,
-            .importance = 1,
+            .importance = 0,
             .pocket = POCKET_KEY_ITEMS,
         #endif
         .type = ITEM_USE_BAG_MENU,
@@ -3078,7 +3078,7 @@ const struct Item gItemsInfo[] =
             .pocket = POCKET_TREASURES,
         #else
             .price = 0,
-            .importance = 1,
+            .importance = 0,
             .pocket = POCKET_KEY_ITEMS,
         #endif
         .type = ITEM_USE_BAG_MENU,
@@ -3097,7 +3097,7 @@ const struct Item gItemsInfo[] =
             .pocket = POCKET_TREASURES,
         #else
             .price = 0,
-            .importance = 1,
+            .importance = 0,
             .pocket = POCKET_KEY_ITEMS,
         #endif
         .type = ITEM_USE_BAG_MENU,
@@ -11880,7 +11880,7 @@ const struct Item gItemsInfo[] =
     {
         .name = _("Oval Charm"),
         .price = 0,
-        .importance = 1,
+        .importance = 0,
         .description = COMPOUND_STRING(
             "Raises the chance\n"
             "of finding eggs\n"
@@ -11896,7 +11896,7 @@ const struct Item gItemsInfo[] =
     {
         .name = _("Shiny Charm"),
         .price = 0,
-        .importance = 1,
+        .importance = 0,
         .description = COMPOUND_STRING(
             "A charm that will\n"
             "raise the chance\n"
@@ -11912,7 +11912,7 @@ const struct Item gItemsInfo[] =
     {
         .name = HANDLE_EXPANDED_ITEM_NAME("CatchngCharm", "Catching Charm"),
         .price = 0,
-        .importance = 1,
+        .importance = 0,
         .description = COMPOUND_STRING(
             "A charm that raises\n"
             "the chance of\n"
@@ -11928,7 +11928,7 @@ const struct Item gItemsInfo[] =
     {
         .name = _("Exp. Charm"),
         .price = 0,
-        .importance = 1,
+        .importance = 0,
         .description = COMPOUND_STRING(
             "A charm that raises\n"
             "the amount of Exp.\n"
@@ -11946,7 +11946,7 @@ const struct Item gItemsInfo[] =
     {
         .name = HANDLE_EXPANDED_ITEM_NAME("RotomCatalog", "Rotom Catalog"),
         .price = 3000,
-        .importance = 1,
+        .importance = 0,
         .description = COMPOUND_STRING(
             "A catalog full of\n"
             "devices liked by\n"
@@ -11962,7 +11962,7 @@ const struct Item gItemsInfo[] =
     {
         .name = _("Gracidea"),
         .price = 3000,
-        .importance = 1,
+        .importance = 0,
         .description = COMPOUND_STRING(
             "Bouquets made with\n"
             "it are offered as a\n"
@@ -11979,7 +11979,7 @@ const struct Item gItemsInfo[] =
         .name = _("Reveal Glass"),
         .pluralName = _("Reveal Glasses"),
         .price = 3000,
-        .importance = 1,
+        .importance = 0,
         .description = COMPOUND_STRING(
             "This glass returns\n"
             "a Pokémon back to\n"
@@ -11996,7 +11996,7 @@ const struct Item gItemsInfo[] =
         .name = _("DNA Splicers"),
         .pluralName = _("DNA Splicers"),
         .price = 3000,
-        .importance = 1,
+        .importance = 0,
         .description = COMPOUND_STRING(
             "Splicer that fuses\n"
             "Kyurem and a\n"
@@ -12012,7 +12012,7 @@ const struct Item gItemsInfo[] =
     {
         .name = _("Zygarde Cube"),
         .price = 3000,
-        .importance = 1,
+        .importance = 0,
         .description = COMPOUND_STRING(
             "An item to store\n"
             "Zygarde Cores and\n"
@@ -12028,7 +12028,7 @@ const struct Item gItemsInfo[] =
     {
         .name = _("Prison Bottle"),
         .price = 3000,
-        .importance = 1,
+        .importance = 0,
         .description = COMPOUND_STRING(
             "A bottle used to\n"
             "seal a certain\n"
@@ -12044,7 +12044,7 @@ const struct Item gItemsInfo[] =
     {
         .name = _("N-Solarizer"),
         .price = 3000,
-        .importance = 1,
+        .importance = 0,
         .description = COMPOUND_STRING(
             "A device to fuse\n"
             "and split Necrozma\n"
@@ -12060,7 +12060,7 @@ const struct Item gItemsInfo[] =
     {
         .name = _("N-Lunarizer"),
         .price = 3000,
-        .importance = 1,
+        .importance = 0,
         .description = COMPOUND_STRING(
             "A device to fuse\n"
             "and split Necrozma\n"
@@ -12077,7 +12077,7 @@ const struct Item gItemsInfo[] =
         .name = HANDLE_EXPANDED_ITEM_NAME("ReinsOfUnity", "Reins of Unity"),
         .pluralName = HANDLE_EXPANDED_ITEM_NAME("ReinsOfUnity", "Reins of Unity"),
         .price = 3000,
-        .importance = 1,
+        .importance = 0,
         .description = COMPOUND_STRING(
             "Reins that unite\n"
             "Calyrex with its\n"
@@ -12095,7 +12095,7 @@ const struct Item gItemsInfo[] =
     {
         .name = _("Mega Ring"),
         .price = 0,
-        .importance = 1,
+        .importance = 0,
         .description = COMPOUND_STRING(
             "Enables {PKMN} holding\n"
             "their Mega Stone to\n"
@@ -12111,7 +12111,7 @@ const struct Item gItemsInfo[] =
     {
         .name = _("Z-Power Ring"),
         .price = 0,
-        .importance = 1,
+        .importance = 0,
         .description = COMPOUND_STRING(
             "A strange ring\n"
             "that enables\n"
@@ -12148,7 +12148,7 @@ const struct Item gItemsInfo[] =
             "A folding bicycle\n"
             "that is faster than\n"
             "the Running Shoes."),
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_FIELD,
         .fieldUseFunc = ItemUseOutOfBattle_CannotUse,
@@ -12198,7 +12198,7 @@ const struct Item gItemsInfo[] =
             "Use by any body of\n"
             "water to fish for\n"
             "wild Pokémon."),
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_FIELD,
         .fieldUseFunc = ItemUseOutOfBattle_Rod,
@@ -12215,7 +12215,7 @@ const struct Item gItemsInfo[] =
             "A decent fishing\n"
             "rod for catching\n"
             "wild Pokémon."),
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_FIELD,
         .fieldUseFunc = ItemUseOutOfBattle_Rod,
@@ -12232,7 +12232,7 @@ const struct Item gItemsInfo[] =
             "The best fishing\n"
             "rod for catching\n"
             "wild Pokémon."),
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_FIELD,
         .fieldUseFunc = ItemUseOutOfBattle_Rod,
@@ -12249,7 +12249,7 @@ const struct Item gItemsInfo[] =
             "A device that\n"
             "signals an invisible\n"
             "item by sound."),
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_FIELD,
         .fieldUseFunc = ItemUseOutOfBattle_Itemfinder,
@@ -12265,7 +12265,7 @@ const struct Item gItemsInfo[] =
             "Can be viewed\n"
             "anytime. Shows your\n"
             "present location."),
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_BAG_MENU,
         .fieldUseFunc = ItemUseOutOfBattle_TownMap,
@@ -12281,7 +12281,7 @@ const struct Item gItemsInfo[] =
             "A rechargeable unit\n"
             "that flags battle-\n"
             "ready Trainers."),
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_FIELD,
 #if I_VS_SEEKER_CHARGING != 0
@@ -12301,7 +12301,7 @@ const struct Item gItemsInfo[] =
             "A convenient case\n"
             "that holds TMs and\n"
             "HMs."),
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_BAG_MENU,
         .fieldUseFunc = ItemUseOutOfBattle_CannotUse,
@@ -12318,7 +12318,7 @@ const struct Item gItemsInfo[] =
             "A convenient\n"
             "container that\n"
             "holds Berries."),
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_BAG_MENU,
         .fieldUseFunc = ItemUseOutOfBattle_CannotUse,
@@ -12334,7 +12334,7 @@ const struct Item gItemsInfo[] =
             "This device grants\n"
             "access to the {PKMN}\n"
             "Storage System."),
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_FIELD,
         .fieldUseFunc = ItemUseOutOfBattle_PokemonBoxLink,
@@ -12349,7 +12349,7 @@ const struct Item gItemsInfo[] =
         .description = COMPOUND_STRING(
             "A case that holds\n"
             "up to 9,999 Coins."),
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_BAG_MENU,
         .fieldUseFunc = ItemUseOutOfBattle_CoinCase,
@@ -12365,7 +12365,7 @@ const struct Item gItemsInfo[] =
             "Stores Berry\n"
             "Powder made using\n"
             "a Berry Crusher."),
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_BAG_MENU,
         .fieldUseFunc = ItemUseOutOfBattle_PowderJar,
@@ -12381,7 +12381,7 @@ const struct Item gItemsInfo[] =
             "A tool used for\n"
             "watering Berries\n"
             "and plants."),
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_FIELD,
         .fieldUseFunc = ItemUseOutOfBattle_WailmerPail,
@@ -12397,7 +12397,7 @@ const struct Item gItemsInfo[] =
             "A tool used to\n"
             "search out Pokémon\n"
             "hiding in grass."),
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_BAG_MENU,
         .fieldUseFunc = ItemUseOutOfBattle_CannotUse, // Todo
@@ -12413,7 +12413,7 @@ const struct Item gItemsInfo[] =
             "A case for holding\n"
             "{POKEBLOCK}s made with\n"
             "a Berry Blender."),
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_PBLOCK_CASE,
         .fieldUseFunc = ItemUseOutOfBattle_PokeblockCase,
@@ -12429,7 +12429,7 @@ const struct Item gItemsInfo[] =
             "A sack used to\n"
             "gather and hold\n"
             "volcanic ash."),
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_BAG_MENU,
         .fieldUseFunc = ItemUseOutOfBattle_CannotUse,
@@ -12445,7 +12445,7 @@ const struct Item gItemsInfo[] =
             "A sweet-sounding\n"
             "flute that awakens\n"
             "Pokémon."),
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_BAG_MENU,
         .fieldUseFunc = ItemUseOutOfBattle_PokeFlute,
@@ -12462,7 +12462,7 @@ const struct Item gItemsInfo[] =
             "Stores information\n"
             "on famous people\n"
             "for instant recall."),
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_BAG_MENU,
         .fieldUseFunc = ItemUseOutOfBattle_CannotUse,
@@ -12478,7 +12478,7 @@ const struct Item gItemsInfo[] =
             "A TV set tuned to\n"
             "an advice program\n"
             "for Trainers."),
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_FIELD,
         .fieldUseFunc = ItemUseOutOfBattle_CannotUse,
@@ -12496,7 +12496,7 @@ const struct Item gItemsInfo[] =
             "The ticket required\n"
             "for sailing on a\n"
             "ferry."),
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_BAG_MENU,
         .fieldUseFunc = ItemUseOutOfBattle_CannotUse,
@@ -12512,7 +12512,7 @@ const struct Item gItemsInfo[] =
             "The ticket for a\n"
             "ferry to a distant\n"
             "southern island."),
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_BAG_MENU,
         .fieldUseFunc = ItemUseOutOfBattle_CannotUse,
@@ -12529,7 +12529,7 @@ const struct Item gItemsInfo[] =
             "A ticket required\n"
             "to board the ship\n"
             "to Navel Rock."),
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_BAG_MENU,
         .fieldUseFunc = ItemUseOutOfBattle_CannotUse,
@@ -12545,7 +12545,7 @@ const struct Item gItemsInfo[] =
             "A ticket required\n"
             "to board the ship\n"
             "to Birth Island."),
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_BAG_MENU,
         .fieldUseFunc = ItemUseOutOfBattle_CannotUse,
@@ -12561,7 +12561,7 @@ const struct Item gItemsInfo[] =
             "A faded sea chart\n"
             "that shows the way\n"
             "to a certain island."),
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_BAG_MENU,
         .fieldUseFunc = ItemUseOutOfBattle_CannotUse,
@@ -12643,7 +12643,7 @@ const struct Item gItemsInfo[] =
             "The key for New\n"
             "Mauville beneath\n"
             "Mauville City."),
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_BAG_MENU,
         .fieldUseFunc = ItemUseOutOfBattle_CannotUse,
@@ -12659,7 +12659,7 @@ const struct Item gItemsInfo[] =
             "A device found\n"
             "inside the\n"
             "Abandoned Ship."),
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_BAG_MENU,
         .fieldUseFunc = ItemUseOutOfBattle_CannotUse,
@@ -12675,7 +12675,7 @@ const struct Item gItemsInfo[] =
             "The key to the\n"
             "storage inside the\n"
             "Abandoned Ship."),
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_BAG_MENU,
         .fieldUseFunc = ItemUseOutOfBattle_CannotUse,
@@ -12689,7 +12689,7 @@ const struct Item gItemsInfo[] =
         .pluralName = _("Keys to Room 1"),
         .price = 0,
         .description = sKeyToRoomDesc,
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_BAG_MENU,
         .fieldUseFunc = ItemUseOutOfBattle_CannotUse,
@@ -12703,7 +12703,7 @@ const struct Item gItemsInfo[] =
         .pluralName = _("Keys to Room 2"),
         .price = 0,
         .description = sKeyToRoomDesc,
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_BAG_MENU,
         .fieldUseFunc = ItemUseOutOfBattle_CannotUse,
@@ -12717,7 +12717,7 @@ const struct Item gItemsInfo[] =
         .pluralName = _("Keys to Room 4"),
         .price = 0,
         .description = sKeyToRoomDesc,
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_BAG_MENU,
         .fieldUseFunc = ItemUseOutOfBattle_CannotUse,
@@ -12731,7 +12731,7 @@ const struct Item gItemsInfo[] =
         .pluralName = _("Keys to Room 6"),
         .price = 0,
         .description = sKeyToRoomDesc,
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_BAG_MENU,
         .fieldUseFunc = ItemUseOutOfBattle_CannotUse,
@@ -12779,7 +12779,7 @@ const struct Item gItemsInfo[] =
             "The pass required\n"
             "for entering\n"
             "Pokémon Contests."),
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_BAG_MENU,
         .fieldUseFunc = ItemUseOutOfBattle_CannotUse,
@@ -12795,7 +12795,7 @@ const struct Item gItemsInfo[] =
             "A parcel for Prof.\n"
             "Oak from a Pokémon\n"
             "Mart's clerk."),
-        .importance = 2,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_BAG_MENU,
         .fieldUseFunc = ItemUseOutOfBattle_CannotUse,
@@ -12811,7 +12811,7 @@ const struct Item gItemsInfo[] =
             "The key to the\n"
             "Cinnabar Island\n"
             "Gym's entrance."),
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_BAG_MENU,
         .fieldUseFunc = ItemUseOutOfBattle_CannotUse,
@@ -12827,7 +12827,7 @@ const struct Item gItemsInfo[] =
             "A voucher for\n"
             "obtaining a bicycle\n"
             "from the Bike Shop."),
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_BAG_MENU,
         .fieldUseFunc = ItemUseOutOfBattle_CannotUse,
@@ -12844,7 +12844,7 @@ const struct Item gItemsInfo[] =
             "Gold dentures lost\n"
             "by the Safari\n"
             "Zone's Warden."),
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_BAG_MENU,
         .fieldUseFunc = ItemUseOutOfBattle_CannotUse,
@@ -12860,7 +12860,7 @@ const struct Item gItemsInfo[] =
             "A card-type door\n"
             "key used in Silph\n"
             "Co's office."),
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_BAG_MENU,
         .fieldUseFunc = ItemUseOutOfBattle_CannotUse,
@@ -12876,7 +12876,7 @@ const struct Item gItemsInfo[] =
             "An elevator key\n"
             "used in Team\n"
             "Rocket's Hideout."),
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_BAG_MENU,
         .fieldUseFunc = ItemUseOutOfBattle_CannotUse,
@@ -12909,7 +12909,7 @@ const struct Item gItemsInfo[] =
             "A pass for ferries\n"
             "between One, Two,\n"
             "and Three Island."),
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_BAG_MENU,
         .fieldUseFunc = ItemUseOutOfBattle_CannotUse,
@@ -12926,7 +12926,7 @@ const struct Item gItemsInfo[] =
             "For ferries serving\n"
             "Vermilion and the\n"
             "Sevii Islands."),
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_BAG_MENU,
         .fieldUseFunc = ItemUseOutOfBattle_CannotUse,
@@ -12943,7 +12943,7 @@ const struct Item gItemsInfo[] =
             "A thirst-quenching\n"
             "tea prepared by an\n"
             "old lady."),
-        .importance = 1,
+        .importance = 01,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_BAG_MENU,
         .fieldUseFunc = ItemUseOutOfBattle_CannotUse,
@@ -12960,7 +12960,7 @@ const struct Item gItemsInfo[] =
             "An exquisite, red-\n"
             "glowing gem that\n"
             "symbolizes passion."),
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_BAG_MENU,
         .fieldUseFunc = ItemUseOutOfBattle_CannotUse,
@@ -12976,7 +12976,7 @@ const struct Item gItemsInfo[] =
             "A brilliant blue gem\n"
             "that symbolizes\n"
             "honesty."),
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_BAG_MENU,
         .fieldUseFunc = ItemUseOutOfBattle_CannotUse,
@@ -13196,7 +13196,7 @@ const struct Item gItemsInfo[] =
             "A peculiar scroll\n"
             "with secrets of\n"
             "the dark path."),
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_PARTY_MENU,
         .fieldUseFunc = ItemUseOutOfBattle_EvolutionStone,
@@ -13214,7 +13214,7 @@ const struct Item gItemsInfo[] =
             "A peculiar scroll\n"
             "with secrets of\n"
             "the water path."),
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_PARTY_MENU,
         .fieldUseFunc = ItemUseOutOfBattle_EvolutionStone,
@@ -13231,7 +13231,7 @@ const struct Item gItemsInfo[] =
             "Energy charges can\n"
             "be used to cause\n"
             "Terastallization."),
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .type = ITEM_USE_BAG_MENU,
         .fieldUseFunc = ItemUseOutOfBattle_CannotUse,
@@ -13837,7 +13837,7 @@ const struct Item gItemsInfo[] =
     {
         .name = HANDLE_EXPANDED_ITEM_NAME("GlmmringCharm", "Glimmering Charm"),
         .price = 0,
-        .importance = 1,
+        .importance = 0,
         .description = COMPOUND_STRING(
             "A charm that will\n"
             "raise the shards\n"
@@ -14106,7 +14106,7 @@ const struct Item gItemsInfo[] =
             "Ends the current\n"
             "race. No, you can't\n"
             "throw it, Keiz."),
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .type = 4,
         .fieldUseFunc = ItemUseOutOfBattle_DoneButton,
@@ -14123,7 +14123,7 @@ const struct Item gItemsInfo[] =
             "Advances time\n"
             "until the next\n"
             "time period."),
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .type = 4,
         .fieldUseFunc = ItemUseOutOfBattle_SleepingBag,
@@ -14140,7 +14140,7 @@ const struct Item gItemsInfo[] =
             "Use FLY quickly\n"
             "outside battle."),
         .type = ITEM_USE_FIELD,
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .fieldUseFunc = ItemUseOutOfBattle_FlyTool,
         .secondaryId = 0,
@@ -14156,7 +14156,7 @@ const struct Item gItemsInfo[] =
             "Use TELEPORT\n"
             "outside battle."),
         .type = ITEM_USE_FIELD,   
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .fieldUseFunc = ItemUseOutOfBattle_TeleportTool,
         .secondaryId = 0,
@@ -14172,7 +14172,7 @@ const struct Item gItemsInfo[] =
             "Use SWEETSCENT\n"
             "outside battle."),
         .type = ITEM_USE_FIELD,   
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .fieldUseFunc = ItemUseOutOfBattle_SweetScentTool,
         .secondaryId = 0,
@@ -14189,7 +14189,7 @@ const struct Item gItemsInfo[] =
             "you have one.\n"
             "Larger first."),
         .type = ITEM_USE_FIELD,   
-        .importance = 1,
+        .importance = 0,
         .pocket = POCKET_KEY_ITEMS,
         .fieldUseFunc = ItemUseOnFieldCB_RepelCase,
         .secondaryId = 0,

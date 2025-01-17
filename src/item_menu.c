@@ -304,8 +304,8 @@ static const u8 sContextMenuItems_ItemsPocket[] = {
 };
 
 static const u8 sContextMenuItems_KeyItemsPocket[] = {
-    ACTION_USE,         ACTION_REGISTER,
-    ACTION_DUMMY,       ACTION_CANCEL
+    ACTION_USE,        ACTION_REGISTER,
+    ACTION_TOSS,       ACTION_CANCEL
 };
 
 static const u8 sContextMenuItems_BallsPocket[] = {
@@ -2036,7 +2036,23 @@ static void ItemMenu_Toss(u8 taskId)
 
     RemoveContextWindow();
     tItemCount = 1;
-    if (tQuantity == 1)
+
+    if (ItemId_GetImportance(gSpecialVar_ItemId))
+    {
+        FillWindowPixelBuffer(WIN_DESCRIPTION, PIXEL_FILL(0));
+        BagMenu_Print(WIN_DESCRIPTION, FONT_NORMAL, gText_CantTossImportantItems, 3, 1, 0, 0, 0, COLORID_NORMAL);
+        gTasks[taskId].func = WaitDepositErrorMessage;
+    }
+    else if (gSaveBlock1Ptr->registeredItems[0] == gSpecialVar_ItemId || 
+             gSaveBlock1Ptr->registeredItems[1] == gSpecialVar_ItemId || 
+             gSaveBlock1Ptr->registeredItems[2] == gSpecialVar_ItemId || 
+             gSaveBlock1Ptr->registeredItems[3] == gSpecialVar_ItemId)
+    {
+        FillWindowPixelBuffer(WIN_DESCRIPTION, PIXEL_FILL(0));
+        BagMenu_Print(WIN_DESCRIPTION, FONT_NORMAL, gText_CantTossRegisteredItems, 3, 1, 0, 0, 0, COLORID_NORMAL);
+        gTasks[taskId].func = WaitDepositErrorMessage;
+    }
+    else if (tQuantity == 1)
     {
         AskTossItems(taskId);
     }
