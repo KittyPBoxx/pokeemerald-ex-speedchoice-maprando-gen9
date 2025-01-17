@@ -1755,23 +1755,68 @@ static void MoveSelectionDisplayMoveType(u32 battler)
 
     txtPtr = StringCopy(gDisplayedStringBattle, gTypesInfo[type].name);
 
-    effectiveness = AI_GetTypeEffectiveness(moveInfo->moves[gMoveSelectionCursor[battler]], battler, GetBattlerAtPosition(BATTLE_OPPOSITE(GetBattlerPosition(battler))));
+    end = StringCopy(txtPtr, gText_Space2);
 
-    if (effectiveness == UQ_4_12(0)) 
+    if (gBattleTypeFlags & BATTLE_TYPE_DOUBLE) 
     {
-        end = StringCopy(txtPtr, gText_MoveInterfaceType_No);
-    } 
-    else if (effectiveness <= UQ_4_12(0.5)) 
-    {
-        end = StringCopy(txtPtr, gText_MoveInterfaceType_Bad);
-    } 
-    else if (effectiveness >= UQ_4_12(2.0)) 
-    {
-        end = StringCopy(txtPtr, gText_MoveInterfaceType_Good);
-    } 
-    else 
-    {
-        end = StringCopy(txtPtr, gText_MoveInterfaceType_Normal);   
+        effectiveness = AI_GetTypeEffectiveness(moveInfo->moves[gMoveSelectionCursor[battler]], battler, GetBattlerAtPosition(B_POSITION_OPPONENT_RIGHT));
+
+        if (effectiveness == UQ_4_12(0)) 
+        {
+            end = StringCopy(end, gText_MoveInterfaceType_No);
+        } 
+        else if (effectiveness <= UQ_4_12(0.5)) 
+        {
+            end = StringCopy(end, gText_MoveInterfaceType_Bad);
+        } 
+        else if (effectiveness >= UQ_4_12(2.0)) 
+        {
+            end = StringCopy(end, gText_MoveInterfaceType_Good);
+        } 
+        else 
+        {
+            end = StringCopy(end, gText_MoveInterfaceType_NormalDouble);   
+        }
+
+        effectiveness = AI_GetTypeEffectiveness(moveInfo->moves[gMoveSelectionCursor[battler]], battler, GetBattlerAtPosition(B_POSITION_OPPONENT_LEFT));
+
+        if (effectiveness == UQ_4_12(0)) 
+        {
+            end = StringCopy(end, gText_MoveInterfaceType_No);
+        } 
+        else if (effectiveness <= UQ_4_12(0.5)) 
+        {
+            end = StringCopy(end, gText_MoveInterfaceType_Bad);
+        } 
+        else if (effectiveness >= UQ_4_12(2.0)) 
+        {
+            end = StringCopy(end, gText_MoveInterfaceType_Good);
+        } 
+        else 
+        {
+            end = StringCopy(end, gText_MoveInterfaceType_NormalDouble);   
+        }
+    }
+    else
+    {   
+        effectiveness = AI_GetTypeEffectiveness(moveInfo->moves[gMoveSelectionCursor[battler]], battler, GetBattlerAtPosition(BATTLE_OPPOSITE(GetBattlerPosition(battler))));
+
+        if (effectiveness == UQ_4_12(0)) 
+        {
+            end = StringCopy(end, gText_MoveInterfaceType_No);
+        } 
+        else if (effectiveness <= UQ_4_12(0.5)) 
+        {
+            end = StringCopy(end, gText_MoveInterfaceType_Bad);
+        } 
+        else if (effectiveness >= UQ_4_12(2.0)) 
+        {
+            end = StringCopy(end, gText_MoveInterfaceType_Good);
+        } 
+        else 
+        {
+            end = StringCopy(end, gText_MoveInterfaceType_Normal);   
+        }
     }
 
     PrependFontIdToFit(txtPtr, end, FONT_NORMAL, WindowWidthPx(B_WIN_MOVE_TYPE) - 25);

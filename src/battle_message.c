@@ -2091,6 +2091,7 @@ const u8 gText_MoveInterfaceType_Good[] = _(" {UP_ARROW_2}");
 const u8 gText_MoveInterfaceType_Bad[] = _(" {DOWN_ARROW_2}");
 const u8 gText_MoveInterfaceType_No[] = _(" {EMOJI_TILDE}");
 const u8 gText_MoveInterfaceType_Normal[] = _("");
+const u8 gText_MoveInterfaceType_NormalDouble[] = _("{EMOJI_SQUARE}");
 const u8 gText_MoveInterfacePpType[] = _("{PALETTE 5}{COLOR_HIGHLIGHT_SHADOW DYNAMIC_COLOR4 DYNAMIC_COLOR5 DYNAMIC_COLOR6}PP\nTYPE/");
 const u8 gText_MoveInterfaceDynamicColors[] = _("{PALETTE 5}{COLOR_HIGHLIGHT_SHADOW DYNAMIC_COLOR4 DYNAMIC_COLOR5 DYNAMIC_COLOR6}");
 const u8 gText_WhichMoveToForget4[] = _("{PALETTE 5}{COLOR_HIGHLIGHT_SHADOW DYNAMIC_COLOR4 DYNAMIC_COLOR5 DYNAMIC_COLOR6}Which move should\nbe forgotten?");

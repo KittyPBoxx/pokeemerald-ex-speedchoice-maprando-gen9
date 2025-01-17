@@ -274,6 +274,7 @@ extern const u8 gText_MoveInterfaceType_Good[];
 extern const u8 gText_MoveInterfaceType_Bad[];
 extern const u8 gText_MoveInterfaceType_No[];
 extern const u8 gText_MoveInterfaceType_Normal[];
+extern const u8 gText_MoveInterfaceType_NormalDouble[];
 extern const u8 gText_MoveInterfacePpType[];
 extern const u8 gText_MoveInterfaceDynamicColors[];
 extern const u8 gText_WhichMoveToForget4[];
