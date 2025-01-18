@@ -185,6 +185,7 @@ enum SettingsDebugMenu
     DEBUG_SETTINGS_MENU_ITEM_TOGGLE_TRAINER_SEE,
     DEBUG_SETTINGS_MENU_ITEM_TOGGLE_COLISSION,
     DEBUG_SETTINGS_MENU_ITEM_TOGGLE_CATCH_EXP,
+    DEBUG_SETTINGS_MENU_ITEM_TOGGLE_SUMMARY_RELEARN,
 };
 
 enum BattleType
@@ -453,6 +454,7 @@ static void DebugAction_Settings_MapRando(u8 taskId);
 static void DebugAction_Settings_LevelScaling(u8 taskId);
 static void DebugAction_Settings_CatchExp(u8 taskId);
 static void DebugAction_Settings_AlwaysObey(u8 taskId);
+static void DebugAction_Settings_SummaryRelearn(u8 taskId);
 // static void DebugAction_FlagsVars_RunningShoes(u8 taskId);
 
 static void Debug_InitializeBattle(u8 taskId);
@@ -656,6 +658,7 @@ static const u8 sDebugText_Settings_MapRando[] =            _("Toggle {STR_VAR_1
 static const u8 sDebugText_Settings_LevelScaling[] =        _("Toggle {STR_VAR_1}Level Scaling");
 static const u8 sDebugText_Settings_CatchExp[] =            _("Toggle {STR_VAR_1}Catch Exp OFF");
 static const u8 sDebugText_Settings_AlwaysObey[] =          _("Toggle {STR_VAR_1}Always Obey");
+static const u8 sDebugText_Settings_SummaryRelearn[] =      _("Toggle {STR_VAR_1}Summary Relearn");
 
 
 // Battle
@@ -884,6 +887,7 @@ static const struct ListMenuItem sDebugMenu_Items_Settings[] =
     [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_MAP_RANDO]       = {sDebugText_Settings_MapRando,           DEBUG_SETTINGS_MENU_ITEM_TOGGLE_MAP_RANDO},
     [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_LEVEL_SCALING]   = {sDebugText_Settings_LevelScaling,       DEBUG_SETTINGS_MENU_ITEM_TOGGLE_LEVEL_SCALING},
     [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_CATCH_EXP]       = {sDebugText_Settings_CatchExp,           DEBUG_SETTINGS_MENU_ITEM_TOGGLE_CATCH_EXP},
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_SUMMARY_RELEARN] = {sDebugText_Settings_SummaryRelearn,     DEBUG_SETTINGS_MENU_ITEM_TOGGLE_SUMMARY_RELEARN},
 };
 
 static const struct ListMenuItem sDebugMenu_Items_Battle_0[] =
@@ -1070,6 +1074,7 @@ static void (*const sDebugMenu_Actions_Settings[])(u8) =
     [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_TRAINER_SEE]     = DebugAction_Settings_TrainerSeeOnOff,
     [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_COLISSION]       = DebugAction_Settings_CollisionOnOff,
     [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_CATCH_EXP]       = DebugAction_Settings_CatchExp,
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_SUMMARY_RELEARN] = DebugAction_Settings_SummaryRelearn,
 };
 static void (*const sDebugMenu_Actions_Give[])(u8) =
 {
@@ -1559,6 +1564,9 @@ static u8 Debug_CheckToggleSettings(u8 id)
             case DEBUG_SETTINGS_MENU_ITEM_TOGGLE_CATCH_EXP:
                 result = FlagGet(FLAG_DISABLE_CATCH_EXP);
                 break;
+            case DEBUG_SETTINGS_MENU_ITEM_TOGGLE_SUMMARY_RELEARN:
+                result = FlagGet(FLAG_SUMMARY_RELEARNER);
+                break;
             default:
                 result = 0xFF;
                 break;
@@ -1678,7 +1686,7 @@ static void Debug_RefreshListMenu(u8 taskId)
     if (gTasks[taskId].tMultiUseType == 1)
     {
         gMultiuseListMenuTemplate = sDebugMenu_ListTemplate_Settings;
-        totalItems = 11;
+        totalItems = 12;
     }
     else if (sDebugMenuListData->listId == 0 && gTasks[taskId].tMultiUseType == 0)
     {
@@ -3744,6 +3752,15 @@ static void DebugAction_Settings_CatchExp(u8 taskId)
     else
         PlaySE(SE_PC_LOGIN);
     FlagToggle(FLAG_DISABLE_CATCH_EXP);
+}
+
+static void DebugAction_Settings_SummaryRelearn(u8 taskId)
+{
+     if (FlagGet(FLAG_SUMMARY_RELEARNER))
+        PlaySE(SE_PC_OFF);
+    else
+        PlaySE(SE_PC_LOGIN);
+    FlagToggle(FLAG_SUMMARY_RELEARNER);   
 }
 
 static void DebugAction_Settings_AlwaysObey(u8 taskId)
