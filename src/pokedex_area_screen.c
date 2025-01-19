@@ -64,12 +64,32 @@ struct OverworldArea
     u16 regionMapSectionId;
 };
 
+enum 
+{
+    TIME_ALL,
+    TIME_DAWN,
+    TIME_DAY,
+    TIME_DUSK,
+    TIME_NIGHT
+};
+
+enum 
+{
+    ENCOUNTER_ALL,
+    ENCOUNTER_LAND,
+    ENCOUNTER_WATER,
+    ENCOUNTER_FISH,
+    ENCOUNTER_ROCK,
+    ENCOUNTER_TREE
+};
+
 struct
 {
     /*0x000*/ void (*callback)(void); // unused
     /*0x004*/ MainCallback prev; // unused
     /*0x008*/ MainCallback next; // unused
-    /*0x00C*/ u16 state; // unused
+    /*0x00C*/ u8 timeOfDay;
+              u8 encounterTerrain; // unused
     /*0x00E*/ u16 species;
     /*0x010*/ struct OverworldArea overworldAreasWithMons[MAX_AREA_HIGHLIGHTS];
     /*0x110*/ u16 numOverworldAreas;
@@ -389,17 +409,11 @@ static bool8 MapHasSpecies(const struct WildPokemonHeader *info, u16 species)
         return TRUE;
     if (MonListHasSpecies(info->waterMonsInfo, species, WATER_WILD_COUNT))
         return TRUE;
-// When searching the fishing encounters, this incorrectly uses the size of the land encounters.
-// As a result it's reading out of bounds of the fishing encounters tables.
-#ifdef BUGFIX
     if (MonListHasSpecies(info->fishingMonsInfo, species, FISH_WILD_COUNT))
-#else
-    if (MonListHasSpecies(info->fishingMonsInfo, species, LAND_WILD_COUNT))
-#endif
         return TRUE;
     if (MonListHasSpecies(info->rockSmashMonsInfo, species, ROCK_WILD_COUNT))
         return TRUE;
-    if (MonListHasSpecies(info->rockSmashMonsInfo, species, TREE_WILD_COUNT))
+    if (MonListHasSpecies(info->headbuttMonsInfo, species, TREE_WILD_COUNT))
         return TRUE;
     return FALSE;
 }
@@ -411,14 +425,26 @@ static bool8 MonListHasSpecies(const struct WildPokemonInfo *info, u16 species, 
 
     if (info != NULL)
     {
-        for (timeOfDay = 0; timeOfDay < TIMES_OF_DAY_COUNT; timeOfDay++)
+        if (sPokedexAreaScreen->timeOfDay == TIME_ALL)
+        {
+            for (timeOfDay = 0; timeOfDay < TIMES_OF_DAY_COUNT; timeOfDay++)
+            {
+                for (i = 0; i < size; i++)
+                {
+                    if (info->wildPokemon[timeOfDay][i].species == species)
+                        return TRUE;
+                }
+            }
+        }
+        else 
         {
             for (i = 0; i < size; i++)
             {
-                if (info->wildPokemon[timeOfDay][i].species == species)
+                if (info->wildPokemon[sPokedexAreaScreen->timeOfDay - 1][i].species == species)
                     return TRUE;
             }
         }
+
     }
     return FALSE;
 }
@@ -695,6 +721,22 @@ static void Task_HandlePokedexAreaScreenInput(u8 taskId)
             }
             gTasks[taskId].data[1] = 2;
             PlaySE(SE_DEX_PAGE);
+        }
+        else if (JOY_NEW(DPAD_DOWN))
+        {
+            if (sPokedexAreaScreen->timeOfDay == TIME_ALL)
+            {
+                 PlaySE(SE_POKENAV_ON);
+                 sPokedexAreaScreen->timeOfDay = GetCurrentTimeOfDay() + 1;
+            }
+            else 
+            {
+                 PlaySE(SE_POKENAV_OFF);
+                 sPokedexAreaScreen->timeOfDay = 0;
+            }
+            gTasks[taskId].func = Task_ShowPokedexAreaScreen;
+            gTasks[taskId].tState = 0;
+            return;
         }
         else
             return;
