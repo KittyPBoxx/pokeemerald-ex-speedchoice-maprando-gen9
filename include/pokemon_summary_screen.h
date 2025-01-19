@@ -43,4 +43,11 @@ enum PokemonSummaryScreenPage
     PSS_PAGE_COUNT,
 };
 
+enum PokemonSummarySkillsMode
+{
+    SUMMARY_SKILLS_MODE_STATS,
+    SUMMARY_SKILLS_MODE_IVS,
+    SUMMARY_SKILLS_MODE_EVS,
+};
+
 #endif // GUARD_POKEMON_SUMMARY_SCREEN_H

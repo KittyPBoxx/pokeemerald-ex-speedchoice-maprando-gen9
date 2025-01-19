@@ -73,6 +73,7 @@
 #include "constants/event_objects.h"
 #include "field_camera.h"
 #include "random_warps.h"
+#include "ui_stat_editor.h"
 
 #if DEBUG_OVERWORLD_MENU == TRUE
 // *******************************
@@ -151,7 +152,7 @@ enum ScriptDebugMenu
     DEBUG_UTIL_MENU_ITEM_SCRIPT_4,
     DEBUG_UTIL_MENU_ITEM_SCRIPT_5,
     DEBUG_UTIL_MENU_ITEM_SCRIPT_6,
-    // DEBUG_UTIL_MENU_ITEM_SCRIPT_7,
+    DEBUG_UTIL_MENU_ITEM_SCRIPT_7,
     // DEBUG_UTIL_MENU_ITEM_SCRIPT_8,
 };
 
@@ -359,7 +360,7 @@ static void DebugAction_Util_Script_3(u8 taskId);
 static void DebugAction_Util_Script_4(u8 taskId);
 static void DebugAction_Util_Script_5(u8 taskId);
 static void DebugAction_Util_Script_6(u8 taskId);
-// static void DebugAction_Util_Script_7(u8 taskId);
+static void DebugAction_Util_Script_7(u8 taskId);
 // static void DebugAction_Util_Script_8(u8 taskId);
 
 static void DebugAction_OpenUtilitiesMenu(u8 taskId);
@@ -578,7 +579,7 @@ static const u8 sDebugText_Util_Script_3[] = _("Force Gym Battle");
 static const u8 sDebugText_Util_Script_4[] = _("Unlock Doors");
 static const u8 sDebugText_Util_Script_5[] = _("Unexist NPCs");
 static const u8 sDebugText_Util_Script_6[] = _("Find Broken Warps");
-static const u8 sDebugText_Util_Script_7[] = _("Script 7");
+static const u8 sDebugText_Util_Script_7[] = _("Edit Stats");
 static const u8 sDebugText_Util_Script_8[] = _("Script 8");
 // Util Menu
 static const u8 sDebugText_Util_FlyToMap[] =                 _("Fly to map…{CLEAR_TO 110}{RIGHT_ARROW}");
@@ -853,7 +854,7 @@ static const struct ListMenuItem sDebugMenu_Items_Scripts[] =
     [DEBUG_UTIL_MENU_ITEM_SCRIPT_4] = {sDebugText_Util_Script_4, DEBUG_UTIL_MENU_ITEM_SCRIPT_4},
     [DEBUG_UTIL_MENU_ITEM_SCRIPT_5] = {sDebugText_Util_Script_5, DEBUG_UTIL_MENU_ITEM_SCRIPT_5},
     [DEBUG_UTIL_MENU_ITEM_SCRIPT_6] = {sDebugText_Util_Script_6, DEBUG_UTIL_MENU_ITEM_SCRIPT_6},
-    // [DEBUG_UTIL_MENU_ITEM_SCRIPT_7] = {sDebugText_Util_Script_7, DEBUG_UTIL_MENU_ITEM_SCRIPT_7},
+    [DEBUG_UTIL_MENU_ITEM_SCRIPT_7] = {sDebugText_Util_Script_7, DEBUG_UTIL_MENU_ITEM_SCRIPT_7},
     // [DEBUG_UTIL_MENU_ITEM_SCRIPT_8] = {sDebugText_Util_Script_8, DEBUG_UTIL_MENU_ITEM_SCRIPT_8},
 };
 
@@ -1041,7 +1042,7 @@ static void (*const sDebugMenu_Actions_Scripts[])(u8) =
     [DEBUG_UTIL_MENU_ITEM_SCRIPT_4] = DebugAction_Util_Script_4,
     [DEBUG_UTIL_MENU_ITEM_SCRIPT_5] = DebugAction_Util_Script_5,
     [DEBUG_UTIL_MENU_ITEM_SCRIPT_6] = DebugAction_Util_Script_6,
-    // [DEBUG_UTIL_MENU_ITEM_SCRIPT_7] = DebugAction_Util_Script_7,
+    [DEBUG_UTIL_MENU_ITEM_SCRIPT_7] = DebugAction_Util_Script_7,
     // [DEBUG_UTIL_MENU_ITEM_SCRIPT_8] = DebugAction_Util_Script_8,
 };
 
@@ -3092,10 +3093,16 @@ static void DebugAction_Util_Script_6(u8 taskId)
     
 }
 
-// static void DebugAction_Util_Script_7(u8 taskId)
-// {
-//     Debug_DestroyMenu_Full_Script(taskId, Debug_EventScript_Script_7);
-// }
+static void ChangePokemonStatsPartyScreen_CB(void)
+{
+    SetMainCallback2(CB2_LoadMap);
+}
+
+static void DebugAction_Util_Script_7(u8 taskId)
+{
+    DebugAction_DestroyExtraWindow(taskId);
+    StatEditor_Init(ChangePokemonStatsPartyScreen_CB);
+}
 
 // static void DebugAction_Util_Script_8(u8 taskId)
 // {

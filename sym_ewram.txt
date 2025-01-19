@@ -157,3 +157,4 @@
 	.include "src/done_button.o"
 	.include "src/title_screen.o"
 	.include "src/dexnav.o"
+	.include "src/ui_stat_editor.o"

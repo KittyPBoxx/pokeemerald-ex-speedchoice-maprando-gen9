@@ -368,6 +368,7 @@ SECTIONS {
         src/boot_error_screen.o(.text);
         src/AgbAccuracy.o(.text);
         src/special_fossils.o(.text);
+        src/ui_stat_editor.o(.text);
     } > ROM =0
 
     script_data :
@@ -745,6 +746,7 @@ SECTIONS {
         src/dexnav.o(.rodata);
         src/pokemon_sprite_visualizer.o(.rodata);
         src/expansion_intro.o(.rodata);
+        src/ui_stat_editor.o(.rodata);
     } > ROM =0
 
     song_data :
