@@ -189,7 +189,7 @@
 #define B_FLAG_NO_BAG_USE           FLAG_NO_BATTLE_BAG // If this flag is set, the ability to use the bag in battle is disabled.
 #define B_FLAG_NO_CATCHING          FLAG_NO_CATCHING // If this flag is set, the ability to catch wild Pokémon is disabled.
 #define B_FLAG_AI_VS_AI_BATTLE      FLAG_AI_VS_AI // If this flag is set, the player's mons will be controlled by the ai next battles.
-#define B_FLAG_DYNAMAX_BATTLE       FLAG_IS_CHAMPION // If this flag is set, the ability to Dynamax in battle is enabled for all trainers.
+#define B_FLAG_DYNAMAX_BATTLE       FLAG_USE_DMAX // If this flag is set, the ability to Dynamax in battle is enabled for all trainers.
 #define B_FLAG_TERA_ORB_CHARGED     FLAG_TERA_ORB_CHARGED  // If this flag is set, the Tera Orb is charged. It is automatically set upon healing and cleared upon Terastallizing once configured.
 #define B_FLAG_TERA_ORB_NO_COST     FLAG_IS_CHAMPION // If this flag is set, the Tera Orb does not use up its charge upon Terastallization. In S/V, this occurs after an event with Terapagos.
 

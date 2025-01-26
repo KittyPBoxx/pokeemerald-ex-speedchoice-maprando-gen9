@@ -153,7 +153,7 @@ enum ScriptDebugMenu
     DEBUG_UTIL_MENU_ITEM_SCRIPT_5,
     DEBUG_UTIL_MENU_ITEM_SCRIPT_6,
     DEBUG_UTIL_MENU_ITEM_SCRIPT_7,
-    // DEBUG_UTIL_MENU_ITEM_SCRIPT_8,
+    DEBUG_UTIL_MENU_ITEM_SCRIPT_8,
 };
 
 enum FlagsVarsDebugMenu
@@ -361,7 +361,7 @@ static void DebugAction_Util_Script_4(u8 taskId);
 static void DebugAction_Util_Script_5(u8 taskId);
 static void DebugAction_Util_Script_6(u8 taskId);
 static void DebugAction_Util_Script_7(u8 taskId);
-// static void DebugAction_Util_Script_8(u8 taskId);
+static void DebugAction_Util_Script_8(u8 taskId);
 
 static void DebugAction_OpenUtilitiesMenu(u8 taskId);
 static void DebugAction_OpenPCBagMenu(u8 taskId);
@@ -580,7 +580,7 @@ static const u8 sDebugText_Util_Script_4[] = _("Unlock Doors");
 static const u8 sDebugText_Util_Script_5[] = _("Unexist NPCs");
 static const u8 sDebugText_Util_Script_6[] = _("Find Broken Warps");
 static const u8 sDebugText_Util_Script_7[] = _("Edit Stats");
-static const u8 sDebugText_Util_Script_8[] = _("Script 8");
+static const u8 sDebugText_Util_Script_8[] = _("Toggle Dmax");
 // Util Menu
 static const u8 sDebugText_Util_FlyToMap[] =                 _("Fly to map…{CLEAR_TO 110}{RIGHT_ARROW}");
 static const u8 sDebugText_Util_WarpToMap[] =                _("Warp to map warp…{CLEAR_TO 110}{RIGHT_ARROW}");
@@ -855,7 +855,7 @@ static const struct ListMenuItem sDebugMenu_Items_Scripts[] =
     [DEBUG_UTIL_MENU_ITEM_SCRIPT_5] = {sDebugText_Util_Script_5, DEBUG_UTIL_MENU_ITEM_SCRIPT_5},
     [DEBUG_UTIL_MENU_ITEM_SCRIPT_6] = {sDebugText_Util_Script_6, DEBUG_UTIL_MENU_ITEM_SCRIPT_6},
     [DEBUG_UTIL_MENU_ITEM_SCRIPT_7] = {sDebugText_Util_Script_7, DEBUG_UTIL_MENU_ITEM_SCRIPT_7},
-    // [DEBUG_UTIL_MENU_ITEM_SCRIPT_8] = {sDebugText_Util_Script_8, DEBUG_UTIL_MENU_ITEM_SCRIPT_8},
+    [DEBUG_UTIL_MENU_ITEM_SCRIPT_8] = {sDebugText_Util_Script_8, DEBUG_UTIL_MENU_ITEM_SCRIPT_8},
 };
 
 static const struct ListMenuItem sDebugMenu_Items_FlagsVars[] =
@@ -1043,7 +1043,7 @@ static void (*const sDebugMenu_Actions_Scripts[])(u8) =
     [DEBUG_UTIL_MENU_ITEM_SCRIPT_5] = DebugAction_Util_Script_5,
     [DEBUG_UTIL_MENU_ITEM_SCRIPT_6] = DebugAction_Util_Script_6,
     [DEBUG_UTIL_MENU_ITEM_SCRIPT_7] = DebugAction_Util_Script_7,
-    // [DEBUG_UTIL_MENU_ITEM_SCRIPT_8] = DebugAction_Util_Script_8,
+    [DEBUG_UTIL_MENU_ITEM_SCRIPT_8] = DebugAction_Util_Script_8,
 };
 
 static void (*const sDebugMenu_Actions_Flags[])(u8) =
@@ -3104,10 +3104,21 @@ static void DebugAction_Util_Script_7(u8 taskId)
     StatEditor_Init(ChangePokemonStatsPartyScreen_CB);
 }
 
-// static void DebugAction_Util_Script_8(u8 taskId)
-// {
-//     Debug_DestroyMenu_Full_Script(taskId, Debug_EventScript_Script_8);
-// }
+static void DebugAction_Util_Script_8(u8 taskId)
+{
+    if (FlagGet(FLAG_USE_DMAX))
+    {
+        RemoveBagItem(ITEM_DYNAMAX_BAND, 1);
+        PlaySE(SE_PC_OFF);
+        FlagClear(FLAG_USE_DMAX);   
+    }
+    else
+    {
+        FlagSet(FLAG_USE_DMAX);
+        AddBagItem(ITEM_DYNAMAX_BAND, 1);
+        PlaySE(SE_PC_LOGIN);
+    }
+}
 
 // *******************************
 // Actions Flags and Vars
