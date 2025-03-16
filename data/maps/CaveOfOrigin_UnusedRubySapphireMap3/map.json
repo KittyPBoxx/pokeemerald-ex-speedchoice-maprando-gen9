@@ -25,7 +25,7 @@
       "trainer_type": "TRAINER_TYPE_NONE",
       "trainer_sight_or_berry_tree_id": "0",
       "script": "SootopolisCity_EventScript_GiveWaterfallBackup",
-      "flag": "FLAG_RECEIVED_HM_WATERFALL"
+      "flag": "FLAG_WONDER_CARD_UNUSED_1"
     }
   ],
   "warp_events": [

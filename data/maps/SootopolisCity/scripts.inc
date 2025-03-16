@@ -1327,7 +1327,8 @@ SootopolisCity_EventScript_TryGiveWaterfall::
 SootopolisCity_EventScript_GiveWaterfallBackup::
 	lock
 	giveitem ITEM_HM_WATERFALL
-	setflag FLAG_RECEIVED_HM_WATERFALL
+	setflag FLAG_WONDER_CARD_UNUSED_1
+	removeobject 1
 	releaseall
 	end
 

@@ -670,7 +670,7 @@
 #define FLAG_ALWAYS_OBEY       0x273
 #define FLAG_SUMMARY_RELEARNER 0x274 
 #define FLAG_USE_DMAX          0x275
-#define FLAG_UNUSED_0x276  0x276 // Unused Flag
+#define FLAG_MODERN_EXP_SHARE  0x276
 #define FLAG_UNUSED_0x277  0x277 // Unused Flag
 #define FLAG_UNUSED_0x278  0x278 // Unused Flag
 #define FLAG_UNUSED_0x279  0x279 // Unused Flag

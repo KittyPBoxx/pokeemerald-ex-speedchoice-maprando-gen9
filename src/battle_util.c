@@ -49,6 +49,7 @@
 #include "constants/weather.h"
 #include "constants/pokemon.h"
 #include "done_button.h"
+#include "constants/flags.h"
 
 /*
 NOTE: The data and functions in this file up until (but not including) sSoundMovesTable
