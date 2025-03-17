@@ -50,6 +50,7 @@ Route119_EventScript_Kecleon2::
 EventScript_Kecleon::
 	checkitem ITEM_DEVON_SCOPE
 	goto_if_eq VAR_RESULT, TRUE, EventScript_AskUseDevonScope
+	goto_if_set FLAG_RECEIVED_DEVON_SCOPE, EventScript_AskUseDevonScope
 	msgbox Kecleon_Text_SomethingUnseeable, MSGBOX_DEFAULT
 	release
 	end

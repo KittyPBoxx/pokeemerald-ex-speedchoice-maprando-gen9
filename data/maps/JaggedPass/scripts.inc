@@ -12,6 +12,7 @@ JaggedPass_OnResume:
 	end
 
 JaggedPass_EventScript_CheckHasMagmaEmblem::
+	goto_if_set FLAG_RECEIVED_RED_OR_BLUE_ORB, JaggedPass_EventScript_SetReadyToOpenHideout
 	checkitem ITEM_MAGMA_EMBLEM
 	goto_if_eq VAR_RESULT, TRUE, JaggedPass_EventScript_SetReadyToOpenHideout
 	return

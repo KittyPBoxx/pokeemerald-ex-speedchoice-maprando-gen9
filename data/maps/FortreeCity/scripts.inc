@@ -57,6 +57,7 @@ FortreeCity_EventScript_Kecleon::
 	faceplayer
 	checkitem ITEM_DEVON_SCOPE
 	goto_if_eq VAR_RESULT, TRUE, FortreeCity_EventScript_AskUseDevonScope
+	goto_if_set FLAG_RECEIVED_DEVON_SCOPE, FortreeCity_EventScript_AskUseDevonScope
 	msgbox FortreeCity_Text_SomethingUnseeable, MSGBOX_DEFAULT
 	release
 	end

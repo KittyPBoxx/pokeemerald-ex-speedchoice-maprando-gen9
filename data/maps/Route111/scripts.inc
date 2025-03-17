@@ -201,8 +201,14 @@ Route111_EventScript_ViciousSandstormTriggerRight::
 	end
 
 Route111_EventScript_ViciousSandstormTrigger::
+	goto_if_set FLAG_RECEIVED_GO_GOGGLES, Route111_EventScript_ViciousSandstormTrigger_NoGoggleAccess
 	checkitem ITEM_GO_GOGGLES
 	goto_if_eq VAR_RESULT, FALSE, Route111_EventScript_PreventRouteAccess
+	setvar VAR_TEMP_3, 1
+	releaseall
+	end
+
+Route111_EventScript_ViciousSandstormTrigger_NoGoggleAccess::
 	setvar VAR_TEMP_3, 1
 	releaseall
 	end
