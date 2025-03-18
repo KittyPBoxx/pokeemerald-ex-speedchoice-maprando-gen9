@@ -4635,6 +4635,15 @@ IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
 - Swords Dance
 - Slash
 
+None
+Level: 46
+IVs: 30 HP / 30 Atk / 30 Def / 30 SpA / 30 SpD / 30 Spe
+- Roar
+- Double Edge
+- Sand Attack
+- Crunch
+
+
 === TRAINER_PHOEBE ===
 Name: PHOEBE
 Class: Elite Four
@@ -4685,6 +4694,15 @@ IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
 - Ice Beam
 - Rock Slide
 - Earthquake
+
+None
+Level: 48
+IVs: 30 HP / 30 Atk / 30 Def / 30 SpA / 30 SpD / 30 Spe
+- Shadow Punch
+- Confuse Ray
+- Curse
+- Protect
+
 
 === TRAINER_GLACIA ===
 Name: GLACIA
@@ -4737,6 +4755,14 @@ IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
 - Ice Beam
 - Sheer Cold
 
+None
+Level: 50
+IVs: 30 HP / 30 Atk / 30 Def / 30 SpA / 30 SpD / 30 Spe
+- Encore
+- Body Slam
+- Hail
+- Ice Ball
+
 === TRAINER_DRAKE ===
 Name: DRAKE
 Class: Elite Four
@@ -4787,6 +4813,14 @@ IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
 - Dragon Claw
 - Rock Slide
 - Crunch
+
+None
+Level: 52
+IVs: 30 HP / 30 Atk / 30 Def / 30 SpA / 30 SpD / 30 Spe
+- Rock Tomb
+- Dragon Claw
+- Protect
+- Double Edge
 
 === TRAINER_ROXANNE_1 ===
 Name: ROXANNE
@@ -4856,6 +4890,30 @@ IVs: 24 HP / 24 Atk / 24 Def / 24 SpA / 24 SpD / 24 Spe
 - Reversal
 - Bulk Up
 
+None
+Level: 16
+IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
+- Karate Chop
+- Low Kick
+- Seismic Toss
+- Bulk Up
+
+None
+Level: 16
+IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
+- Karate Chop
+- Low Kick
+- Seismic Toss
+- Bulk Up
+
+None
+Level: 16
+IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
+- Karate Chop
+- Low Kick
+- Seismic Toss
+- Bulk Up
+
 === TRAINER_WATTSON_1 ===
 Name: WATTSON
 Class: Leader
@@ -4897,6 +4955,22 @@ IVs: 30 HP / 30 Atk / 30 Def / 30 SpA / 30 SpD / 30 Spe
 - Thunder Wave
 - Shock Wave
 - Howl
+
+None
+Level: 20
+IVs: 24 HP / 24 Atk / 24 Def / 24 SpA / 24 SpD / 24 Spe
+- Rollout
+- Spark
+- Self Destruct
+- Shock Wave
+
+None
+Level: 20
+IVs: 24 HP / 24 Atk / 24 Def / 24 SpA / 24 SpD / 24 Spe
+- Rollout
+- Spark
+- Self Destruct
+- Shock Wave
 
 === TRAINER_FLANNERY_1 ===
 Name: FLANNERY
@@ -4940,6 +5014,22 @@ IVs: 30 HP / 30 Atk / 30 Def / 30 SpA / 30 SpD / 30 Spe
 - Body Slam
 - Attract
 
+None
+Level: 24
+IVs: 24 HP / 24 Atk / 24 Def / 24 SpA / 24 SpD / 24 Spe
+- Overheat
+- Take Down
+- Magnitude
+- Sunny Day
+
+None
+Level: 24
+IVs: 24 HP / 24 Atk / 24 Def / 24 SpA / 24 SpD / 24 Spe
+- Overheat
+- Take Down
+- Magnitude
+- Sunny Day
+
 === TRAINER_NORMAN_1 ===
 Name: NORMAN
 Class: Leader
@@ -4981,6 +5071,22 @@ IVs: 30 HP / 30 Atk / 30 Def / 30 SpA / 30 SpD / 30 Spe
 - Yawn
 - Facade
 - Feint Attack
+
+None
+Level: 27
+IVs: 24 HP / 24 Atk / 24 Def / 24 SpA / 24 SpD / 24 Spe
+- Teeter Dance
+- Psybeam
+- Facade
+- Encore
+
+None
+Level: 27
+IVs: 24 HP / 24 Atk / 24 Def / 24 SpA / 24 SpD / 24 Spe
+- Teeter Dance
+- Psybeam
+- Facade
+- Encore
 
 === TRAINER_WINONA_1 ===
 Name: WINONA
@@ -5032,6 +5138,14 @@ IVs: 31 HP / 31 Atk / 31 Def / 31 SpA / 31 SpD / 31 Spe
 - Dragon Dance
 - Aerial Ace
 
+None
+Level: 29
+IVs: 25 HP / 25 Atk / 25 Def / 25 SpA / 25 SpD / 25 Spe
+- Perish Song
+- Mirror Move
+- Safeguard
+- Aerial Ace
+
 === TRAINER_TATE_AND_LIZA_1 ===
 Name: TATE&LIZA
 Class: Leader
@@ -5073,6 +5187,22 @@ IVs: 30 HP / 30 Atk / 30 Def / 30 SpA / 30 SpD / 30 Spe
 - Solar Beam
 - Psychic
 - Flamethrower
+
+None
+Level: 41
+IVs: 30 HP / 30 Atk / 30 Def / 30 SpA / 30 SpD / 30 Spe
+- Earthquake
+- Ancient Power
+- Psychic
+- Light Screen
+
+None
+Level: 41
+IVs: 30 HP / 30 Atk / 30 Def / 30 SpA / 30 SpD / 30 Spe
+- Earthquake
+- Ancient Power
+- Psychic
+- Light Screen
 
 === TRAINER_JUAN_1 ===
 Name: JUAN
@@ -5123,6 +5253,15 @@ IVs: 30 HP / 30 Atk / 30 Def / 30 SpA / 30 SpD / 30 Spe
 - Double Team
 - Ice Beam
 - Rest
+
+None
+Level: 41
+IVs: 24 HP / 24 Atk / 24 Def / 24 SpA / 24 SpD / 24 Spe
+- Water Pulse
+- Attract
+- Sweet Kiss
+- Flail
+
 
 === TRAINER_JERRY_1 ===
 Name: JERRY
@@ -16905,4 +17044,28 @@ IVs: 24 HP / 24 Atk / 24 Def / 24 SpA / 24 SpD / 24 Spe
 - Block
 - Harden
 - Tackle
+- Rock Tomb
+
+None
+Level: 12
+IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
+- Tackle
+- Defense Curl
+- Rock Throw
+- Rock Tomb
+
+None
+Level: 12
+IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
+- Tackle
+- Defense Curl
+- Rock Throw
+- Rock Tomb
+
+None
+Level: 12
+IVs: 12 HP / 12 Atk / 12 Def / 12 SpA / 12 SpD / 12 Spe
+- Tackle
+- Defense Curl
+- Rock Throw
 - Rock Tomb
