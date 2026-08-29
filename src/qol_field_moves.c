@@ -657,7 +657,7 @@ bool32 PartyHasMonLearnsKnowsFieldMove(u16 itemId)
     }
 
     if (CheckBagHasItem(itemId,1))
-        return SetMonResultVariables(0,GetMonData(&gPlayerParty[i], MON_DATA_SPECIES));
+        return SetMonResultVariables(0,GetMonData(&gPlayerParty[0], MON_DATA_SPECIES));
 
     return FALSE;
 }
