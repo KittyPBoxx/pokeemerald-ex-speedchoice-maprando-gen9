@@ -1346,6 +1346,11 @@ extern const u8 gText_Exit[];
 // Zygarde Cube text
 extern const u8 gText_ChangeForm[];
 extern const u8 gText_ChangeAbility[];
+extern const u8 gText_LevelToCap[];
+extern const u8 gText_LevelToCapGrewTo[];
+extern const u8 gText_LevelToCapForgetPrompt[];
+extern const u8 gText_LevelToCapForgotMove[];
+extern const u8 gText_LevelToCapNoEffect[];
 
 // Frontier records.
 extern const u8 gText_WinStreak[];
@@ -2050,6 +2055,7 @@ extern const u8 gPCText_Move[];
 extern const u8 gPCText_Shift[];
 extern const u8 gPCText_Place[];
 extern const u8 gPCText_Summary[];
+extern const u8 gPCText_LevelToCap[];
 extern const u8 gPCText_Release[];
 extern const u8 gPCText_Mark[];
 extern const u8 gPCText_Jump[];

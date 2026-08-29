@@ -38,6 +38,19 @@ u32 GetCurrentLevelCap(void)
     return MAX_LEVEL;
 }
 
+// GetCurrentLevelCap returns MAX_LEVEL when FLAG_LEVEL_CAP is unset, so without
+// the flag check "Level to Cap" would silently mean "level to 100".
+bool32 IsLevelToCapAvailable(void)
+{
+    return FlagGet(FLAG_LEVEL_CAP) && GetCurrentLevelCap() < MAX_LEVEL;
+}
+
+// Exp needed for this species to sit exactly at the current level cap.
+u32 GetLevelCapTargetExp(u16 species)
+{
+    return gExperienceTables[gSpeciesInfo[species].growthRate][GetCurrentLevelCap()];
+}
+
 u32 GetSoftLevelCapExpValue(u32 level, u32 expValue)
 {
     static const u32 sExpScalingDown[5] = { 4, 8, 16, 32, 64 };

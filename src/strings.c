@@ -930,6 +930,7 @@ const u8 gPCText_Shift[] = _("SHIFT");
 const u8 gPCText_Move[] = _("MOVE");
 const u8 gPCText_Place[] = _("PLACE");
 const u8 gPCText_Summary[] = _("SUMMARY");
+const u8 gPCText_LevelToCap[] = _("LVLtoCAP");
 const u8 gPCText_Release[] = _("RELEASE");
 const u8 gPCText_Mark[] = _("MARK");
 const u8 gPCText_Name[] = _("NAME");
@@ -1775,6 +1776,14 @@ const u8 gText_ElectricFan[] = _("Electric fan");
 const u8 gText_LawnMower[] = _("Lawn mower");
 const u8 gText_ChangeForm[] = _("Change form");
 const u8 gText_ChangeAbility[] = _("Change Ability");
+const u8 gText_LevelToCap[] = _("LVLtoCAP");
+// Level to Cap messages for the PC's bottom window (18 tiles by two lines). The
+// party-menu equivalents carry \p and {PAUSE_UNTIL_PRESS}, which the storage
+// system's plain text printer does not drive.
+const u8 gText_LevelToCapGrewTo[] = _("{STR_VAR_1} grew to\nLv. {STR_VAR_2}!");
+const u8 gText_LevelToCapForgetPrompt[] = _("Forget a move to learn\n{STR_VAR_2}?");
+const u8 gText_LevelToCapForgotMove[] = _("{STR_VAR_1} forgot\n{STR_VAR_2}!");
+const u8 gText_LevelToCapNoEffect[] = _("It won't have any\neffect.");
 const u8 gText_TeachWhichMoveToPkmn[] = _("Teach which move to {STR_VAR_1}?");
 const u8 gText_MoveRelearnerTeachMoveConfirm[] = _("Teach {STR_VAR_2}?");
 const u8 gText_MoveRelearnerPkmnLearnedMove[] = _("{STR_VAR_1} learned\n{STR_VAR_2}!");
