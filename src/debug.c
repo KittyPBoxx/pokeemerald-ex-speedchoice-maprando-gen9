@@ -187,6 +187,7 @@ enum SettingsDebugMenu
     DEBUG_SETTINGS_MENU_ITEM_TOGGLE_COLISSION,
     DEBUG_SETTINGS_MENU_ITEM_TOGGLE_CATCH_EXP,
     DEBUG_SETTINGS_MENU_ITEM_TOGGLE_SUMMARY_RELEARN,
+    DEBUG_SETTINGS_MENU_ITEM_TOGGLE_AUTO_HEAL,
 };
 
 enum BattleType
@@ -456,6 +457,7 @@ static void DebugAction_Settings_LevelScaling(u8 taskId);
 static void DebugAction_Settings_CatchExp(u8 taskId);
 static void DebugAction_Settings_AlwaysObey(u8 taskId);
 static void DebugAction_Settings_SummaryRelearn(u8 taskId);
+static void DebugAction_Settings_AutoHeal(u8 taskId);
 // static void DebugAction_FlagsVars_RunningShoes(u8 taskId);
 
 static void Debug_InitializeBattle(u8 taskId);
@@ -660,6 +662,7 @@ static const u8 sDebugText_Settings_LevelScaling[] =        _("Toggle {STR_VAR_1
 static const u8 sDebugText_Settings_CatchExp[] =            _("Toggle {STR_VAR_1}Catch Exp OFF");
 static const u8 sDebugText_Settings_AlwaysObey[] =          _("Toggle {STR_VAR_1}Always Obey");
 static const u8 sDebugText_Settings_SummaryRelearn[] =      _("Toggle {STR_VAR_1}Summary Relearn");
+static const u8 sDebugText_Settings_AutoHeal[] =            _("Toggle {STR_VAR_1}Auto Heal");
 
 
 // Battle
@@ -889,6 +892,7 @@ static const struct ListMenuItem sDebugMenu_Items_Settings[] =
     [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_LEVEL_SCALING]   = {sDebugText_Settings_LevelScaling,       DEBUG_SETTINGS_MENU_ITEM_TOGGLE_LEVEL_SCALING},
     [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_CATCH_EXP]       = {sDebugText_Settings_CatchExp,           DEBUG_SETTINGS_MENU_ITEM_TOGGLE_CATCH_EXP},
     [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_SUMMARY_RELEARN] = {sDebugText_Settings_SummaryRelearn,     DEBUG_SETTINGS_MENU_ITEM_TOGGLE_SUMMARY_RELEARN},
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_AUTO_HEAL]       = {sDebugText_Settings_AutoHeal,           DEBUG_SETTINGS_MENU_ITEM_TOGGLE_AUTO_HEAL},
 };
 
 static const struct ListMenuItem sDebugMenu_Items_Battle_0[] =
@@ -1076,6 +1080,7 @@ static void (*const sDebugMenu_Actions_Settings[])(u8) =
     [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_COLISSION]       = DebugAction_Settings_CollisionOnOff,
     [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_CATCH_EXP]       = DebugAction_Settings_CatchExp,
     [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_SUMMARY_RELEARN] = DebugAction_Settings_SummaryRelearn,
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_AUTO_HEAL]       = DebugAction_Settings_AutoHeal,
 };
 static void (*const sDebugMenu_Actions_Give[])(u8) =
 {
@@ -1579,6 +1584,9 @@ static u8 Debug_CheckToggleSettings(u8 id)
                 break;
             case DEBUG_SETTINGS_MENU_ITEM_TOGGLE_SUMMARY_RELEARN:
                 result = FlagGet(FLAG_SUMMARY_RELEARNER);
+                break;
+            case DEBUG_SETTINGS_MENU_ITEM_TOGGLE_AUTO_HEAL:
+                result = FlagGet(FLAG_HEAL_AFTER_BATTLE);
                 break;
             default:
                 result = 0xFF;
@@ -3790,7 +3798,16 @@ static void DebugAction_Settings_SummaryRelearn(u8 taskId)
         PlaySE(SE_PC_OFF);
     else
         PlaySE(SE_PC_LOGIN);
-    FlagToggle(FLAG_SUMMARY_RELEARNER);   
+    FlagToggle(FLAG_SUMMARY_RELEARNER);
+}
+
+static void DebugAction_Settings_AutoHeal(u8 taskId)
+{
+    if (FlagGet(FLAG_HEAL_AFTER_BATTLE))
+        PlaySE(SE_PC_OFF);
+    else
+        PlaySE(SE_PC_LOGIN);
+    FlagToggle(FLAG_HEAL_AFTER_BATTLE);
 }
 
 static void DebugAction_Settings_AlwaysObey(u8 taskId)
