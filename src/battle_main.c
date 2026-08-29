@@ -242,6 +242,7 @@ void (*gPreBattleCallback1)(void);
 void (*gBattleMainFunc)(void);
 struct BattleResults gBattleResults;
 u8 gLeveledUpInBattle;
+u8 gParticipatedInBattle;
 u8 gHealthboxSpriteIds[MAX_BATTLERS_COUNT];
 u8 gMultiUsePlayerCursor;
 u8 gNumberOfMovesToChoose;
@@ -3210,6 +3211,7 @@ static void BattleStartClearSetData(void)
     gBattleMoveDamage = 0;
     gIntroSlideFlags = 0;
     gLeveledUpInBattle = 0;
+    gParticipatedInBattle = 0;
     gAbsentBattlerFlags = 0;
     gBattleStruct->runTries = 0;
     gBattleStruct->safariGoNearCounter = 0;
@@ -5801,6 +5803,18 @@ static void FreeResetData_ReturnToOvOrDoEvolutions(void)
     }
 }
 
+// Allow EVO_MODE_BATTLE_ONLY to fire in EXP_NONE runs
+// Tandemaus cannot evolve otherwise since it cannot level up in battle
+static bool32 CanUseBattleOnlyEvoWithoutLevelUp(s32 partyIndex)
+{
+    // EVO_EVERY_LEVEL enabled takes priority
+    if (CheckSpeedchoiceOption(EVO_EVERY_LEVEL, EVO_EV_ON) == TRUE)
+        return FALSE;
+
+    return CheckSpeedchoiceOption(EXPMATH, EXP_NONE) == TRUE
+        && (gParticipatedInBattle & gBitTable[partyIndex]);
+}
+
 static void TryEvolvePokemon(void)
 {
     s32 i;
@@ -5821,6 +5835,10 @@ static void TryEvolvePokemon(void)
             if (species == SPECIES_NONE && (gLeveledUpInBattle & gBitTable[i]))
             {
                 gLeveledUpInBattle &= ~(gBitTable[i]);
+                species = GetEvolutionTargetSpecies(&gPlayerParty[i], EVO_MODE_BATTLE_ONLY, gLeveledUpInBattle, NULL);
+            }
+            else if (species == SPECIES_NONE && CanUseBattleOnlyEvoWithoutLevelUp(i))
+            {
                 species = GetEvolutionTargetSpecies(&gPlayerParty[i], EVO_MODE_BATTLE_ONLY, gLeveledUpInBattle, NULL);
             }
 

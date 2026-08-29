@@ -1182,6 +1182,8 @@ void ResetSentPokesToOpponentValue(void)
     for (i = 0; i < gBattlersCount; i += 2)
         bits |= gBitTable[gBattlerPartyIndexes[i]];
 
+    gParticipatedInBattle |= bits;
+
     for (i = 1; i < gBattlersCount; i += 2)
         gSentPokesToOpponent[(i & BIT_FLANK) >> 1] = bits;
 }
@@ -1214,6 +1216,7 @@ void UpdateSentPokesToOpponentValue(u32 battler)
     else
     {
         s32 i;
+        gParticipatedInBattle |= gBitTable[gBattlerPartyIndexes[battler]];
         for (i = 1; i < gBattlersCount; i++)
             gSentPokesToOpponent[(i & BIT_FLANK) >> 1] |= gBitTable[gBattlerPartyIndexes[battler]];
     }
