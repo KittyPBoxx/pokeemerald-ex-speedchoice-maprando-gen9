@@ -2895,9 +2895,21 @@ static void SetPartyMonSelectionActions(struct Pokemon *mons, u8 slotId, u8 acti
     }
     else
     {
+        const u8 *actions = sPartyMenuActions[action];
+
+        // SPEEDCHOICE: put SUMMARY above SHIFT/SEND OUT so double-tapping A can't
+        // switch a mon in by accident. Same length, so the counts still apply.
+        if (FlagGet(FLAG_SUMMARY_FIRST))
+        {
+            if (action == ACTIONS_SHIFT)
+                actions = sPartyMenuAction_SummaryShiftCancel;
+            else if (action == ACTIONS_SEND_OUT)
+                actions = sPartyMenuAction_SummarySendOutCancel;
+        }
+
         sPartyMenuInternal->numActions = sPartyMenuActionCounts[action];
         for (i = 0; i < sPartyMenuInternal->numActions; i++)
-            sPartyMenuInternal->actions[i] = sPartyMenuActions[action][i];
+            sPartyMenuInternal->actions[i] = actions[i];
     }
 }
 

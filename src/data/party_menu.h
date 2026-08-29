@@ -862,6 +862,9 @@ struct
 static const u8 sPartyMenuAction_SummarySwitchCancel[] = {MENU_SUMMARY, MENU_SWITCH, MENU_CANCEL1};
 static const u8 sPartyMenuAction_ShiftSummaryCancel[] = {MENU_SHIFT, MENU_SUMMARY, MENU_CANCEL1};
 static const u8 sPartyMenuAction_SendOutSummaryCancel[] = {MENU_SEND_OUT, MENU_SUMMARY, MENU_CANCEL1};
+// SPEEDCHOICE: used instead of the two above when FLAG_SUMMARY_FIRST is set.
+static const u8 sPartyMenuAction_SummaryShiftCancel[] = {MENU_SUMMARY, MENU_SHIFT, MENU_CANCEL1};
+static const u8 sPartyMenuAction_SummarySendOutCancel[] = {MENU_SUMMARY, MENU_SEND_OUT, MENU_CANCEL1};
 static const u8 sPartyMenuAction_SummaryCancel[] = {MENU_SUMMARY, MENU_CANCEL1};
 static const u8 sPartyMenuAction_EnterSummaryCancel[] = {MENU_ENTER, MENU_SUMMARY, MENU_CANCEL1};
 static const u8 sPartyMenuAction_NoEntrySummaryCancel[] = {MENU_NO_ENTRY, MENU_SUMMARY, MENU_CANCEL1};
