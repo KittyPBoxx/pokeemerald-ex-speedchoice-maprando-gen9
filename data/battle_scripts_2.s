@@ -39,7 +39,7 @@ BattleScript_ItemEnd:
 
 BattleScript_UseItemMessage:
 	printstring STRINGID_EMPTYSTRING3
-	pause B_WAIT_TIME_MED
+	waitmessage B_WAIT_TIME_MED
 	playse SE_USE_ITEM
 	getbattlerside BS_ATTACKER
 	copybyte cMULTISTRING_CHOOSER, gBattleCommunication

@@ -1828,9 +1828,16 @@ static void Cmd_attackstring(void)
     {
         PrepareStringBattle(STRINGID_USEDMOVE, gBattlerAttacker);
         gHitMarker |= HITMARKER_ATTACKSTRING_PRINTED;
+        // Let a following waitmessage apply its dwell time. At instant text speed the
+        // string paints in one frame, so without this it is only readable when a move
+        // animation happens to cover it -- which nothing does on a charge turn.
+        gBattleCommunication[MSG_DISPLAY] = 1;
+    }
+    else
+    {
+        gBattleCommunication[MSG_DISPLAY] = 0;
     }
     gBattlescriptCurrInstr = cmd->nextInstr;
-    gBattleCommunication[MSG_DISPLAY] = 0;
 }
 
 static void Cmd_ppreduce(void)
