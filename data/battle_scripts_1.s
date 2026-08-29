@@ -231,6 +231,9 @@ BattleScript_EffectDoodle_CopyAbility:
 .endif
 	printstring STRINGID_PKMNCOPIEDFOE
 	waitmessage B_WAIT_TIME_LONG
+	trytoclearprimalweather
+	tryrevertweatherform
+	flushtextbox
 	switchinabilities BS_ATTACKER
 	jumpifbyte CMP_NOT_EQUAL, gBattleCommunication, 0x0, BattleScript_MoveEnd
 	addbyte gBattleCommunication, 1
@@ -2336,6 +2339,9 @@ BattleScript_EffectEntrainment::
 	setlastusedability BS_TARGET
 	printstring STRINGID_PKMNACQUIREDABILITY
 	waitmessage B_WAIT_TIME_LONG
+	trytoclearprimalweather
+	tryrevertweatherform
+	flushtextbox
 	goto BattleScript_MoveEnd
 
 BattleScript_EffectSimpleBeam::
@@ -5046,6 +5052,9 @@ BattleScript_EffectRolePlay::
 .endif
 	printstring STRINGID_PKMNCOPIEDFOE
 	waitmessage B_WAIT_TIME_LONG
+	trytoclearprimalweather
+	tryrevertweatherform
+	flushtextbox
 	switchinabilities BS_ATTACKER
 	goto BattleScript_MoveEnd
 
@@ -6953,6 +6962,9 @@ BattleScript_MegaEvolutionAfterString:
 	handlemegaevo BS_SCRIPTING, 1
 	printstring STRINGID_MEGAEVOEVOLVED
 	waitmessage B_WAIT_TIME_LONG
+	trytoclearprimalweather
+	tryrevertweatherform
+	flushtextbox
 	switchinabilities BS_SCRIPTING
 	end3
 
@@ -6982,6 +6994,9 @@ BattleScript_PrimalReversionRet::
 	handleprimalreversion BS_ATTACKER, 2
 	printstring STRINGID_PKMNREVERTEDTOPRIMAL
 	waitmessage B_WAIT_TIME_LONG
+	trytoclearprimalweather
+	tryrevertweatherform
+	flushtextbox
 	switchinabilities BS_ATTACKER
 	return
 
@@ -6998,6 +7013,9 @@ BattleScript_UltraBurst::
 	handleultraburst BS_SCRIPTING, 1
 	printstring STRINGID_ULTRABURSTCOMPLETED
 	waitmessage B_WAIT_TIME_LONG
+	trytoclearprimalweather
+	tryrevertweatherform
+	flushtextbox
 	switchinabilities BS_SCRIPTING
 	end3
 
@@ -8415,6 +8433,9 @@ BattleScript_MummyActivates::
 	call BattleScript_AbilityPopUp
 	printstring STRINGID_ATTACKERACQUIREDABILITY
 	waitmessage B_WAIT_TIME_LONG
+	trytoclearprimalweather
+	tryrevertweatherform
+	flushtextbox
 	return
 
 BattleScript_WanderingSpiritActivates::
@@ -8554,6 +8575,15 @@ BattleScript_FellStingerRaisesAtkEnd:
 
 BattleScript_AttackerAbilityStatRaiseEnd3::
 	call BattleScript_AttackerAbilityStatRaise
+	end3
+
+BattleScript_NeutralizingGasEnters::
+	call BattleScript_AbilityPopUp
+	printfromtable gSwitchInAbilityStringIds
+	waitmessage B_WAIT_TIME_LONG
+	trytoclearprimalweather
+	tryrevertweatherform
+	flushtextbox
 	end3
 
 BattleScript_SwitchInAbilityMsg::

@@ -6289,7 +6289,7 @@ u32 AbilityBattleEffects(u32 caseID, u32 battler, u32 ability, u32 special, u32 
                 gBattleResources->flags->flags[i] |= RESOURCE_FLAG_NEUTRALIZING_GAS;
                 gBattlerAbility = i;
                 gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_SWITCHIN_NEUTRALIZING_GAS;
-                BattleScriptPushCursorAndCallback(BattleScript_SwitchInAbilityMsg);
+                BattleScriptPushCursorAndCallback(BattleScript_NeutralizingGasEnters);
                 effect++;
             }
 
