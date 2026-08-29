@@ -2191,6 +2191,7 @@ BattleScript_VictoryDanceEnd::
 BattleScript_EffectMeFirst::
 	attackcanceler
 	attackstring
+	waitmessage B_WAIT_TIME_SHORT
 	trymefirst BattleScript_FailedFromPpReduce
 	attackanimation
 	waitanimation
@@ -5061,6 +5062,7 @@ BattleScript_EffectWish::
 BattleScript_EffectAssist::
 	attackcanceler
 	attackstring
+	waitmessage B_WAIT_TIME_SHORT
 	assistattackselect BattleScript_FailedFromPpReduce
 	attackanimation
 	waitanimation
