@@ -1342,6 +1342,18 @@ static void Debug_ShowMenuWithType(void (*HandleInput)(u8), struct ListMenuTempl
 
     Debug_RefreshListMenu(inputTaskId);
 
+    // The Settings menu inherits whatever gMultiuseListMenuTemplate the previous menu left
+    // behind (Flags/Vars, totalItems == 12), and ListMenuInit above baked that count into
+    // the list task. Debug_RefreshListMenu only fixes the global, so re-init the task or
+    // every Settings entry past the 12th stays out of scroll range. Other menus get a
+    // correct static template and must keep it.
+    if (multiUseType == 1)
+    {
+        DestroyListMenuTask(menuTaskId, NULL, NULL);
+        menuTaskId = ListMenuInit(&gMultiuseListMenuTemplate, 0, 0);
+        gTasks[inputTaskId].tMenuTaskId = menuTaskId;
+    }
+
     // draw everything
     CopyWindowToVram(windowId, COPYWIN_FULL);
 }
@@ -1687,7 +1699,7 @@ static void Debug_RefreshListMenu(u8 taskId)
     if (gTasks[taskId].tMultiUseType == 1)
     {
         gMultiuseListMenuTemplate = sDebugMenu_ListTemplate_Settings;
-        totalItems = 12;
+        totalItems = ARRAY_COUNT(sDebugMenu_Items_Settings);
     }
     else if (sDebugMenuListData->listId == 0 && gTasks[taskId].tMultiUseType == 0)
     {
