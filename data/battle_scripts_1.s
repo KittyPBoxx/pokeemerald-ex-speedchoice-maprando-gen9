@@ -6945,6 +6945,8 @@ BattleScript_MegaEvolution::
 BattleScript_MegaEvolutionAfterString:
 	waitmessage B_WAIT_TIME_LONG
 	setbyte gIsCriticalHit, 0
+	@ The form change replaces Illusion with the new ability, so break the disguise first.
+	tryillusionoff BS_SCRIPTING
 	handlemegaevo BS_SCRIPTING, 0
 	playanimation BS_SCRIPTING, B_ANIM_MEGA_EVOLUTION
 	waitanimation
@@ -6972,6 +6974,7 @@ BattleScript_PrimalReversionRestoreAttacker::
 BattleScript_PrimalReversionRet::
 	flushtextbox
 	setbyte gIsCriticalHit, 0
+	tryillusionoff BS_ATTACKER
 	handleprimalreversion BS_ATTACKER, 0
 	handleprimalreversion BS_ATTACKER, 1
 	playanimation BS_ATTACKER, B_ANIM_PRIMAL_REVERSION
@@ -6988,6 +6991,7 @@ BattleScript_UltraBurst::
 	printstring STRINGID_ULTRABURSTREACTING
 	waitmessage B_WAIT_TIME_LONG
 	setbyte gIsCriticalHit, 0
+	tryillusionoff BS_SCRIPTING
 	handleultraburst BS_SCRIPTING, 0
 	playanimation BS_SCRIPTING, B_ANIM_ULTRA_BURST
 	waitanimation
@@ -7123,9 +7127,9 @@ BattleScript_BattlerFormChangeWithStringEnd3::
 
 BattleScript_IllusionOff::
 	spriteignore0hp TRUE
-	playanimation BS_TARGET, B_ANIM_ILLUSION_OFF
+	playanimation BS_SCRIPTING, B_ANIM_ILLUSION_OFF
 	waitanimation
-	updatenick BS_TARGET
+	updatenick BS_SCRIPTING
 	waitstate
 	spriteignore0hp FALSE
 	printstring STRINGID_ILLUSIONWOREOFF
