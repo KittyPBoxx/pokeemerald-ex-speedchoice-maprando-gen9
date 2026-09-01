@@ -1,11 +1,13 @@
 #include "global.h"
 #include "malloc.h"
+#include "battle.h" // gMoveToLearn
 #include "bg.h"
 #include "data.h"
 #include "decompress.h"
 #include "dma3.h"
 #include "dynamic_placeholder_text_util.h"
 #include "event_data.h"
+#include "evolution_scene.h"
 #include "event_object_movement.h"
 #include "field_screen_effect.h"
 #include "field_weather.h"
@@ -16,6 +18,7 @@
 #include "item.h"
 #include "item_icon.h"
 #include "item_menu.h"
+#include "level_caps.h"
 #include "mail.h"
 #include "main.h"
 #include "menu.h"
@@ -23,6 +26,7 @@
 #include "naming_screen.h"
 #include "overworld.h"
 #include "palette.h"
+#include "party_menu.h"
 #include "pc_screen_effect.h"
 #include "pokemon.h"
 #include "pokemon_icon.h"
@@ -128,6 +132,7 @@ enum {
     MENU_SHIFT,
     MENU_PLACE,
     MENU_SUMMARY,
+    MENU_LEVEL_TO_CAP,
     MENU_RELEASE,
     MENU_MARK,
     MENU_JUMP,
@@ -201,6 +206,9 @@ enum {
     SCREEN_CHANGE_SUMMARY_SCREEN,
     SCREEN_CHANGE_NAME_BOX,
     SCREEN_CHANGE_ITEM_FROM_BAG,
+    SCREEN_CHANGE_LEVEL_TO_CAP,
+    SCREEN_CHANGE_LEVEL_TO_CAP_MOVE,
+    SCREEN_CHANGE_LEVEL_TO_CAP_EVO,
 };
 
 enum {
@@ -590,6 +598,43 @@ EWRAM_DATA static u8 sMovingMonOrigBoxPos = 0;
 EWRAM_DATA static bool8 sAutoActionOn = 0;
 EWRAM_DATA static bool8 sJustOpenedBag = 0;
 
+// The evolution scene and move-learning summary screen index gPlayerParty directly,
+// so a boxed mon borrows a party slot for the duration (displacing a member into
+// savedPartyMon if the party is full). The box entry stays untouched until the flow
+// returns, so an interrupted run can only cost the level-up, never the Pokemon.
+EWRAM_DATA static struct {
+    bool8 active;
+    bool8 fromBox;
+    bool8 displaced;
+    bool8 resuming;   // screen change in flight; the borrow must survive it
+    bool8 firstMove;
+    u8 resumeState;
+    u8 slot;
+    u8 boxId;
+    u8 boxPos;
+    u8 curLevel;
+    u8 finalLevel;
+    u16 moveToLearn;
+    u16 startSpecies;
+    u16 evoSpecies;
+    bool8 evoCanStop;
+    struct Pokemon savedPartyMon;
+} sLevelToCap = {0};
+
+// States for Task_LevelMonToCap. The flow stays on the box screen, leaving the PC
+// only for the move selector and the evolution scene.
+enum {
+    LTC_START,
+    LTC_LEVEL_MSG,
+    LTC_MOVE_LOOP,
+    LTC_LEARNED_MSG,
+    LTC_REPLACE_YESNO,
+    LTC_FORGOT_MSG,
+    LTC_EVO_CHECK,
+    LTC_NO_EFFECT,
+    LTC_DONE,
+};
+
 // Main tasks
 static void Task_InitPokeStorage(u8);
 static void Task_PlaceMon(u8);
@@ -614,6 +659,9 @@ static void Task_ItemToBag(u8);
 static void Task_TakeItemForMoving(u8);
 static void Task_ShowMarkMenu(u8);
 static void Task_ShowMonSummary(u8);
+static void Task_LevelMonToCap(u8);
+static bool8 BorrowPartySlotForLevelToCap(void);
+static void FinishLevelToCap(void);
 static void Task_ReleaseMon(u8);
 static void Task_ReshowPokeStorage(u8);
 static void Task_PokeStorageMain(u8);
@@ -995,12 +1043,14 @@ static const struct WindowTemplate sWindowTemplates[] =
         .paletteNum = 3,
         .baseBlock = 0xC0,
     },
+    // Two lines tall for the Level to Cap messages. 18 * 4 tiles ends exactly at
+    // sYesNoWindowTemplate's baseBlock.
     [WIN_MESSAGE] = {
         .bg = 0,
         .tilemapLeft = 11,
-        .tilemapTop = 17,
+        .tilemapTop = 15,
         .width = 18,
-        .height = 2,
+        .height = 4,
         .paletteNum = 15,
         .baseBlock = 0x14,
     },
@@ -1992,6 +2042,16 @@ static void SpriteCB_ChooseBoxArrow(struct Sprite *sprite)
 //------------------------------------------------------------------------------
 
 
+// Used while handing off to a screen that outlives FreePokeStorageData. Same as
+// VBlankCB_PokeStorage minus UnkUtil_Run and the sStorage deref, which would touch
+// freed memory. TransferPlttBuffer must stay, or the incoming screen's fade stalls.
+static void VBlankCB_PokeStorageTeardown(void)
+{
+    LoadOam();
+    ProcessSpriteCopyRequests();
+    TransferPlttBuffer();
+}
+
 static void VBlankCB_PokeStorage(void)
 {
     LoadOam();
@@ -2013,6 +2073,9 @@ static void CB2_PokeStorage(void)
 
 void EnterPokeStorage(u8 boxOption)
 {
+    // Repair the borrowed party slot if a Level to Cap flow was abandoned part-way.
+    sLevelToCap.resuming = FALSE;
+    FinishLevelToCap();
     ResetTasks();
     sCurrentBoxOption = boxOption;
     sStorage = Alloc(sizeof(*sStorage));
@@ -2034,6 +2097,9 @@ void EnterPokeStorage(u8 boxOption)
 
 static void CB2_ReturnToPokeStorage(void)
 {
+    // Deliberately does not finish a Level to Cap flow: the move selector and the
+    // evolution scene return through here mid-flow, and the borrowed party slot has
+    // to stay put until LTC_DONE.
     ResetTasks();
     sStorage = Alloc(sizeof(*sStorage));
     if (sStorage == NULL)
@@ -2242,7 +2308,16 @@ static void Task_ReshowPokeStorage(u8 taskId)
     case 1:
         if (!UpdatePaletteFade())
         {
-            if (sWhichToReshow == SCREEN_CHANGE_ITEM_FROM_BAG - 1 && gSpecialVar_ItemId != ITEM_NONE)
+            if (sLevelToCap.resuming)
+            {
+                // Back from the move selector or the evolution scene.
+                u8 resumeState = sLevelToCap.resumeState;
+
+                sLevelToCap.resuming = FALSE;
+                SetPokeStorageTask(Task_LevelMonToCap);
+                sStorage->state = resumeState;
+            }
+            else if (sWhichToReshow == SCREEN_CHANGE_ITEM_FROM_BAG - 1 && gSpecialVar_ItemId != ITEM_NONE)
             {
                 PrintMessage(MSG_ITEM_IS_HELD);
                 sStorage->state++;
@@ -2696,6 +2771,11 @@ static void Task_OnSelectedMon(u8 taskId)
         case MENU_SUMMARY:
             PlaySE(SE_SELECT);
             SetPokeStorageTask(Task_ShowMonSummary);
+            break;
+        case MENU_LEVEL_TO_CAP:
+            PlaySE(SE_SELECT);
+            ClearBottomWindow();
+            SetPokeStorageTask(Task_LevelMonToCap);
             break;
         case MENU_MARK:
             PlaySE(SE_SELECT);
@@ -3604,6 +3684,211 @@ static void Task_ShowMonSummary(u8 taskId)
     }
 }
 
+// Prints an already-expanded string into the PC's bottom message window.
+// PrintMessage only handles the fixed sMessages table.
+static void PrintLevelToCapMessage(const u8 *str)
+{
+    FillWindowPixelBuffer(WIN_MESSAGE, PIXEL_FILL(1));
+    AddTextPrinterParameterized(WIN_MESSAGE, FONT_NORMAL, str, 0, 1, TEXT_SKIP_DRAW, NULL);
+    DrawTextBorderOuter(WIN_MESSAGE, 2, 14);
+    PutWindowTilemap(WIN_MESSAGE);
+    CopyWindowToVram(WIN_MESSAGE, COPYWIN_GFX);
+    ScheduleBgCopyTilemapToVram(0);
+}
+
+// Leaves the PC for a screen that returns through CB2_ReturnToPokeStorage,
+// resuming Task_LevelMonToCap at resumeState.
+static void LevelToCapChangeScreen(u8 screenChangeType, u8 resumeState)
+{
+    sLevelToCap.resuming = TRUE;
+    sLevelToCap.resumeState = resumeState;
+    sWhichToReshow = SCREEN_CHANGE_LEVEL_TO_CAP - 1;
+    sStorage->screenChangeType = screenChangeType;
+    SetPokeStorageTask(Task_ChangeScreen);
+}
+
+static void Task_LevelMonToCap(u8 taskId)
+{
+    struct BoxPokemon *boxMon;
+    struct Pokemon *mon;
+    u32 targetExp;
+    u16 move;
+
+    switch (sStorage->state)
+    {
+    case LTC_START:
+        if (!BorrowPartySlotForLevelToCap())
+        {
+            SetPokeStorageTask(Task_PokeStorageMain);
+            break;
+        }
+
+        mon = &gPlayerParty[sLevelToCap.slot];
+        sLevelToCap.curLevel = GetMonData(mon, MON_DATA_LEVEL);
+        sLevelToCap.finalLevel = GetCurrentLevelCap();
+        if (sLevelToCap.curLevel >= sLevelToCap.finalLevel)
+        {
+            PrintLevelToCapMessage(gText_LevelToCapNoEffect);
+            sStorage->state = LTC_NO_EFFECT;
+            break;
+        }
+
+        sLevelToCap.startSpecies = GetMonData(mon, MON_DATA_SPECIES);
+        targetExp = GetLevelCapTargetExp(sLevelToCap.startSpecies);
+        SetMonData(mon, MON_DATA_EXP, &targetExp);
+        SetMonData(mon, MON_DATA_LEVEL, &sLevelToCap.finalLevel);
+        CalculateMonStats(mon);
+
+        GetMonNickname(mon, gStringVar1);
+        ConvertIntToDecimalStringN(gStringVar2, sLevelToCap.finalLevel, STR_CONV_MODE_LEFT_ALIGN, 3);
+        StringExpandPlaceholders(gStringVar4, gText_LevelToCapGrewTo);
+        PrintLevelToCapMessage(gStringVar4);
+        TryRefreshDisplayMon();
+        RefreshDisplayMonData();
+
+        // Start above the old level so already-known moves aren't offered again.
+        sLevelToCap.curLevel++;
+        sLevelToCap.firstMove = TRUE;
+        sStorage->state = LTC_LEVEL_MSG;
+        break;
+
+    case LTC_LEVEL_MSG:
+        if (!IsDma3ManagerBusyWithBgCopy() && JOY_NEW(A_BUTTON | B_BUTTON | DPAD_ANY))
+            sStorage->state = LTC_MOVE_LOOP;
+        break;
+
+    // Exactly one MonTryLearningNewMove per frame: with a randomised learnset,
+    // sLearningMoveTableID is unbounded on the firstMove == FALSE path, so an
+    // in-frame loop can scan past the end of the table forever.
+    case LTC_MOVE_LOOP:
+        mon = &gPlayerParty[sLevelToCap.slot];
+        if (sLevelToCap.curLevel > sLevelToCap.finalLevel)
+        {
+            SetMonData(mon, MON_DATA_LEVEL, &sLevelToCap.finalLevel);
+            sStorage->state = LTC_EVO_CHECK;
+            break;
+        }
+
+        SetMonData(mon, MON_DATA_LEVEL, &sLevelToCap.curLevel);
+        move = MonTryLearningNewMove(mon, sLevelToCap.firstMove);
+        sLevelToCap.firstMove = FALSE;
+
+        if (move == MOVE_NONE)
+        {
+            // Nothing more at this level; rescan from the top for the next one.
+            sLevelToCap.curLevel++;
+            sLevelToCap.firstMove = TRUE;
+        }
+        else if (move == MON_HAS_MAX_MOVES)
+        {
+            sLevelToCap.moveToLearn = gMoveToLearn;
+            StringCopy(gStringVar2, GetMoveName(gMoveToLearn));
+            StringExpandPlaceholders(gStringVar4, gText_LevelToCapForgetPrompt);
+            PrintLevelToCapMessage(gStringVar4);
+            ShowYesNoWindow(0);
+            sStorage->state = LTC_REPLACE_YESNO;
+        }
+        else if (move != MON_ALREADY_KNOWS_MOVE)
+        {
+            // Learned into a free slot.
+            GetMonNickname(mon, gStringVar1);
+            StringCopy(gStringVar2, GetMoveName(move));
+            StringExpandPlaceholders(gStringVar4, gText_PkmnLearnedMove3);
+            PrintLevelToCapMessage(gStringVar4);
+            sStorage->state = LTC_LEARNED_MSG;
+        }
+        break;
+
+    case LTC_LEARNED_MSG:
+        if (!IsDma3ManagerBusyWithBgCopy() && JOY_NEW(A_BUTTON | B_BUTTON | DPAD_ANY))
+            sStorage->state = LTC_MOVE_LOOP;
+        break;
+
+    case LTC_REPLACE_YESNO:
+        switch (Menu_ProcessInputNoWrapClearOnChoose())
+        {
+        case MENU_B_PRESSED:
+        case 1: // No - skip this move and carry on
+            ClearBottomWindow();
+            sStorage->state = LTC_MOVE_LOOP;
+            break;
+        case 0: // Yes - pick a move to forget on the summary screen
+            ClearBottomWindow();
+            LevelToCapChangeScreen(SCREEN_CHANGE_LEVEL_TO_CAP_MOVE, LTC_FORGOT_MSG);
+            break;
+        }
+        break;
+
+    case LTC_FORGOT_MSG:
+        // Returned from the move selector. MAX_MON_MOVES means the player backed out.
+        mon = &gPlayerParty[sLevelToCap.slot];
+        if (GetMoveSlotToReplace() == MAX_MON_MOVES)
+        {
+            sStorage->state = LTC_MOVE_LOOP;
+            break;
+        }
+        move = GetMonData(mon, MON_DATA_MOVE1 + GetMoveSlotToReplace());
+        GetMonNickname(mon, gStringVar1);
+        StringCopy(gStringVar2, GetMoveName(move));
+        RemoveMonPPBonus(mon, GetMoveSlotToReplace());
+        SetMonMoveSlot(mon, sLevelToCap.moveToLearn, GetMoveSlotToReplace());
+        StringExpandPlaceholders(gStringVar4, gText_LevelToCapForgotMove);
+        PrintLevelToCapMessage(gStringVar4);
+        sStorage->state = LTC_LEARNED_MSG;
+        break;
+
+    case LTC_EVO_CHECK:
+        mon = &gPlayerParty[sLevelToCap.slot];
+        sLevelToCap.evoSpecies = GetEvolutionTargetSpecies(mon, EVO_MODE_NORMAL, ITEM_NONE, NULL);
+        sLevelToCap.evoCanStop = TRUE;
+        if (sLevelToCap.evoSpecies == SPECIES_NONE)
+        {
+            sLevelToCap.evoSpecies = GetEvolutionTargetSpecies(mon, EVO_MODE_CANT_STOP, ITEM_NONE, NULL);
+            sLevelToCap.evoCanStop = FALSE;
+        }
+
+        if (sLevelToCap.evoSpecies != SPECIES_NONE)
+        {
+            ClearBottomWindow();
+            LevelToCapChangeScreen(SCREEN_CHANGE_LEVEL_TO_CAP_EVO, LTC_DONE);
+            break;
+        }
+        sStorage->state = LTC_DONE;
+        break;
+
+    case LTC_NO_EFFECT:
+        if (!IsDma3ManagerBusyWithBgCopy() && JOY_NEW(A_BUTTON | B_BUTTON | DPAD_ANY))
+        {
+            ClearBottomWindow();
+            sStorage->state = LTC_DONE;
+        }
+        break;
+
+    case LTC_DONE:
+        ClearBottomWindow();
+        FinishLevelToCap();
+
+        // RefreshDisplayMonData only repaints from the cached displayMon* fields,
+        // so re-read the mon first or the panel keeps the pre-flow level.
+        TryRefreshDisplayMon();
+        if (sCursorArea == CURSOR_AREA_IN_PARTY)
+            boxMon = &gPlayerParty[sCursorPosition].box;
+        else
+            boxMon = GetBoxedMonPtr(StorageGetCurrentBox(), sCursorPosition);
+
+        // On evolution the icon sprite is still the pre-evolution species: the PC
+        // rebuilt its icons on the way back from the evolution scene, before
+        // FinishLevelToCap wrote the evolved mon into the box.
+        if (boxMon != NULL && GetBoxMonData(boxMon, MON_DATA_SPECIES) != sLevelToCap.startSpecies)
+            UpdateSpeciesSpritePSS(boxMon);
+        else
+            RefreshDisplayMonData();
+
+        SetPokeStorageTask(Task_PokeStorageMain);
+        break;
+    }
+}
+
 static void Task_GiveItemFromBag(u8 taskId)
 {
     switch (sStorage->state)
@@ -3794,6 +4079,23 @@ static void Task_ChangeScreen(u8 taskId)
     case SCREEN_CHANGE_ITEM_FROM_BAG:
         FreePokeStorageData();
         GoToBagMenu(ITEMMENULOCATION_PCBOX, 0, CB2_ReturnToPokeStorage);
+        break;
+    // Both of these leave the PC mid-flow with a party slot still borrowed. The old
+    // VBlank handler stays installed until the next screen replaces it, and would
+    // deref sStorage/sUnkUtil after FreePokeStorageData releases them.
+    case SCREEN_CHANGE_LEVEL_TO_CAP_MOVE:
+        SetVBlankCallback(VBlankCB_PokeStorageTeardown);
+        FreePokeStorageData();
+        ShowSelectMovePokemonSummaryScreen(gPlayerParty, sLevelToCap.slot,
+                                           CalculatePlayerPartyCount() - 1,
+                                           CB2_ReturnToPokeStorage, sLevelToCap.moveToLearn);
+        break;
+    case SCREEN_CHANGE_LEVEL_TO_CAP_EVO:
+        SetVBlankCallback(VBlankCB_PokeStorageTeardown);
+        FreePokeStorageData();
+        gCB2_AfterEvolution = CB2_ReturnToPokeStorage;
+        BeginEvolutionScene(&gPlayerParty[sLevelToCap.slot], sLevelToCap.evoSpecies,
+                            sLevelToCap.evoCanStop, sLevelToCap.slot);
         break;
     }
 
@@ -6778,6 +7080,84 @@ static void LoadSavedMovingMon(void)
     }
 }
 
+// Parks the mon under the cursor in a gPlayerParty slot; party-side mons are
+// already there. Returns FALSE if there is nothing valid to level.
+static bool8 BorrowPartySlotForLevelToCap(void)
+{
+    struct BoxPokemon *boxMon;
+    u8 boxId = StorageGetCurrentBox();
+    u8 i;
+
+    sLevelToCap.displaced = FALSE;
+
+    if (sCursorArea == CURSOR_AREA_IN_PARTY)
+    {
+        if (sCursorPosition >= PARTY_SIZE
+         || GetMonData(&gPlayerParty[sCursorPosition], MON_DATA_SPECIES) == SPECIES_NONE)
+            return FALSE;
+
+        sLevelToCap.fromBox = FALSE;
+        sLevelToCap.slot = sCursorPosition;
+        sLevelToCap.active = TRUE;
+        return TRUE;
+    }
+
+    // GetBoxedMonPtr returns NULL for an out-of-range slot.
+    boxMon = GetBoxedMonPtr(boxId, sCursorPosition);
+    if (boxMon == NULL || GetBoxMonData(boxMon, MON_DATA_SPECIES) == SPECIES_NONE)
+        return FALSE;
+
+    sLevelToCap.fromBox = TRUE;
+    sLevelToCap.boxId = boxId;
+    sLevelToCap.boxPos = sCursorPosition;
+
+    for (i = 0; i < PARTY_SIZE; i++)
+    {
+        if (GetMonData(&gPlayerParty[i], MON_DATA_SPECIES) == SPECIES_NONE)
+            break;
+    }
+
+    if (i == PARTY_SIZE)
+    {
+        // Party is full, so set the last member aside for the duration.
+        i = PARTY_SIZE - 1;
+        sLevelToCap.savedPartyMon = gPlayerParty[i];
+        sLevelToCap.displaced = TRUE;
+    }
+
+    sLevelToCap.slot = i;
+    BoxMonToMon(boxMon, &gPlayerParty[i]);
+    CalculatePlayerPartyCount();
+    sLevelToCap.active = TRUE;
+    return TRUE;
+}
+
+// Undoes the borrow, copying the levelled (and possibly evolved) result back
+// over the original box entry.
+static void FinishLevelToCap(void)
+{
+    struct BoxPokemon *boxMon;
+
+    if (!sLevelToCap.active)
+        return;
+
+    sLevelToCap.active = FALSE;
+    if (!sLevelToCap.fromBox)
+        return;
+
+    // HP/stats are recomputed on the next withdrawal.
+    boxMon = GetBoxedMonPtr(sLevelToCap.boxId, sLevelToCap.boxPos);
+    if (boxMon != NULL)
+        *boxMon = gPlayerParty[sLevelToCap.slot].box;
+
+    if (sLevelToCap.displaced)
+        gPlayerParty[sLevelToCap.slot] = sLevelToCap.savedPartyMon;
+    else
+        ZeroMonData(&gPlayerParty[sLevelToCap.slot]);
+
+    CalculatePlayerPartyCount();
+}
+
 static void InitSummaryScreenData(void)
 {
     if (sIsMonBeingMoved)
@@ -7763,6 +8143,11 @@ static bool8 SetMenuTexts_Mon(void)
     }
 
     SetMenuText(MENU_SUMMARY);
+
+    // Offered for both the box and the party list.
+    if (IsLevelToCapAvailable() && !sStorage->displayMonIsEgg && !sIsMonBeingMoved)
+        SetMenuText(MENU_LEVEL_TO_CAP);
+
     if (sStorage->boxOption == OPTION_MOVE_MONS)
     {
         if (sCursorArea == CURSOR_AREA_IN_BOX)
@@ -8044,6 +8429,7 @@ static const u8 *const sMenuTexts[] =
     [MENU_SHIFT]      = gPCText_Shift,
     [MENU_PLACE]      = gPCText_Place,
     [MENU_SUMMARY]    = gPCText_Summary,
+    [MENU_LEVEL_TO_CAP] = gPCText_LevelToCap,
     [MENU_RELEASE]    = gPCText_Release,
     [MENU_MARK]       = gPCText_Mark,
     [MENU_JUMP]       = gPCText_Jump,

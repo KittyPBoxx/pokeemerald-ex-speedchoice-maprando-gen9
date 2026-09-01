@@ -16,5 +16,7 @@
 
 u32 GetCurrentLevelCap(void);
 u32 GetSoftLevelCapExpValue(u32 level, u32 expValue);
+bool32 IsLevelToCapAvailable(void);
+u32 GetLevelCapTargetExp(u16 species);
 
 #endif /* GUARD_LEVEL_CAP_H */
