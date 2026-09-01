@@ -282,20 +282,24 @@ u32 CanUseStrength(u8 collision)
     return FIELD_MOVE_FAIL;
 }
 
-u32 UseStrength(u32 fieldMoveStatus, u8 x, u8 y, u8 direction)
+u32 UseStrength(u32 fieldMoveStatus, s16 x, s16 y, u8 direction)
 {
 #ifdef QOL_NO_MESSAGING_STRENGTH
     FlagSet(FLAG_SYS_USE_STRENGTH);
 #endif
-    HideMapNamePopUpWindow();
-    LockPlayerAndLoadMon();
 
     if (FlagGet(FLAG_SYS_USE_STRENGTH))
     {
-        TryPushBoulder(x, y, direction);
+        // A blocked boulder doesn't start the push task and unlock field controls
+        if (!TryPushBoulder(x, y, direction))
+            return COLLISION_OBJECT_EVENT;
+
+        HideMapNamePopUpWindow();
         return COLLISION_PUSHED_BOULDER;
     }
 
+    HideMapNamePopUpWindow();
+    LockPlayerAndLoadMon();
     FlagSet(FLAG_SYS_USE_STRENGTH);
 
     if(fieldMoveStatus == FIELD_MOVE_POKEMON)
@@ -653,7 +657,7 @@ bool32 PartyHasMonLearnsKnowsFieldMove(u16 itemId)
     }
 
     if (CheckBagHasItem(itemId,1))
-        return SetMonResultVariables(0,GetMonData(&gPlayerParty[i], MON_DATA_SPECIES));
+        return SetMonResultVariables(0,GetMonData(&gPlayerParty[0], MON_DATA_SPECIES));
 
     return FALSE;
 }
