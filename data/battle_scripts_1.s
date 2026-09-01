@@ -231,6 +231,9 @@ BattleScript_EffectDoodle_CopyAbility:
 .endif
 	printstring STRINGID_PKMNCOPIEDFOE
 	waitmessage B_WAIT_TIME_LONG
+	trytoclearprimalweather
+	tryrevertweatherform
+	flushtextbox
 	switchinabilities BS_ATTACKER
 	jumpifbyte CMP_NOT_EQUAL, gBattleCommunication, 0x0, BattleScript_MoveEnd
 	addbyte gBattleCommunication, 1
@@ -2337,6 +2340,9 @@ BattleScript_EffectEntrainment::
 	setlastusedability BS_TARGET
 	printstring STRINGID_PKMNACQUIREDABILITY
 	waitmessage B_WAIT_TIME_LONG
+	trytoclearprimalweather
+	tryrevertweatherform
+	flushtextbox
 	goto BattleScript_MoveEnd
 
 BattleScript_EffectSimpleBeam::
@@ -5047,6 +5053,9 @@ BattleScript_EffectRolePlay::
 .endif
 	printstring STRINGID_PKMNCOPIEDFOE
 	waitmessage B_WAIT_TIME_LONG
+	trytoclearprimalweather
+	tryrevertweatherform
+	flushtextbox
 	switchinabilities BS_ATTACKER
 	goto BattleScript_MoveEnd
 
@@ -6947,12 +6956,17 @@ BattleScript_MegaEvolution::
 BattleScript_MegaEvolutionAfterString:
 	waitmessage B_WAIT_TIME_LONG
 	setbyte gIsCriticalHit, 0
+	@ The form change replaces Illusion with the new ability, so break the disguise first.
+	tryillusionoff BS_SCRIPTING
 	handlemegaevo BS_SCRIPTING, 0
 	playanimation BS_SCRIPTING, B_ANIM_MEGA_EVOLUTION
 	waitanimation
 	handlemegaevo BS_SCRIPTING, 1
 	printstring STRINGID_MEGAEVOEVOLVED
 	waitmessage B_WAIT_TIME_LONG
+	trytoclearprimalweather
+	tryrevertweatherform
+	flushtextbox
 	switchinabilities BS_SCRIPTING
 	end3
 
@@ -6974,6 +6988,7 @@ BattleScript_PrimalReversionRestoreAttacker::
 BattleScript_PrimalReversionRet::
 	flushtextbox
 	setbyte gIsCriticalHit, 0
+	tryillusionoff BS_ATTACKER
 	handleprimalreversion BS_ATTACKER, 0
 	handleprimalreversion BS_ATTACKER, 1
 	playanimation BS_ATTACKER, B_ANIM_PRIMAL_REVERSION
@@ -6981,6 +6996,9 @@ BattleScript_PrimalReversionRet::
 	handleprimalreversion BS_ATTACKER, 2
 	printstring STRINGID_PKMNREVERTEDTOPRIMAL
 	waitmessage B_WAIT_TIME_LONG
+	trytoclearprimalweather
+	tryrevertweatherform
+	flushtextbox
 	switchinabilities BS_ATTACKER
 	return
 
@@ -6990,12 +7008,16 @@ BattleScript_UltraBurst::
 	printstring STRINGID_ULTRABURSTREACTING
 	waitmessage B_WAIT_TIME_LONG
 	setbyte gIsCriticalHit, 0
+	tryillusionoff BS_SCRIPTING
 	handleultraburst BS_SCRIPTING, 0
 	playanimation BS_SCRIPTING, B_ANIM_ULTRA_BURST
 	waitanimation
 	handleultraburst BS_SCRIPTING, 1
 	printstring STRINGID_ULTRABURSTCOMPLETED
 	waitmessage B_WAIT_TIME_LONG
+	trytoclearprimalweather
+	tryrevertweatherform
+	flushtextbox
 	switchinabilities BS_SCRIPTING
 	end3
 
@@ -7125,9 +7147,9 @@ BattleScript_BattlerFormChangeWithStringEnd3::
 
 BattleScript_IllusionOff::
 	spriteignore0hp TRUE
-	playanimation BS_TARGET, B_ANIM_ILLUSION_OFF
+	playanimation BS_SCRIPTING, B_ANIM_ILLUSION_OFF
 	waitanimation
-	updatenick BS_TARGET
+	updatenick BS_SCRIPTING
 	waitstate
 	spriteignore0hp FALSE
 	printstring STRINGID_ILLUSIONWOREOFF
@@ -8413,6 +8435,9 @@ BattleScript_MummyActivates::
 	call BattleScript_AbilityPopUp
 	printstring STRINGID_ATTACKERACQUIREDABILITY
 	waitmessage B_WAIT_TIME_LONG
+	trytoclearprimalweather
+	tryrevertweatherform
+	flushtextbox
 	return
 
 BattleScript_WanderingSpiritActivates::
@@ -8552,6 +8577,15 @@ BattleScript_FellStingerRaisesAtkEnd:
 
 BattleScript_AttackerAbilityStatRaiseEnd3::
 	call BattleScript_AttackerAbilityStatRaise
+	end3
+
+BattleScript_NeutralizingGasEnters::
+	call BattleScript_AbilityPopUp
+	printfromtable gSwitchInAbilityStringIds
+	waitmessage B_WAIT_TIME_LONG
+	trytoclearprimalweather
+	tryrevertweatherform
+	flushtextbox
 	end3
 
 BattleScript_SwitchInAbilityMsg::
