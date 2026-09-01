@@ -131,7 +131,7 @@ BattleScript_EffectSpicyExtract_End:
 BattleScript_EffectTidyUp::
 	attackcanceler
 	attackstring
-	pause B_WAIT_TIME_MED
+	waitmessage B_WAIT_TIME_MED
 	ppreduce
 	waitstate
 	trytidyup FALSE, BattleScript_EffectTidyUpDoMoveAnimation
@@ -328,7 +328,7 @@ BattleScript_EffectPledge::
 	attackcanceler
 	setpledge BattleScript_HitFromAccCheck
 	attackstring
-	pause B_WAIT_TIME_MED
+	waitmessage B_WAIT_TIME_MED
 	ppreduce
 	printstring STRINGID_WAITINGFORPARTNERSMOVE
 	waitmessage B_WAIT_TIME_LONG
@@ -691,7 +691,7 @@ BattleScript_EffectSkyDrop::
 	jumpifsubstituteblocks BattleScript_ButItFailed
 	jumpiftargetally BattleScript_ButItFailed
 	jumpifunder200 BS_TARGET, BattleScript_SkyDropWork
-	pause B_WAIT_TIME_SHORT
+	waitmessage B_WAIT_TIME_SHORT
 	printstring STRINGID_TARGETTOOHEAVY
 	waitmessage B_WAIT_TIME_LONG
 	goto BattleScript_MoveEnd
@@ -736,7 +736,7 @@ BattleScript_EffectFling::
 	setlastuseditem BS_ATTACKER
 	accuracycheck BattleScript_FlingMissed, ACC_CURR_MOVE
 	attackstring
-	pause B_WAIT_TIME_SHORT
+	waitmessage B_WAIT_TIME_SHORT
 	printstring STRINGID_PKMNFLUNG
 	waitmessage B_WAIT_TIME_SHORT
 	ppreduce
@@ -1194,7 +1194,7 @@ BattleScript_EffectStrengthSap::
 	attackstring
 	ppreduce
 	jumpifstat BS_TARGET, CMP_NOT_EQUAL, STAT_ATK, MIN_STAT_STAGE, BattleScript_StrengthSapTryLower
-	pause B_WAIT_TIME_SHORT
+	waitmessage B_WAIT_TIME_SHORT
 	statbuffchange STAT_CHANGE_ALLOW_PTR, BattleScript_MoveEnd
 	printfromtable gStatDownStringIds
 	waitmessage B_WAIT_TIME_LONG
@@ -1715,7 +1715,7 @@ BattleScript_DefogWorks:
 	statbuffchange STAT_CHANGE_ALLOW_PTR, BattleScript_DefogTryHazardsWithAnim
 	jumpifbyte CMP_LESS_THAN, cMULTISTRING_CHOOSER, B_MSG_STAT_WONT_DECREASE, BattleScript_DefogDoAnim
 	jumpifbyte CMP_EQUAL, cMULTISTRING_CHOOSER, B_MSG_STAT_FELL_EMPTY, BattleScript_DefogTryHazardsWithAnim
-	pause B_WAIT_TIME_SHORT
+	waitmessage B_WAIT_TIME_SHORT
 	goto BattleScript_DefogPrintString
 BattleScript_DefogDoAnim::
 	attackanimation
@@ -1738,7 +1738,7 @@ BattleScript_DefogTryHazardsWithAnim:
 BattleScript_EffectCopycat::
 	attackcanceler
 	attackstring
-	pause 5
+	waitmessage B_WAIT_TIME_SHORT
 	trycopycat BattleScript_CopycatFail
 	attackanimation
 	waitanimation
@@ -1753,7 +1753,7 @@ BattleScript_EffectInstruct::
 	attackcanceler
 	attackstring
 	ppreduce
-	pause 5
+	waitmessage B_WAIT_TIME_SHORT
 	tryinstruct BattleScript_ButItFailed
 	attackanimation
 	waitanimation
@@ -1772,7 +1772,7 @@ BattleScript_EffectAutotomize::
 	ppreduce
 	statbuffchange MOVE_EFFECT_AFFECTS_USER | STAT_CHANGE_ALLOW_PTR, BattleScript_AutotomizeWeightLoss
 	jumpifbyte CMP_NOT_EQUAL, cMULTISTRING_CHOOSER, B_MSG_STAT_WONT_INCREASE, BattleScript_AutotomizeAttackAnim
-	pause B_WAIT_TIME_SHORT
+	waitmessage B_WAIT_TIME_SHORT
 	goto BattleScript_AutotomizePrintString
 BattleScript_AutotomizeAttackAnim::
 	attackanimation
@@ -1850,7 +1850,7 @@ BattleScript_ToxicThreadWorks:
 	statbuffchange STAT_CHANGE_ALLOW_PTR, BattleScript_ToxicThreadTryPsn
 	jumpifbyte CMP_LESS_THAN, cMULTISTRING_CHOOSER, B_MSG_STAT_WONT_DECREASE, BattleScript_ToxicThreadDoAnim
 	jumpifbyte CMP_EQUAL, cMULTISTRING_CHOOSER, B_MSG_STAT_FELL_EMPTY, BattleScript_ToxicThreadTryPsn
-	pause B_WAIT_TIME_SHORT
+	waitmessage B_WAIT_TIME_SHORT
 	goto BattleScript_ToxicThreadPrintString
 BattleScript_ToxicThreadDoAnim::
 	attackanimation
@@ -2191,6 +2191,7 @@ BattleScript_VictoryDanceEnd::
 BattleScript_EffectMeFirst::
 	attackcanceler
 	attackstring
+	waitmessage B_WAIT_TIME_SHORT
 	trymefirst BattleScript_FailedFromPpReduce
 	attackanimation
 	waitanimation
@@ -2782,7 +2783,7 @@ BattleScript_EffectPlaceholder::
 	attackcanceler
 	attackstring
 	ppreduce
-	pause 5
+	waitmessage B_WAIT_TIME_SHORT
 	printstring STRINGID_NOTDONEYET
 	goto BattleScript_MoveEnd
 
@@ -2853,7 +2854,7 @@ BattleScript_PrintMoveMissed::
 	attackstring
 	ppreduce
 BattleScript_MoveMissedPause::
-	pause B_WAIT_TIME_SHORT
+	waitmessage B_WAIT_TIME_LONG
 BattleScript_MoveMissed::
 	effectivenesssound
 	resultmessage
@@ -3091,7 +3092,7 @@ BattleScript_DreamEaterTryFaintEnd:
 BattleScript_EffectMirrorMove::
 	attackcanceler
 	attackstring
-	pause B_WAIT_TIME_LONG
+	waitmessage B_WAIT_TIME_LONG
 	trymirrormove
 	ppreduce
 	orhalfword gMoveResultFlags, MOVE_RESULT_FAILED
@@ -3132,7 +3133,7 @@ BattleScript_EffectStatUpAfterAtkCanceler::
 	ppreduce
 	statbuffchange MOVE_EFFECT_AFFECTS_USER | STAT_CHANGE_ALLOW_PTR, BattleScript_StatUpEnd
 	jumpifbyte CMP_NOT_EQUAL, cMULTISTRING_CHOOSER, B_MSG_STAT_WONT_INCREASE, BattleScript_StatUpAttackAnim
-	pause B_WAIT_TIME_SHORT
+	waitmessage B_WAIT_TIME_SHORT
 	goto BattleScript_StatUpPrintString
 BattleScript_StatUpAttackAnim::
 	attackanimation
@@ -3190,7 +3191,7 @@ BattleScript_EffectStatDownFromStatBuffChange:
 	statbuffchange STAT_CHANGE_ALLOW_PTR, BattleScript_StatDownEnd
 	jumpifbyte CMP_LESS_THAN, cMULTISTRING_CHOOSER, B_MSG_STAT_WONT_DECREASE, BattleScript_StatDownDoAnim
 	jumpifbyte CMP_EQUAL, cMULTISTRING_CHOOSER, B_MSG_STAT_FELL_EMPTY, BattleScript_StatDownEnd
-	pause B_WAIT_TIME_SHORT
+	waitmessage B_WAIT_TIME_SHORT
 	goto BattleScript_StatDownPrintString
 BattleScript_StatDownDoAnim::
 	attackanimation
@@ -3385,7 +3386,7 @@ BattleScript_EffectRest::
 	jumpifleafguardprotected BS_TARGET, BattleScript_LeafGuardPreventsRest
 .endif
 	trysetrest BattleScript_AlreadyAtFullHp
-	pause B_WAIT_TIME_SHORT
+	waitmessage B_WAIT_TIME_SHORT
 	printfromtable gRestUsedStringIds
 	waitmessage B_WAIT_TIME_LONG
 	updatestatusicon BS_ATTACKER
@@ -3449,7 +3450,7 @@ BattleScript_MoveMissedDoDamage::
 	jumpifability BS_ATTACKER, ABILITY_MAGIC_GUARD, BattleScript_PrintMoveMissed
 	attackstring
 	ppreduce
-	pause B_WAIT_TIME_LONG
+	waitmessage B_WAIT_TIME_LONG
 	resultmessage
 	waitmessage B_WAIT_TIME_LONG
 .if B_CRASH_IF_TARGET_IMMUNE < GEN_4
@@ -3844,7 +3845,7 @@ BattleScript_EffectMimic::
 BattleScript_EffectMetronome::
 	attackcanceler
 	attackstring
-	pause B_WAIT_TIME_SHORT
+	waitmessage B_WAIT_TIME_SHORT
 	attackanimation
 	waitanimation
 	setbyte sB_ANIM_TURN, 0
@@ -3854,7 +3855,7 @@ BattleScript_EffectMetronome::
 BattleScript_EffectLeechSeed::
 	attackcanceler
 	attackstring
-	pause B_WAIT_TIME_SHORT
+	waitmessage B_WAIT_TIME_SHORT
 	ppreduce
 	jumpifsubstituteblocks BattleScript_ButItFailed
 	accuracycheck BattleScript_DoLeechSeed, ACC_CURR_MOVE
@@ -4038,7 +4039,7 @@ BattleScript_SleepTalkIsAsleep::
 	ppreduce
 	orword gHitMarker, HITMARKER_NO_PPDEDUCT
 	trychoosesleeptalkmove BattleScript_SleepTalkUsingMove
-	pause B_WAIT_TIME_LONG
+	waitmessage B_WAIT_TIME_LONG
 	goto BattleScript_ButItFailed
 BattleScript_SleepTalkUsingMove::
 	attackanimation
@@ -4380,7 +4381,7 @@ BattleScript_EffectMagnitude::
 	attackstring
 	ppreduce
 	magnitudedamagecalculation
-	pause B_WAIT_TIME_SHORT
+	waitmessage B_WAIT_TIME_SHORT
 	printstring STRINGID_MAGNITUDESTRENGTH
 	waitmessage B_WAIT_TIME_LONG
 BattleScript_EffectMagnitudeTarget:
@@ -4610,7 +4611,7 @@ BattleScript_EffectBeatUp::
 	goto BattleScript_HitFromAtkAnimation
 .else
 	attackstring
-	pause B_WAIT_TIME_SHORT
+	waitmessage B_WAIT_TIME_SHORT
 	ppreduce
 	setbyte gBattleCommunication, 0
 BattleScript_BeatUpLoop::
@@ -4686,7 +4687,7 @@ BattleScript_FailedFromAtkString::
 BattleScript_FailedFromPpReduce::
 	ppreduce
 BattleScript_ButItFailed::
-	pause B_WAIT_TIME_SHORT
+	waitmessage B_WAIT_TIME_SHORT
 	orhalfword gMoveResultFlags, MOVE_RESULT_FAILED
 	resultmessage
 	waitmessage B_WAIT_TIME_LONG
@@ -4788,7 +4789,7 @@ BattleScript_SpitUpEnd:
 BattleScript_SpitUpFailProtect::
 	attackstring
 	ppreduce
-	pause B_WAIT_TIME_LONG
+	waitmessage B_WAIT_TIME_LONG
 	stockpiletobasedamage BattleScript_SpitUpFail
 	resultmessage
 	waitmessage B_WAIT_TIME_LONG
@@ -4928,7 +4929,7 @@ BattleScript_MementoTargetProtect:
 	trymemento BattleScript_MementoTargetProtectEnd
 BattleScript_MementoTargetProtectEnd:
 	setatkhptozero
-	pause B_WAIT_TIME_LONG
+	waitmessage B_WAIT_TIME_LONG
 	effectivenesssound
 	resultmessage
 	waitmessage B_WAIT_TIME_LONG
@@ -4960,7 +4961,7 @@ BattleScript_EffectFollowMe::
 BattleScript_EffectNaturePower::
 	attackcanceler
 	attackstring
-	pause B_WAIT_TIME_SHORT
+	waitmessage B_WAIT_TIME_SHORT
 	callterrainattack
 	printstring STRINGID_NATUREPOWERTURNEDINTO
 	waitmessage B_WAIT_TIME_LONG
@@ -5061,6 +5062,7 @@ BattleScript_EffectWish::
 BattleScript_EffectAssist::
 	attackcanceler
 	attackstring
+	waitmessage B_WAIT_TIME_SHORT
 	assistattackselect BattleScript_FailedFromPpReduce
 	attackanimation
 	waitanimation
@@ -6643,7 +6645,7 @@ BattleScript_SelectingMoveWithNoPP::
 
 BattleScript_NoPPForMove::
 	attackstring
-	pause B_WAIT_TIME_SHORT
+	waitmessage B_WAIT_TIME_SHORT
 	printstring STRINGID_BUTNOPPLEFT
 	waitmessage B_WAIT_TIME_LONG
 	goto BattleScript_MoveEnd
@@ -6876,7 +6878,7 @@ BattleScript_GrudgeTakesPp::
 BattleScript_MagicCoatBounce::
 	attackstring
 	ppreduce
-	pause B_WAIT_TIME_SHORT
+	waitmessage B_WAIT_TIME_SHORT
 	jumpifbyte CMP_EQUAL, cMULTISTRING_CHOOSER, 0, BattleScript_MagicCoatBounce_Print
 	call BattleScript_AbilityPopUp
 BattleScript_MagicCoatBounce_Print:
@@ -6890,7 +6892,7 @@ BattleScript_MagicCoatBounce_Print:
 BattleScript_MagicCoatBouncePrankster::
 	attackstring
 	ppreduce
-	pause B_WAIT_TIME_SHORT
+	waitmessage B_WAIT_TIME_SHORT
 	printfromtable gMagicCoatBounceStringIds
 	waitmessage B_WAIT_TIME_LONG
 	printstring STRINGID_ITDOESNTAFFECT
@@ -7282,7 +7284,7 @@ BattleScript_MoveUsedIsParalyzed::
 BattleScript_PowderMoveNoEffect::
 	attackstring
 	ppreduce
-	pause B_WAIT_TIME_SHORT
+	waitmessage B_WAIT_TIME_SHORT
 	jumpiftype BS_TARGET, TYPE_GRASS, BattleScript_PowderMoveNoEffectPrint
 	jumpifability BS_TARGET, ABILITY_OVERCOAT, BattleScript_PowderMoveNoEffectOvercoat
 	printstring STRINGID_SAFETYGOGGLESPROTECTED
@@ -7355,7 +7357,7 @@ BattleScript_MoveUsedPowder::
 	bicword gHitMarker, HITMARKER_NO_ATTACKSTRING | HITMARKER_ATTACKSTRING_PRINTED
 	attackstring
 	ppreduce
-	pause B_WAIT_TIME_SHORT
+	waitmessage B_WAIT_TIME_SHORT
 	cancelmultiturnmoves BS_ATTACKER
 	status2animation BS_ATTACKER, STATUS2_POWDER
 	waitanimation
@@ -7942,7 +7944,7 @@ BattleScript_PrimalWeatherBlocksMove::
 	jumpifword CMP_COMMON_BITS, gHitMarker, HITMARKER_ATTACKSTRING_PRINTED, BattleScript_MoveEnd @in case of multi-target moves, if move fails once, no point in printing the message twice
 	accuracycheck BattleScript_PrintMoveMissed, NO_ACC_CALC_CHECK_LOCK_ON
 	attackstring
-	pause B_WAIT_TIME_SHORT
+	waitmessage B_WAIT_TIME_SHORT
 	ppreduce
 	printfromtable gPrimalWeatherBlocksStringIds
 	waitmessage B_WAIT_TIME_LONG
@@ -8178,7 +8180,7 @@ BattleScript_BadDreams_HidePopUp:
 
 BattleScript_TookAttack::
 	attackstring
-	pause B_WAIT_TIME_SHORT
+	waitmessage B_WAIT_TIME_SHORT
 	printstring STRINGID_PKMNSXTOOKATTACK
 	waitmessage B_WAIT_TIME_LONG
 	orword gHitMarker, HITMARKER_ATTACKSTRING_PRINTED
@@ -8188,14 +8190,14 @@ BattleScript_SturdyPreventsOHKO::
 	pause B_WAIT_TIME_SHORT
 	call BattleScript_AbilityPopUp
 	printstring STRINGID_PKMNPROTECTEDBY
-	pause B_WAIT_TIME_LONG
+	waitmessage B_WAIT_TIME_LONG
 	goto BattleScript_MoveEnd
 
 BattleScript_DampStopsExplosion::
 	pause B_WAIT_TIME_SHORT
 	call BattleScript_AbilityPopUpScripting
 	printstring STRINGID_PKMNPREVENTSUSAGE
-	pause B_WAIT_TIME_LONG
+	waitmessage B_WAIT_TIME_LONG
 	moveendto MOVEEND_NEXT_TARGET
 	moveendcase MOVEEND_CLEAR_BITS
 	end
@@ -8204,7 +8206,7 @@ BattleScript_MoveHPDrain_PPLoss::
 	ppreduce
 BattleScript_MoveHPDrain::
 	attackstring
-	pause B_WAIT_TIME_SHORT
+	waitmessage B_WAIT_TIME_LONG
 	call BattleScript_AbilityPopUp
 	orword gHitMarker, HITMARKER_IGNORE_SUBSTITUTE
 	healthbarupdate BS_TARGET
@@ -8218,7 +8220,7 @@ BattleScript_MoveStatDrain_PPLoss::
 	ppreduce
 BattleScript_MoveStatDrain::
 	attackstring
-	pause B_WAIT_TIME_SHORT
+	waitmessage B_WAIT_TIME_LONG
 	call BattleScript_AbilityPopUp
 	setgraphicalstatchangevalues
 	playanimation BS_TARGET, B_ANIM_STATS_CHANGE, sB_ANIM_ARG1
@@ -8239,7 +8241,7 @@ BattleScript_MonMadeMoveUseless_PPLoss::
 	ppreduce
 BattleScript_MonMadeMoveUseless::
 	attackstring
-	pause B_WAIT_TIME_SHORT
+	waitmessage B_WAIT_TIME_LONG
 	call BattleScript_AbilityPopUp
 	printstring STRINGID_PKMNSXMADEYUSELESS
 	waitmessage B_WAIT_TIME_LONG
@@ -8250,7 +8252,7 @@ BattleScript_FlashFireBoost_PPLoss::
 	ppreduce
 BattleScript_FlashFireBoost::
 	attackstring
-	pause B_WAIT_TIME_SHORT
+	waitmessage B_WAIT_TIME_LONG
 	call BattleScript_AbilityPopUp
 	printfromtable gFlashFireStringIds
 	waitmessage B_WAIT_TIME_LONG
@@ -8318,7 +8320,7 @@ BattleScript_OwnTempoPrevents::
 BattleScript_SoundproofProtected::
 	attackstring
 	ppreduce
-	pause B_WAIT_TIME_SHORT
+	waitmessage B_WAIT_TIME_SHORT
 	call BattleScript_AbilityPopUp
 	printstring STRINGID_PKMNSXBLOCKSY
 	waitmessage B_WAIT_TIME_LONG
@@ -8332,7 +8334,7 @@ BattleScript_IceFaceNullsDamage::
 BattleScript_DazzlingProtected::
 	attackstring
 	ppreduce
-	pause B_WAIT_TIME_SHORT
+	waitmessage B_WAIT_TIME_SHORT
 	call BattleScript_AbilityPopUpScripting
 	printstring STRINGID_POKEMONCANNOTUSEMOVE
 	waitmessage B_WAIT_TIME_LONG
@@ -9648,7 +9650,7 @@ BattleScript_EjectPackActivates::
 BattleScript_DarkTypePreventsPrankster::
 	attackstring
 	ppreduce
-	pause B_WAIT_TIME_SHORT
+	waitmessage B_WAIT_TIME_SHORT
 	printstring STRINGID_ITDOESNTAFFECT
 	waitmessage B_WAIT_TIME_LONG
 	orhalfword gMoveResultFlags, MOVE_RESULT_NO_EFFECT
@@ -9657,7 +9659,7 @@ BattleScript_DarkTypePreventsPrankster::
 BattleScript_WellBakedBodyActivates::
 	attackstring
 	ppreduce
-	pause B_WAIT_TIME_SHORT
+	waitmessage B_WAIT_TIME_SHORT
 	call BattleScript_AbilityPopUpTarget
 	orhalfword gMoveResultFlags, MOVE_RESULT_NO_EFFECT
 	modifybattlerstatstage BS_TARGET, STAT_DEF, INCREASE, 1, BattleScript_WellBakedBodyEnd, ANIM_ON
@@ -9667,7 +9669,7 @@ BattleScript_WellBakedBodyEnd:
 BattleScript_WindRiderActivatesMoveEnd::
 	attackstring
 	ppreduce
-	pause B_WAIT_TIME_SHORT
+	waitmessage B_WAIT_TIME_SHORT
 	call BattleScript_AbilityPopUpTarget
 	orhalfword gMoveResultFlags, MOVE_RESULT_NO_EFFECT
 	modifybattlerstatstage BS_TARGET, STAT_ATK, INCREASE, 1, BattleScript_WindRiderActivatesMoveEnd_End, ANIM_ON
@@ -9678,7 +9680,7 @@ BattleScript_GoodAsGoldActivates::
 	attackstring
 	ppreduce
 	call BattleScript_AbilityPopUpTarget
-	pause B_WAIT_TIME_SHORT
+	waitmessage B_WAIT_TIME_SHORT
 	printstring STRINGID_ITDOESNTAFFECT
 	waitmessage B_WAIT_TIME_MED
 	goto BattleScript_MoveEnd
@@ -10006,7 +10008,7 @@ BattleScript_DynamaxEnds::
 BattleScript_MoveBlockedByDynamax::
 	accuracycheck BattleScript_PrintMoveMissed, ACC_CURR_MOVE
 	attackstring
-	pause B_WAIT_TIME_SHORT
+	waitmessage B_WAIT_TIME_SHORT
 	ppreduce
 	jumpifword CMP_COMMON_BITS, gHitMarker, HITMARKER_STRING_PRINTED, BattleScript_MoveEnd
 	printstring STRINGID_MOVEBLOCKEDBYDYNAMAX
@@ -10017,7 +10019,7 @@ BattleScript_MoveBlockedByDynamax::
 BattleScript_PokemonCantUseTheMove::
 	attackstring
 	ppreduce
-	pause B_WAIT_TIME_SHORT
+	waitmessage B_WAIT_TIME_SHORT
 	printstring STRINGID_BUTPOKEMONCANTUSETHEMOVE
 	waitmessage B_WAIT_TIME_LONG
 	goto BattleScript_MoveEnd

@@ -1817,6 +1817,25 @@ static void Cmd_accuracycheck(void)
     AccuracyCheck(FALSE, cmd->nextInstr, cmd->failInstr, cmd->move);
 }
 
+// Battle Speed supplies the dwell scale that B_WAIT_TIME_MULTIPLIER (1) leaves out.
+static u16 ScaleBattleMessageTime(u16 time)
+{
+    if (gGlobalSpeed & (1 << MAX_SPEED_ON) || CheckSpeedchoiceOption(BATTLE_SPEED, BATTLE_SPEED_INST) == TRUE)
+        return time;
+    if (CheckSpeedchoiceOption(BATTLE_SPEED, BATTLE_SPEED_FAST) == TRUE)
+        return time * 8;
+    if (CheckSpeedchoiceOption(BATTLE_SPEED, BATTLE_SPEED_MID) == TRUE)
+        return time * 16;
+    return time * 32;
+}
+
+// Delay hold-to-skip past the move-confirm A press, which is usually still held when this runs.
+static bool32 CanSkipBattleMessage(void)
+{
+    return gPauseCounterBattle >= ScaleBattleMessageTime(B_WAIT_TIME_SHORTEST)
+        && JOY_HELD(A_BUTTON | B_BUTTON);
+}
+
 static void Cmd_attackstring(void)
 {
     CMD_ARGS();
@@ -1828,9 +1847,16 @@ static void Cmd_attackstring(void)
     {
         PrepareStringBattle(STRINGID_USEDMOVE, gBattlerAttacker);
         gHitMarker |= HITMARKER_ATTACKSTRING_PRINTED;
+        // Let a following waitmessage apply its dwell time. At instant text speed the
+        // string paints in one frame, so without this it is only readable when a move
+        // animation happens to cover it -- which nothing does on a charge turn.
+        gBattleCommunication[MSG_DISPLAY] = 1;
+    }
+    else
+    {
+        gBattleCommunication[MSG_DISPLAY] = 0;
     }
     gBattlescriptCurrInstr = cmd->nextInstr;
-    gBattleCommunication[MSG_DISPLAY] = 0;
 }
 
 static void Cmd_ppreduce(void)
@@ -2516,6 +2542,11 @@ static void Cmd_critmessage(void)
 
             gBattleCommunication[MSG_DISPLAY] = 1;
         }
+        else
+        {
+            // attackstring's flag would otherwise reach the wait below and dwell on the move name.
+            gBattleCommunication[MSG_DISPLAY] = 0;
+        }
         gBattlescriptCurrInstr = cmd->nextInstr;
     }
 }
@@ -2763,26 +2794,9 @@ static void Cmd_waitmessage(void)
         }
         else
         {
-            u16 toWait;
+            u16 toWait = ScaleBattleMessageTime(cmd->time);
 
-            if (gGlobalSpeed & (1 << MAX_SPEED_ON) || CheckSpeedchoiceOption(BATTLE_SPEED, BATTLE_SPEED_INST) == TRUE) 
-            {
-                toWait = cmd->time;
-            }
-            else if (CheckSpeedchoiceOption(BATTLE_SPEED, BATTLE_SPEED_FAST) == TRUE)
-            {
-                toWait = cmd->time * 8;
-            }
-            else if (CheckSpeedchoiceOption(BATTLE_SPEED, BATTLE_SPEED_MID) == TRUE)
-            {
-                toWait = cmd->time * 16;
-            }
-            else 
-            {
-                toWait = cmd->time * 32;
-            }
-
-            if (++gPauseCounterBattle >= toWait || (JOY_HELD(A_BUTTON | B_BUTTON)))
+            if (++gPauseCounterBattle >= toWait || CanSkipBattleMessage())
             {
                 gPauseCounterBattle = 0;
                 gBattlescriptCurrInstr = cmd->nextInstr;
@@ -5163,7 +5177,7 @@ static void Cmd_pause(void)
     if (gBattleControllerExecFlags == 0)
     {
         u16 value = cmd->frames;
-        if (++gPauseCounterBattle >= value || (JOY_HELD(A_BUTTON | B_BUTTON)))
+        if (++gPauseCounterBattle >= value || CanSkipBattleMessage())
         {
             gPauseCounterBattle = 0;
             gBattlescriptCurrInstr = cmd->nextInstr;
