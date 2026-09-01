@@ -540,6 +540,38 @@ void Script_GetChosenMonDefensiveIVs(void)
     ConvertIntToDecimalStringN(gStringVar3, GetMonData(&gPlayerParty[gSpecialVar_0x8004], MON_DATA_SPDEF_IV), STR_CONV_MODE_LEFT_ALIGN, 3);
 }
 
+// Indices are shared with Debug_EventScript_SetFriendship in data/scripts/debug.inc.
+// Resolved here because the assembler cannot evaluate the config ternaries.
+static const u8 sDebugFriendshipPresets[] =
+{
+    [DEBUG_FRIENDSHIP_PRESET_MIN]      = 0,
+    [DEBUG_FRIENDSHIP_PRESET_BASE]     = STANDARD_FRIENDSHIP,
+    [DEBUG_FRIENDSHIP_PRESET_1_HEART]  = 80,   // AFFECTION_ONE_HEART
+    [DEBUG_FRIENDSHIP_PRESET_2_HEARTS] = 130,  // AFFECTION_TWO_HEARTS
+    [DEBUG_FRIENDSHIP_PRESET_EVO]      = FRIENDSHIP_EVO_THRESHOLD,
+    [DEBUG_FRIENDSHIP_PRESET_3_HEARTS] = 180,  // AFFECTION_THREE_HEARTS
+    [DEBUG_FRIENDSHIP_PRESET_4_HEARTS] = 220,  // AFFECTION_FOUR_HEARTS
+    [DEBUG_FRIENDSHIP_PRESET_MAX]      = MAX_FRIENDSHIP,
+};
+
+void Script_SetChosenMonFriendship(void)
+{
+    struct Pokemon *mon = &gPlayerParty[gSpecialVar_0x8004];
+    u32 preset = gSpecialVar_0x8005;
+    u8 oldFriendship, newFriendship;
+
+    if (preset >= ARRAY_COUNT(sDebugFriendshipPresets))
+        return;
+
+    oldFriendship = GetMonData(mon, MON_DATA_FRIENDSHIP, NULL);
+    newFriendship = sDebugFriendshipPresets[preset];
+    SetMonData(mon, MON_DATA_FRIENDSHIP, &newFriendship);
+
+    GetMonNickname(mon, gStringVar1);
+    ConvertIntToDecimalStringN(gStringVar2, oldFriendship, STR_CONV_MODE_LEFT_ALIGN, 3);
+    ConvertIntToDecimalStringN(gStringVar3, newFriendship, STR_CONV_MODE_LEFT_ALIGN, 3);
+}
+
 void Script_SetStatus1(struct ScriptContext *ctx)
 {
     u32 status1 = VarGet(ScriptReadHalfword(ctx));

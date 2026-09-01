@@ -550,6 +550,67 @@ Debug_EventScript_InflictStatus1_Text_Freeze:
 Debug_EventScript_InflictStatus1_Text_Frostbite:
 	.string "Frostbite$"
 
+@ The multichoice ids are the DEBUG_FRIENDSHIP_PRESET_* indices, passed straight to
+@ Script_SetChosenMonFriendship.
+Debug_EventScript_SetFriendship::
+	lockall
+	getpartysize
+	goto_if_eq VAR_RESULT, 0, Debug_NoPokemon
+	special ChoosePartyMon
+	waitstate
+	goto_if_ge VAR_0x8004, PARTY_SIZE, Debug_EventScript_SetFriendship_Close
+	specialvar VAR_RESULT, ScriptGetPartyMonSpecies
+	goto_if_eq VAR_RESULT, SPECIES_EGG, Debug_EventScript_SetFriendship_Close
+	dynmultipush Debug_EventScript_SetFriendship_Text_Min,      DEBUG_FRIENDSHIP_PRESET_MIN
+	dynmultipush Debug_EventScript_SetFriendship_Text_Base,     DEBUG_FRIENDSHIP_PRESET_BASE
+	dynmultipush Debug_EventScript_SetFriendship_Text_1Heart,   DEBUG_FRIENDSHIP_PRESET_1_HEART
+	dynmultipush Debug_EventScript_SetFriendship_Text_2Hearts,  DEBUG_FRIENDSHIP_PRESET_2_HEARTS
+	dynmultipush Debug_EventScript_SetFriendship_Text_Evo,      DEBUG_FRIENDSHIP_PRESET_EVO
+	dynmultipush Debug_EventScript_SetFriendship_Text_3Hearts,  DEBUG_FRIENDSHIP_PRESET_3_HEARTS
+	dynmultipush Debug_EventScript_SetFriendship_Text_4Hearts,  DEBUG_FRIENDSHIP_PRESET_4_HEARTS
+	dynmultipush Debug_EventScript_SetFriendship_Text_Max,      DEBUG_FRIENDSHIP_PRESET_MAX
+	dynmultipush Debug_EventScript_SetFriendship_Text_Cancel,   DEBUG_FRIENDSHIP_PRESET_CANCEL
+	dynmultistack 0, 0, FALSE, 6, FALSE, 0, NULL
+	goto_if_eq VAR_RESULT, DEBUG_FRIENDSHIP_PRESET_CANCEL, Debug_EventScript_SetFriendship_Close
+	goto_if_eq VAR_RESULT, MULTI_B_PRESSED, Debug_EventScript_SetFriendship_Close
+	copyvar VAR_0x8005, VAR_RESULT
+	callnative Script_SetChosenMonFriendship
+	msgbox Debug_EventScript_SetFriendship_Text_Done, MSGBOX_DEFAULT
+Debug_EventScript_SetFriendship_Close:
+	releaseall
+	end
+
+Debug_EventScript_SetFriendship_Text_Done:
+	.string "{STR_VAR_1}'s friendship:\n"
+	.string "{STR_VAR_2} {RIGHT_ARROW} {STR_VAR_3}$"
+
+Debug_EventScript_SetFriendship_Text_Min:
+	.string "0  Minimum$"
+
+Debug_EventScript_SetFriendship_Text_Base:
+	.string "Base (as caught)$"
+
+Debug_EventScript_SetFriendship_Text_1Heart:
+	.string "80  1 Heart$"
+
+Debug_EventScript_SetFriendship_Text_2Hearts:
+	.string "130  2 Hearts$"
+
+Debug_EventScript_SetFriendship_Text_Evo:
+	.string "Evolution$"
+
+Debug_EventScript_SetFriendship_Text_3Hearts:
+	.string "180  3 Hearts$"
+
+Debug_EventScript_SetFriendship_Text_4Hearts:
+	.string "220  4 Hearts$"
+
+Debug_EventScript_SetFriendship_Text_Max:
+	.string "255  Maximum$"
+
+Debug_EventScript_SetFriendship_Text_Cancel:
+	.string "Cancel$"
+
 Debug_EventScript_EWRAMCounters::
 	callnative CheckEWRAMCounters
 	msgbox Debug_EventScript_EWRAMCounters_Text, MSGBOX_DEFAULT

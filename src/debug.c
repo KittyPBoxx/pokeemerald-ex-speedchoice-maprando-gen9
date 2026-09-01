@@ -139,6 +139,7 @@ enum PartyDebugMenu
     DEBUG_PARTY_MENU_ITEM_HATCH_AN_EGG,
     DEBUG_PARTY_MENU_ITEM_HEAL_PARTY,
     DEBUG_PARTY_MENU_ITEM_INFLICT_STATUS1,
+    DEBUG_PARTY_MENU_ITEM_SET_FRIENDSHIP,
     DEBUG_PARTY_MENU_ITEM_CHECK_EVS,
     DEBUG_PARTY_MENU_ITEM_CHECK_IVS,
     DEBUG_PARTY_MENU_ITEM_CLEAR_PARTY,
@@ -187,6 +188,8 @@ enum SettingsDebugMenu
     DEBUG_SETTINGS_MENU_ITEM_TOGGLE_COLISSION,
     DEBUG_SETTINGS_MENU_ITEM_TOGGLE_CATCH_EXP,
     DEBUG_SETTINGS_MENU_ITEM_TOGGLE_SUMMARY_RELEARN,
+    DEBUG_SETTINGS_MENU_ITEM_TOGGLE_AUTO_HEAL,
+    DEBUG_SETTINGS_MENU_ITEM_TOGGLE_SUMMARY_FIRST,
 };
 
 enum BattleType
@@ -423,6 +426,7 @@ static void DebugAction_Party_MoveReminder(u8 taskId);
 static void DebugAction_Party_HatchAnEgg(u8 taskId);
 static void DebugAction_Party_HealParty(u8 taskId);
 static void DebugAction_Party_InflictStatus1(u8 taskId);
+static void DebugAction_Party_SetFriendship(u8 taskId);
 static void DebugAction_Party_CheckEVs(u8 taskId);
 static void DebugAction_Party_CheckIVs(u8 taskId);
 static void DebugAction_Party_ClearParty(u8 taskId);
@@ -456,6 +460,8 @@ static void DebugAction_Settings_LevelScaling(u8 taskId);
 static void DebugAction_Settings_CatchExp(u8 taskId);
 static void DebugAction_Settings_AlwaysObey(u8 taskId);
 static void DebugAction_Settings_SummaryRelearn(u8 taskId);
+static void DebugAction_Settings_AutoHeal(u8 taskId);
+static void DebugAction_Settings_SummaryFirst(u8 taskId);
 // static void DebugAction_FlagsVars_RunningShoes(u8 taskId);
 
 static void Debug_InitializeBattle(u8 taskId);
@@ -498,6 +504,7 @@ extern const u8 Debug_FlagsAndVarNotSetBattleConfigMessage[];
 extern const u8 Debug_EventScript_CheckEVs[];
 extern const u8 Debug_EventScript_CheckIVs[];
 extern const u8 Debug_EventScript_InflictStatus1[];
+extern const u8 Debug_EventScript_SetFriendship[];
 // extern const u8 Debug_EventScript_Script_1[];
 // extern const u8 Debug_EventScript_Script_2[];
 // extern const u8 Debug_EventScript_Script_3[];
@@ -622,6 +629,7 @@ static const u8 sDebugText_Party_MoveReminder[] =            _("Move Reminder");
 static const u8 sDebugText_Party_HatchAnEgg[] =              _("Hatch an Egg");
 static const u8 sDebugText_Party_HealParty[] =               _("Heal party");
 static const u8 sDebugText_Party_InflictStatus1[] =          _("Inflict Status1");
+static const u8 sDebugText_Party_SetFriendship[] =           _("Set Friendship");
 static const u8 sDebugText_Party_CheckEVs[] =                _("Check EVs");
 static const u8 sDebugText_Party_CheckIVs[] =                _("Check IVs");
 static const u8 sDebugText_Party_ClearParty[] =              _("Clear Party");
@@ -660,6 +668,8 @@ static const u8 sDebugText_Settings_LevelScaling[] =        _("Toggle {STR_VAR_1
 static const u8 sDebugText_Settings_CatchExp[] =            _("Toggle {STR_VAR_1}Catch Exp OFF");
 static const u8 sDebugText_Settings_AlwaysObey[] =          _("Toggle {STR_VAR_1}Always Obey");
 static const u8 sDebugText_Settings_SummaryRelearn[] =      _("Toggle {STR_VAR_1}Summary Relearn");
+static const u8 sDebugText_Settings_AutoHeal[] =            _("Toggle {STR_VAR_1}Auto Heal");
+static const u8 sDebugText_Settings_SummaryFirst[] =        _("Toggle {STR_VAR_1}Summary First");
 
 
 // Battle
@@ -839,6 +849,7 @@ static const struct ListMenuItem sDebugMenu_Items_Party[] =
     [DEBUG_PARTY_MENU_ITEM_HATCH_AN_EGG]    = {sDebugText_Party_HatchAnEgg,     DEBUG_PARTY_MENU_ITEM_HATCH_AN_EGG},
     [DEBUG_PARTY_MENU_ITEM_HEAL_PARTY]      = {sDebugText_Party_HealParty,      DEBUG_PARTY_MENU_ITEM_HEAL_PARTY},
     [DEBUG_PARTY_MENU_ITEM_INFLICT_STATUS1] = {sDebugText_Party_InflictStatus1, DEBUG_PARTY_MENU_ITEM_INFLICT_STATUS1},
+    [DEBUG_PARTY_MENU_ITEM_SET_FRIENDSHIP]  = {sDebugText_Party_SetFriendship,  DEBUG_PARTY_MENU_ITEM_SET_FRIENDSHIP},
     [DEBUG_PARTY_MENU_ITEM_CHECK_EVS]       = {sDebugText_Party_CheckEVs,       DEBUG_PARTY_MENU_ITEM_CHECK_EVS},
     [DEBUG_PARTY_MENU_ITEM_CHECK_IVS]       = {sDebugText_Party_CheckIVs,       DEBUG_PARTY_MENU_ITEM_CHECK_IVS},
     [DEBUG_PARTY_MENU_ITEM_CLEAR_PARTY]     = {sDebugText_Party_ClearParty,     DEBUG_PARTY_MENU_ITEM_CLEAR_PARTY},
@@ -889,6 +900,8 @@ static const struct ListMenuItem sDebugMenu_Items_Settings[] =
     [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_LEVEL_SCALING]   = {sDebugText_Settings_LevelScaling,       DEBUG_SETTINGS_MENU_ITEM_TOGGLE_LEVEL_SCALING},
     [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_CATCH_EXP]       = {sDebugText_Settings_CatchExp,           DEBUG_SETTINGS_MENU_ITEM_TOGGLE_CATCH_EXP},
     [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_SUMMARY_RELEARN] = {sDebugText_Settings_SummaryRelearn,     DEBUG_SETTINGS_MENU_ITEM_TOGGLE_SUMMARY_RELEARN},
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_AUTO_HEAL]       = {sDebugText_Settings_AutoHeal,           DEBUG_SETTINGS_MENU_ITEM_TOGGLE_AUTO_HEAL},
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_SUMMARY_FIRST]   = {sDebugText_Settings_SummaryFirst,       DEBUG_SETTINGS_MENU_ITEM_TOGGLE_SUMMARY_FIRST},
 };
 
 static const struct ListMenuItem sDebugMenu_Items_Battle_0[] =
@@ -1027,6 +1040,7 @@ static void (*const sDebugMenu_Actions_Party[])(u8) =
     [DEBUG_PARTY_MENU_ITEM_HATCH_AN_EGG]    = DebugAction_Party_HatchAnEgg,
     [DEBUG_PARTY_MENU_ITEM_HEAL_PARTY]      = DebugAction_Party_HealParty,
     [DEBUG_PARTY_MENU_ITEM_INFLICT_STATUS1] = DebugAction_Party_InflictStatus1,
+    [DEBUG_PARTY_MENU_ITEM_SET_FRIENDSHIP]  = DebugAction_Party_SetFriendship,
     [DEBUG_PARTY_MENU_ITEM_CHECK_EVS]       = DebugAction_Party_CheckEVs,
     [DEBUG_PARTY_MENU_ITEM_CHECK_IVS]       = DebugAction_Party_CheckIVs,
     [DEBUG_PARTY_MENU_ITEM_CLEAR_PARTY]     = DebugAction_Party_ClearParty,
@@ -1076,6 +1090,8 @@ static void (*const sDebugMenu_Actions_Settings[])(u8) =
     [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_COLISSION]       = DebugAction_Settings_CollisionOnOff,
     [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_CATCH_EXP]       = DebugAction_Settings_CatchExp,
     [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_SUMMARY_RELEARN] = DebugAction_Settings_SummaryRelearn,
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_AUTO_HEAL]       = DebugAction_Settings_AutoHeal,
+    [DEBUG_SETTINGS_MENU_ITEM_TOGGLE_SUMMARY_FIRST]   = DebugAction_Settings_SummaryFirst,
 };
 static void (*const sDebugMenu_Actions_Give[])(u8) =
 {
@@ -1342,6 +1358,18 @@ static void Debug_ShowMenuWithType(void (*HandleInput)(u8), struct ListMenuTempl
 
     Debug_RefreshListMenu(inputTaskId);
 
+    // The Settings menu inherits whatever gMultiuseListMenuTemplate the previous menu left
+    // behind (Flags/Vars, totalItems == 12), and ListMenuInit above baked that count into
+    // the list task. Debug_RefreshListMenu only fixes the global, so re-init the task or
+    // every Settings entry past the 12th stays out of scroll range. Other menus get a
+    // correct static template and must keep it.
+    if (multiUseType == 1)
+    {
+        DestroyListMenuTask(menuTaskId, NULL, NULL);
+        menuTaskId = ListMenuInit(&gMultiuseListMenuTemplate, 0, 0);
+        gTasks[inputTaskId].tMenuTaskId = menuTaskId;
+    }
+
     // draw everything
     CopyWindowToVram(windowId, COPYWIN_FULL);
 }
@@ -1568,6 +1596,12 @@ static u8 Debug_CheckToggleSettings(u8 id)
             case DEBUG_SETTINGS_MENU_ITEM_TOGGLE_SUMMARY_RELEARN:
                 result = FlagGet(FLAG_SUMMARY_RELEARNER);
                 break;
+            case DEBUG_SETTINGS_MENU_ITEM_TOGGLE_AUTO_HEAL:
+                result = FlagGet(FLAG_HEAL_AFTER_BATTLE);
+                break;
+            case DEBUG_SETTINGS_MENU_ITEM_TOGGLE_SUMMARY_FIRST:
+                result = FlagGet(FLAG_SUMMARY_FIRST);
+                break;
             default:
                 result = 0xFF;
                 break;
@@ -1687,7 +1721,7 @@ static void Debug_RefreshListMenu(u8 taskId)
     if (gTasks[taskId].tMultiUseType == 1)
     {
         gMultiuseListMenuTemplate = sDebugMenu_ListTemplate_Settings;
-        totalItems = 12;
+        totalItems = ARRAY_COUNT(sDebugMenu_Items_Settings);
     }
     else if (sDebugMenuListData->listId == 0 && gTasks[taskId].tMultiUseType == 0)
     {
@@ -3778,7 +3812,25 @@ static void DebugAction_Settings_SummaryRelearn(u8 taskId)
         PlaySE(SE_PC_OFF);
     else
         PlaySE(SE_PC_LOGIN);
-    FlagToggle(FLAG_SUMMARY_RELEARNER);   
+    FlagToggle(FLAG_SUMMARY_RELEARNER);
+}
+
+static void DebugAction_Settings_AutoHeal(u8 taskId)
+{
+    if (FlagGet(FLAG_HEAL_AFTER_BATTLE))
+        PlaySE(SE_PC_OFF);
+    else
+        PlaySE(SE_PC_LOGIN);
+    FlagToggle(FLAG_HEAL_AFTER_BATTLE);
+}
+
+static void DebugAction_Settings_SummaryFirst(u8 taskId)
+{
+    if (FlagGet(FLAG_SUMMARY_FIRST))
+        PlaySE(SE_PC_OFF);
+    else
+        PlaySE(SE_PC_LOGIN);
+    FlagToggle(FLAG_SUMMARY_FIRST);
 }
 
 static void DebugAction_Settings_AlwaysObey(u8 taskId)
@@ -6349,6 +6401,11 @@ static void DebugAction_Party_HealParty(u8 taskId)
 static void DebugAction_Party_InflictStatus1(u8 taskId)
 {
     Debug_DestroyMenu_Full_Script(taskId, Debug_EventScript_InflictStatus1);
+}
+
+static void DebugAction_Party_SetFriendship(u8 taskId)
+{
+    Debug_DestroyMenu_Full_Script(taskId, Debug_EventScript_SetFriendship);
 }
 
 static void DebugAction_Party_CheckEVs(u8 taskId)

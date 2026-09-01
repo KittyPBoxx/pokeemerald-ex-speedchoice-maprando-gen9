@@ -205,6 +205,21 @@
 // Friendship value that the majority of species use.
 #define STANDARD_FRIENDSHIP ((P_UPDATED_FRIENDSHIP >= GEN_8) ? 50 : 70)
 
+// Friendship required for EVO_FRIENDSHIP and its day/night variants.
+#define FRIENDSHIP_EVO_THRESHOLD ((P_FRIENDSHIP_EVO_THRESHOLD >= GEN_9) ? 160 : 220)
+
+// Presets offered by the debug menu's Set Friendship option. The script passes an
+// index; sDebugFriendshipPresets in script_pokemon_util.c maps it to a value.
+#define DEBUG_FRIENDSHIP_PRESET_MIN       0
+#define DEBUG_FRIENDSHIP_PRESET_BASE      1
+#define DEBUG_FRIENDSHIP_PRESET_1_HEART   2
+#define DEBUG_FRIENDSHIP_PRESET_2_HEARTS  3
+#define DEBUG_FRIENDSHIP_PRESET_EVO       4
+#define DEBUG_FRIENDSHIP_PRESET_3_HEARTS  5
+#define DEBUG_FRIENDSHIP_PRESET_4_HEARTS  6
+#define DEBUG_FRIENDSHIP_PRESET_MAX       7
+#define DEBUG_FRIENDSHIP_PRESET_CANCEL    8 // Not a preset; leaves friendship alone.
+
 #define MAX_FRIENDSHIP  255
 #define MAX_SHEEN       255
 #define MAX_CONDITION   255

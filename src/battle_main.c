@@ -5868,6 +5868,30 @@ static void WaitForEvoSceneToFinish(void)
         gBattleMainFunc = TryEvolvePokemon;
 }
 
+// Debug setting. Runs after TryEvolvePokemon so a mon that just evolved is healed
+// to its new max HP.
+static void TryHealPartyAfterBattle(void)
+{
+    u32 i;
+
+    if (!FlagGet(FLAG_HEAL_AFTER_BATTLE))
+        return;
+
+    // Link battles would desync, and the Frontier's carried-over HP is the challenge.
+    if (gBattleTypeFlags & (BATTLE_TYPE_LINK | BATTLE_TYPE_RECORDED_LINK | BATTLE_TYPE_FRONTIER))
+        return;
+
+    for (i = 0; i < PARTY_SIZE; i++)
+    {
+        if (GetMonData(&gPlayerParty[i], MON_DATA_SANITY_HAS_SPECIES))
+            HealPokemon(&gPlayerParty[i]);
+    }
+
+    // Recharge Tera Orb, as HealPlayerParty does.
+    if (B_FLAG_TERA_ORB_CHARGED != 0 && CheckBagHasItem(ITEM_TERA_ORB, 1))
+        FlagSet(B_FLAG_TERA_ORB_CHARGED);
+}
+
 static void ReturnFromBattleToOverworld(void)
 {
     if (!(gBattleTypeFlags & BATTLE_TYPE_LINK))
@@ -5875,6 +5899,8 @@ static void ReturnFromBattleToOverworld(void)
         RandomlyGivePartyPokerus(gPlayerParty);
         PartySpreadPokerus(gPlayerParty);
     }
+
+    TryHealPartyAfterBattle();
 
     if (gBattleTypeFlags & BATTLE_TYPE_LINK && gReceivedRemoteLinkPlayers)
         return;
